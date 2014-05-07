@@ -35,7 +35,7 @@ The usage is very simple and the interface clean:
 from ds18b20 import DS18B20
 
 sensor = DS18B20()
-temperature_in_celcius = sensor.get_temperature()
+temperature_in_celsius = sensor.get_temperature()
 temperature_in_fahrenheit = sensor.get_temperature(DS18B20.DEGREES_F)
 temperature_in_all_units = sensor.get_temperatures([DS18B20.DEGREES_C, DS18B20.DEGREES_F, DS18B20.KELVIN])
 ```
@@ -46,15 +46,15 @@ If something went wrong an exception is raised.
 ## Sample program
 
 There is a little sample program in the `tests` directory.
-Just execute it and you will get the temperatures in Kelvin, Degrees Celcius and Degrees Fahrenheit.
+Just execute it and you will get the temperatures in Kelvin, Degrees Celsius and Degrees Fahrenheit.
 
       $ python example.py
       Kelvin: 295.275000
-      Degress Celcius: 23.125000
+      Degress Celsius: 23.125000
       Degress Fahrenheit: 73.625000
       =====================================
       Kelvin: 296.025000
-      Degress Celcius: 23.875000
+      Degress Celsius: 23.875000
       Degress Fahrenheit: 74.975000
       =====================================
       ...
