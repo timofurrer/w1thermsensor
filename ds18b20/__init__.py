@@ -7,6 +7,7 @@ import os
 from glob import glob
 
 class DS18B20(object):
+    """This class represents a temperature sensor of type DS18B20"""
     DEGREES_C = 0x01
     DEGREES_F = 0x02
     KELVIN = 0x03
@@ -15,7 +16,6 @@ class DS18B20(object):
     SLAVE_FILE = "w1_slave"
     UNIT_FACTORS = {DEGREES_C: lambda x: x * 0.001, DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0, KELVIN: lambda x: x * 0.001 + 272.15}
 
-    """This class represents a temperature sensor of type DS18B20"""
     def __init__(self):
         self._type = "DS18B20"
         self._load_kernel_modules()
@@ -47,28 +47,26 @@ class DS18B20(object):
             return 0
         return float(data[1].split("=")[1])
 
-    def get_temperature(self, unit=DEGREES_C):
-        """Returns the temperature in the specified unit"""
+    def _get_unit_factor(self, unit):
+        """Returns the unit factor depending on the unit constant"""
         try:
-            factor = DS18B20.UNIT_FACTORS[unit]
+            return DS18B20.UNIT_FACTORS[unit]
         except KeyError:
             sys.stderr.write("Only Degress C, F and Kelvin are currently supported\n")
-            return 0
+            return lambda x: 0
 
+    def get_temperature(self, unit=DEGREES_C):
+        """Returns the temperature in the specified unit"""
+        factor = self._get_unit_factor(unit)
         sensor_value = self._get_sensor_value()
-        return eval("%f %s" % (sensor_value, factor))
+        return factor(sensor_value)
 
     def get_temperatures(self, units):
         """Returns the temperatures in the specified units"""
         sensor_value = self._get_sensor_value()
         temperatures = []
         for unit in units:
-            try:
-                factor = DS18B20.UNIT_FACTORS[unit]
-            except KeyError:
-                sys.stderr.write("Only Degress C, F and Kelvin are currently supported\n")
-                return []
-
+            factor = self._get_unit_factor(unit)
             temperatures.append(factor(sensor_value))
         return temperatures
 
