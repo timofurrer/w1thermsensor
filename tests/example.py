@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from time import sleep
-
-from temperaturesensor import TemperatureSensor
+from ds18b20 import DS18B20
 
 
 def main():
-    ts = TemperatureSensor()
+    sensor = DS18B20()
     while True:
-        temperatures = ts.get_temperatures([TemperatureSensor.DEGREES_C, TemperatureSensor.DEGREES_F, TemperatureSensor.KELVIN])
+        temperatures = sensor.get_temperatures([DS18B20.DEGREES_C, DS18B20.DEGREES_F, DS18B20.KELVIN])
         print("Kelvin: %f" % temperatures[2])
         print("Degress Celcius: %f" % temperatures[0])
         print("Degress Fahrenheit: %f" % temperatures[1])
