@@ -13,7 +13,7 @@ class DS18B20(object):
     BASE_DIRECTORY = "/sys/bus/w1/devices"
     SLAVE_PREFIX = "28-*"
     SLAVE_FILE = "w1_slave"
-    UNIT_FACTORS = {DEGREES_C: "* 0.001", DEGREES_F: "* 0.001 * 9.0 / 5.0 + 32.0", KELVIN: "* 0.001 + 272.15"}
+    UNIT_FACTORS = {DEGREES_C: lambda x: x * 0.001, DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0, KELVIN: lambda x: x * 0.001 + 272.15}
 
     """This class represents a temperature sensor of type DS18B20"""
     def __init__(self):
@@ -69,7 +69,7 @@ class DS18B20(object):
                 sys.stderr.write("Only Degress C, F and Kelvin are currently supported\n")
                 return []
 
-            temperatures.append(eval("%f %s" % (sensor_value, factor)))
+            temperatures.append(factor(sensor_value))
         return temperatures
 
     def _load_kernel_modules(self):
