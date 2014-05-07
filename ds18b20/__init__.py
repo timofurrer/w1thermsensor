@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = "0.01.01"
+__version__ = "0.01.02"
 
 from os import path, system
 from glob import glob
