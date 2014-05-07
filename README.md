@@ -31,12 +31,14 @@ I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler)
 
 The usage is very simple and the interface clean:
 
-    from ds18b20 import DS18B20
+```python
+from ds18b20 import DS18B20
 
-    sensor = DS18B20()
-    temperature_in_celcius = sensor.get_temperature()
-    temperature_in_fahrenheit = sensor.get_temperature(DS18B20.DEGREES_F)
-    temperature_in_all_units = sensor.get_temperatures([DS18B20.DEGREES_C, DS18B20.DEGREES_F, DS18B20.KELVIN])
+sensor = DS18B20()
+temperature_in_celcius = sensor.get_temperature()
+temperature_in_fahrenheit = sensor.get_temperature(DS18B20.DEGREES_F)
+temperature_in_all_units = sensor.get_temperatures([DS18B20.DEGREES_C, DS18B20.DEGREES_F, DS18B20.KELVIN])
+```
 
 The need kernel modules will be automatically loaded in the constructor of the `DS18B20` class. <br>
 If something went wrong an exception is raised.
