@@ -2,8 +2,7 @@
 
 __version__ = "0.01.01"
 
-import sys
-import os
+from os import path, system
 from glob import glob
 
 class DS18B20(object):
@@ -50,7 +49,7 @@ class DS18B20(object):
 
     def _get_slave_path(self):
         """Returns the slaves path"""
-        slave_path = os.path.join(DS18B20.BASE_DIRECTORY, DS18B20.SLAVE_PREFIX, DS18B20.SLAVE_FILE)
+        slave_path = path.join(DS18B20.BASE_DIRECTORY, DS18B20.SLAVE_PREFIX, DS18B20.SLAVE_FILE)
         globbed = glob(slave_path)
         if globbed:
             return globbed[0]
@@ -93,5 +92,5 @@ class DS18B20(object):
 
     def _load_kernel_modules(self):
         """Load kernel modules needed by the temperature sensor"""
-        os.system("modprobe w1-gpio")
-        os.system("modprobe w1-therm")
+        system("modprobe w1-gpio")
+        system("modprobe w1-therm")
