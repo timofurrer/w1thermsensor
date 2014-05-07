@@ -16,6 +16,25 @@ class DS18B20(object):
     SLAVE_FILE = "w1_slave"
     UNIT_FACTORS = {DEGREES_C: lambda x: x * 0.001, DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0, KELVIN: lambda x: x * 0.001 + 272.15}
 
+    class DS18B20Error(Exception):
+        """Exception Baseclass for DS18B20 sensor errors"""
+        pass
+
+    class NoSensorFoundError(DS18B20Error):
+        """Exception when no sensor is found"""
+        def __str__(self):
+            return "No DS18B20 temperature sensor found"
+
+    class SensorNotReadyError(DS18B20Error):
+        """Exception when the sensor is not ready yet"""
+        def __str__(self):
+            return "Sensor is not yet ready to read temperature"
+
+    class UnsupportedUnitError(DS18B20Error):
+        """Exception when unsupported unit is given"""
+        def __str__(self):
+            return "Only Degress C, F and Kelvin are currently supported"
+
     def __init__(self):
         self._type = "DS18B20"
         self._load_kernel_modules()
@@ -40,11 +59,14 @@ class DS18B20(object):
     def _get_sensor_value(self):
         """Returns the raw sensor value"""
         slave_path = self._get_slave_path()
+        if not slave_path:
+            raise DS18B20.NoSensorFoundError()
+
         with open(slave_path, "r") as f:
             data = f.readlines()
+
         if data[0].strip()[-3:] != "YES":
-            sys.stderr.write("Sensor is not yet ready to read temperature\n")
-            return 0
+            raise DS18B20.SensorNotReadyError()
         return float(data[1].split("=")[1])
 
     def _get_unit_factor(self, unit):
@@ -52,8 +74,7 @@ class DS18B20(object):
         try:
             return DS18B20.UNIT_FACTORS[unit]
         except KeyError:
-            sys.stderr.write("Only Degress C, F and Kelvin are currently supported\n")
-            return lambda x: 0
+            raise DS18B20.UnsupportedUnitError()
 
     def get_temperature(self, unit=DEGREES_C):
         """Returns the temperature in the specified unit"""
