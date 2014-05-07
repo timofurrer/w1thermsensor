@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
+__version__ = "0.01.00"
+
 import sys
 import os
 from glob import glob
 
-class TemperatureSensor(object):
+class DS18B20(object):
     DEGREES_C = 0x01
     DEGREES_F = 0x02
     KELVIN = 0x03
@@ -29,7 +31,7 @@ class TemperatureSensor(object):
 
     def _get_slave_path(self):
         """Returns the slaves path"""
-        slave_path = os.path.join(TemperatureSensor.BASE_DIRECTORY, TemperatureSensor.SLAVE_PREFIX, TemperatureSensor.SLAVE_FILE)
+        slave_path = os.path.join(DS18B20.BASE_DIRECTORY, DS18B20.SLAVE_PREFIX, DS18B20.SLAVE_FILE)
         globbed = glob(slave_path)
         if globbed:
             return globbed[0]
@@ -48,7 +50,7 @@ class TemperatureSensor(object):
     def get_temperature(self, unit=DEGREES_C):
         """Returns the temperature in the specified unit"""
         try:
-            factor = TemperatureSensor.UNIT_FACTORS[unit]
+            factor = DS18B20.UNIT_FACTORS[unit]
         except KeyError:
             sys.stderr.write("Only Degress C, F and Kelvin are currently supported\n")
             return 0
@@ -62,7 +64,7 @@ class TemperatureSensor(object):
         temperatures = []
         for unit in units:
             try:
-                factor = TemperatureSensor.UNIT_FACTORS[unit]
+                factor = DS18B20.UNIT_FACTORS[unit]
             except KeyError:
                 sys.stderr.write("Only Degress C, F and Kelvin are currently supported\n")
                 return []

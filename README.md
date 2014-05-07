@@ -1,4 +1,4 @@
-# raspitemp
+# DS18B20
 > This little pure python module provides a single class to get the temperature of a DS18B20 sensor<br>
 > It can be easily used on are Rasperry Pi over the GPIO interface.
 
