@@ -49,6 +49,11 @@ class DS18B20(object):
                 sensors.append(sensor[3:])
         return sensors
 
+    @classmethod
+    def get_all_sensors(cls):
+        """Returns an instance for every available DS18B20 sensor"""
+        return [DS18B20(sensor_id) for sensor_id in cls.get_available_sensors()]
+
     def __init__(self, sensor_id=None):
         """If no sensor id is given the first found sensor will be taken"""
         self._type = "DS18B20"

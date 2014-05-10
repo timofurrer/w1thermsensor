@@ -73,6 +73,15 @@ for sensor in sensors:
     print("Sensor %s has temperature %.2f" % (sensor.get_id(), sensor.get_temperature()))
 ```
 
+The first path of the above code can be replaced by the `get_all_sensors` method:
+
+```python
+from ds18b20 import DS18B20
+
+sensors = DS18B20.get_all_sensors()
+...
+```
+
 ## Sample program
 
 There is a little sample program in the `tests` directory.
