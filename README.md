@@ -29,7 +29,9 @@ I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler)
 
 ## Usage
 
-The usage is very simple and the interface clean:
+The usage is very simple and the interface clean..
+
+### Basic usage with one sensor (implicit)
 
 ```python
 from ds18b20 import DS18B20
@@ -42,6 +44,34 @@ temperature_in_all_units = sensor.get_temperatures([DS18B20.DEGREES_C, DS18B20.D
 
 The need kernel modules will be automatically loaded in the constructor of the `DS18B20` class. <br>
 If something went wrong an exception is raised.
+
+*The first found sensor will be taken*
+
+### Basic usage with one sensor (explicit)
+
+The sensor with the ID `00000588806a` will be taken.
+
+```python
+from ds18b20 import DS18B20
+
+sensor = DS18B20("00000588806a")
+temperature_in_celsius = sensor.get_temperature()
+```
+
+### Multiple sensors
+
+With the `get_available_sensors` class-method you can get the ids of all available sensors.
+
+```python
+from ds18b20 import DS18B20
+
+sensors = []
+for sensor_id in DS18B20.get_available_sensors():
+    sensors.append(DS18B20(sensor_id))
+
+for sensor in sensors:
+    print("Sensor %s has temperature %.2f" % (sensor.get_id(), sensor.get_temperature()))
+```
 
 ## Sample program
 

@@ -2,8 +2,9 @@
 
 __version__ = "0.01.02"
 
-from os import path, system
+from os import path, listdir, system
 from glob import glob
+
 
 class DS18B20(object):
     """This class represents a temperature sensor of type DS18B20"""
@@ -11,7 +12,7 @@ class DS18B20(object):
     DEGREES_F = 0x02
     KELVIN = 0x03
     BASE_DIRECTORY = "/sys/bus/w1/devices"
-    SLAVE_PREFIX = "28-*"
+    SLAVE_PREFIX = "28-"
     SLAVE_FILE = "w1_slave"
     UNIT_FACTORS = {DEGREES_C: lambda x: x * 0.001, DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0, KELVIN: lambda x: x * 0.001 + 272.15}
 
@@ -21,7 +22,12 @@ class DS18B20(object):
 
     class NoSensorFoundError(DS18B20Error):
         """Exception when no sensor is found"""
+        def __init__(self, sensor_id):
+            self._sensor_id = sensor_id
+
         def __str__(self):
+            if self._sensor_id:
+                return "No DS18B20 temperature sensor with id '%s' found" % self._sensor_id
             return "No DS18B20 temperature sensor found"
 
     class SensorNotReadyError(DS18B20Error):
@@ -34,9 +40,25 @@ class DS18B20(object):
         def __str__(self):
             return "Only Degress C, F and Kelvin are currently supported"
 
-    def __init__(self):
+    @classmethod
+    def get_available_sensors(cls):
+        """Returns all available sensors"""
+        sensors = []
+        for sensor in listdir(cls.BASE_DIRECTORY):
+            if sensor.startswith(cls.SLAVE_PREFIX):
+                sensors.append(sensor[3:])
+        return sensors
+
+    def __init__(self, sensor_id=None):
+        """If no sensor id is given the first found sensor will be taken"""
         self._type = "DS18B20"
+        self._id = sensor_id
         self._load_kernel_modules()
+        self._sensor = self._get_sensor()
+
+    def get_id(self):
+        """Returns the id of the sensor"""
+        return self._id
 
     def get_type(self):
         """Returns the type of this temperature sensor"""
@@ -44,24 +66,23 @@ class DS18B20(object):
 
     def exists(self):
         """Returns True if the sensor exists and is available to read temperature"""
-        path = self._get_slave_path()
+        path = self._get_sensor()
         return path is not None
 
-    def _get_slave_path(self):
-        """Returns the slaves path"""
-        slave_path = path.join(DS18B20.BASE_DIRECTORY, DS18B20.SLAVE_PREFIX, DS18B20.SLAVE_FILE)
-        globbed = glob(slave_path)
-        if globbed:
-            return globbed[0]
-        return None
+    def _get_sensor(self):
+        """Returns the sensors slave path"""
+        sensors = self.get_available_sensors()
+        if self._id and self._id not in sensors:
+            raise DS18B20.NoSensorFoundError(sensor_id)
+
+        if not self._id and sensors:
+            self._id = sensors[0]
+
+        return path.join(DS18B20.BASE_DIRECTORY, DS18B20.SLAVE_PREFIX + self._id, DS18B20.SLAVE_FILE)
 
     def _get_sensor_value(self):
         """Returns the raw sensor value"""
-        slave_path = self._get_slave_path()
-        if not slave_path:
-            raise DS18B20.NoSensorFoundError()
-
-        with open(slave_path, "r") as f:
+        with open(self._sensor, "r") as f:
             data = f.readlines()
 
         if data[0].strip()[-3:] != "YES":
