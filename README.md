@@ -5,7 +5,7 @@
 ***
 
 *Author*: Timo Furrer <tuxtimo@gmail.com><br>
-*Version*: 0.01.02
+*Version*: 0.01.03
 
 ## Setup
 
