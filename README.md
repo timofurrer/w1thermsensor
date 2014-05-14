@@ -17,6 +17,7 @@ I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler)
 
 ### From Source
 
+    git clone https://github.com/timofurrer/ds18b20.git && cd ds18b20
     python setup.py install
 
 *Note: maybe root privileges are required*
