@@ -14,7 +14,7 @@ class DS18B20(object):
     BASE_DIRECTORY = "/sys/bus/w1/devices"
     SLAVE_PREFIX = "28-"
     SLAVE_FILE = "w1_slave"
-    UNIT_FACTORS = {DEGREES_C: lambda x: x * 0.001, DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0, KELVIN: lambda x: x * 0.001 + 272.15}
+    UNIT_FACTORS = {DEGREES_C: lambda x: x * 0.001, DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0, KELVIN: lambda x: x * 0.001 + 273.15}
 
     class DS18B20Error(Exception):
         """Exception Baseclass for DS18B20 sensor errors"""
