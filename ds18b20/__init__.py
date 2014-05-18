@@ -54,11 +54,12 @@ class DS18B20(object):
         """Returns an instance for every available DS18B20 sensor"""
         return [DS18B20(sensor_id) for sensor_id in cls.get_available_sensors()]
 
-    def __init__(self, sensor_id=None):
+    def __init__(self, sensor_id=None, load_kernel_modules=True):
         """If no sensor id is given the first found sensor will be taken"""
         self._type = "DS18B20"
         self._id = sensor_id
-        self._load_kernel_modules()
+        if load_kernel_modules:
+            self._load_kernel_modules()
         self._sensor = self._get_sensor()
 
     def get_id(self):
