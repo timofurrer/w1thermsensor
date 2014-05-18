@@ -98,3 +98,13 @@ Just execute it and you will get the temperatures in Kelvin, Degrees Celsius and
       Degress Fahrenheit: 74.975000
       =====================================
       ...
+
+## Contribution
+
+Feel free to contribute!
+If you have made any changes and you want to make a `pull request`:
+
+1. You are a **pro** to contribute to this repo!
+2. Please make the tests pass by `make test`
+3. Now you can make the `pull request`
+4. Catch my thank!
