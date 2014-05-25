@@ -1,6 +1,6 @@
 # DS18B20
 > This little pure python module provides a single class to get the temperature of a DS18B20 sensor<br>
-> It can be easily used on are Rasperry Pi over the GPIO interface.
+> It can be easily used on a Rasperry Pi over the GPIO interface.
 
 ***
 
@@ -18,7 +18,7 @@ I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler)
 ### From Source
 
     git clone https://github.com/timofurrer/ds18b20.git && cd ds18b20
-    python setup.py install
+    pip install .
 
 *Note: maybe root privileges are required*
 
