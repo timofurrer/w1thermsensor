@@ -10,8 +10,8 @@ def main():
     while True:
         temperatures = sensor.get_temperatures([DS18B20.DEGREES_C, DS18B20.DEGREES_F, DS18B20.KELVIN])
         print("Kelvin: %f" % temperatures[2])
-        print("Degress Celsius: %f" % temperatures[0])
-        print("Degress Fahrenheit: %f" % temperatures[1])
+        print("Degrees Celsius: %f" % temperatures[0])
+        print("Degrees Fahrenheit: %f" % temperatures[1])
         print("=====================================")
         sleep(1)
 
