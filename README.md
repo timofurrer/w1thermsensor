@@ -90,12 +90,12 @@ Just execute it and you will get the temperatures in Kelvin, Degrees Celsius and
 
       $ python example.py
       Kelvin: 295.275000
-      Degress Celsius: 23.125000
-      Degress Fahrenheit: 73.625000
+      Degrees Celsius: 23.125000
+      Degrees Fahrenheit: 73.625000
       =====================================
       Kelvin: 296.025000
-      Degress Celsius: 23.875000
-      Degress Fahrenheit: 74.975000
+      Degrees Celsius: 23.875000
+      Degrees Fahrenheit: 74.975000
       =====================================
       ...
 
