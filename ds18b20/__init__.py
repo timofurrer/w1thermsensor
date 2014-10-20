@@ -43,11 +43,7 @@ class DS18B20(object):
     @classmethod
     def get_available_sensors(cls):
         """Returns all available sensors"""
-        sensors = []
-        for sensor in listdir(cls.BASE_DIRECTORY):
-            if sensor.startswith(cls.SLAVE_PREFIX):
-                sensors.append(sensor[3:])
-        return sensors
+        return [s[3:] for s in listdir(cls.BASE_DIRECTORY) if s.startswith(cls.SLAVE_PREFIX)]
 
     @classmethod
     def get_all_sensors(cls):
