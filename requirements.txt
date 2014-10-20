@@ -1,0 +1,5 @@
+mock
+six
+sure
+nose
+coverage

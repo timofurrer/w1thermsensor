@@ -1,15 +1,23 @@
-# DS18B20
-> This little pure python module provides a single class to get the temperature of a DS18B20 sensor<br>
+# W1ThermSensor
+> This little pure python module provides a single class to get the temperature of a w1 therm sensor<br>
 > It can be easily used on are Rasperry Pi over the GPIO interface.
 
 ***
 
 *Author*: Timo Furrer <tuxtimo@gmail.com><br>
-*Version*: 0.01.03
+*Version*: 0.02.00
+
+## Supported devices
+
+The following w1 therm sensor devices are supported:
+
+* DS18S20
+* DS1822
+* DS18B20
 
 ## Setup
 
-You just need a DS18B20 temperature sensor. <br>
+You just need a w1 therm sensor. <br>
 Some of them can be bought here: [Adafruit: DS18B20](https://www.adafruit.com/search?q=DS18B20) <br>
 I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler)
 
@@ -17,45 +25,46 @@ I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler)
 
 ### From Source
 
-    git clone https://github.com/timofurrer/ds18b20.git && cd ds18b20
+    git clone https://github.com/timofurrer/w1thermsensor.git && cd w1thermsensor
     python setup.py install
 
 *Note: maybe root privileges are required*
 
 ### From PIP
 
-    pip install ds18b20
+    pip install w1thermsensor
 
 *Note: maybe root privileges are required*
 
 ## Usage
 
 The usage is very simple and the interface clean..
+All examples are with the `DS18B20` sensor - It works the same way for the other supported devices.
 
 ### Basic usage with one sensor (implicit)
 
 ```python
-from ds18b20 import DS18B20
+from w1thermsensor import W1ThermSensor
 
-sensor = DS18B20()
+sensor = W1ThermSensor()
 temperature_in_celsius = sensor.get_temperature()
-temperature_in_fahrenheit = sensor.get_temperature(DS18B20.DEGREES_F)
-temperature_in_all_units = sensor.get_temperatures([DS18B20.DEGREES_C, DS18B20.DEGREES_F, DS18B20.KELVIN])
+temperature_in_fahrenheit = sensor.get_temperature(W1ThermSensor.DEGREES_F)
+temperature_in_all_units = sensor.get_temperatures([W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN])
 ```
 
-The need kernel modules will be automatically loaded in the constructor of the `DS18B20` class. <br>
+The need kernel modules will be automatically loaded in the constructor of the `W1ThermSensor` class. <br>
 If something went wrong an exception is raised.
 
 *The first found sensor will be taken*
 
 ### Basic usage with one sensor (explicit)
 
-The sensor with the ID `00000588806a` will be taken.
+The DS18B20 sensor with the ID `00000588806a` will be taken.
 
 ```python
-from ds18b20 import DS18B20
+from w1thermsensor import W1ThermSensor
 
-sensor = DS18B20("00000588806a")
+sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
 temperature_in_celsius = sensor.get_temperature()
 ```
 
@@ -64,40 +73,20 @@ temperature_in_celsius = sensor.get_temperature()
 With the `get_available_sensors` class-method you can get the ids of all available sensors.
 
 ```python
-from ds18b20 import DS18B20
+from w1thermsensor import W1ThermSensor
 
-sensors = []
-for sensor_id in DS18B20.get_available_sensors():
-    sensors.append(DS18B20(sensor_id))
-
-for sensor in sensors:
-    print("Sensor %s has temperature %.2f" % (sensor.get_id(), sensor.get_temperature()))
+for sensor in W1ThermSensor.get_available_sensors():
+    print("Sensor %s has temperature %.2f" % (sensor.id, sensor.get_temperature()))
 ```
 
-The first path of the above code can be replaced by the `get_all_sensors` method:
+Only sensors of a specific therm sensor type:
 
 ```python
-from ds18b20 import DS18B20
+from w1thermsensor import W1ThermSensor
 
-sensors = DS18B20.get_all_sensors()
-...
+for sensor in W1ThermSensor.get_available_sensors([W1ThermSensor.THERM_SENSOR_DS18B20]):
+    print("Sensor %s has temperature %.2f" % (sensor.id, sensor.get_temperature()))
 ```
-
-## Sample program
-
-There is a little sample program in the `tests` directory.
-Just execute it and you will get the temperatures in Kelvin, Degrees Celsius and Degrees Fahrenheit.
-
-      $ python example.py
-      Kelvin: 295.275000
-      Degress Celsius: 23.125000
-      Degress Fahrenheit: 73.625000
-      =====================================
-      Kelvin: 296.025000
-      Degress Celsius: 23.875000
-      Degress Fahrenheit: 74.975000
-      =====================================
-      ...
 
 ## Contribution
 

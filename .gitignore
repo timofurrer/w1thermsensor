@@ -5,10 +5,16 @@
 *.pyc
 
 # virtualenv
-ds18b20-env
+env
 
 # distutils with PIP
 build
 dist
 MANIFEST
 README.rst
+
+# coverage data
+.coverage
+
+# mocked sensors
+test/mockedsensors
