@@ -23,11 +23,11 @@ class W1ThermSensor(object):
     TYPE_NAMES = {THERM_SENSOR_DS18S20: "DS18S20", THERM_SENSOR_DS1822: "DS1822", THERM_SENSOR_DS18B20: "DS18B20"}
     RESOLVE_TYPE_STR = {"10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20}
 
-    class DS18B20Error(Exception):
+    class W1ThermSensorError(Exception):
         """Exception Baseclass for DS18B20 sensor errors"""
         pass
 
-    class NoSensorFoundError(DS18B20Error):
+    class NoSensorFoundError(W1ThermSensorError):
         """Exception when no sensor is found"""
         def __init__(self, sensor_type, sensor_id):
             self._sensor_type = sensor_type
@@ -36,12 +36,12 @@ class W1ThermSensor(object):
         def __str__(self):
             return "No %s temperature sensor with id '%s' found" % (W1ThermSensor.TYPE_NAMES.get(self._sensor_type, "Unknown"), self._sensor_id)
 
-    class SensorNotReadyError(DS18B20Error):
+    class SensorNotReadyError(W1ThermSensorError):
         """Exception when the sensor is not ready yet"""
         def __str__(self):
             return "Sensor is not yet ready to read temperature"
 
-    class UnsupportedUnitError(DS18B20Error):
+    class UnsupportedUnitError(W1ThermSensorError):
         """Exception when unsupported unit is given"""
         def __str__(self):
             return "Only Degress C, F and Kelvin are currently supported"
