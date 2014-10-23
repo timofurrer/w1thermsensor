@@ -68,9 +68,10 @@ class W1ThermSensor(object):
                 raise W1ThermSensor.NoSensorFoundError(sensor_type, "")
             self._id = s[0].id
 
+        self._sensorpath = self.sensorpath
+
         if W1ThermSensor.LOAD_KERNEL_MODULES:
             self._load_kernel_modules()
-        self._sensor = self._get_sensor()
 
     @property
     def id(self):
@@ -92,7 +93,8 @@ class W1ThermSensor(object):
         """Returns the slave prefix for this temperature sensor"""
         return "%s-" % hex(self._type)[2:]
 
-    def _get_sensor(self):
+    @property
+    def sensorpath(self):
         """Returns the sensors slave path"""
         sensor_path = path.join(W1ThermSensor.BASE_DIRECTORY, self.slave_prefix + self._id, W1ThermSensor.SLAVE_FILE)
         if not path.exists(sensor_path):
@@ -100,9 +102,10 @@ class W1ThermSensor(object):
 
         return sensor_path
 
-    def _get_sensor_value(self):
+    @property
+    def raw_sensor_value(self):
         """Returns the raw sensor value"""
-        with open(self._sensor, "r") as f:
+        with open(self.sensorpath, "r") as f:
             data = f.readlines()
 
         if data[0].strip()[-3:] != "YES":
@@ -119,12 +122,11 @@ class W1ThermSensor(object):
     def get_temperature(self, unit=DEGREES_C):
         """Returns the temperature in the specified unit"""
         factor = self._get_unit_factor(unit)
-        sensor_value = self._get_sensor_value()
-        return factor(sensor_value)
+        return factor(self.raw_sensor_value)
 
     def get_temperatures(self, units):
         """Returns the temperatures in the specified units"""
-        sensor_value = self._get_sensor_value()
+        sensor_value = self.raw_sensor_value
         temperatures = []
         for unit in units:
             factor = self._get_unit_factor(unit)
