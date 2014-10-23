@@ -60,8 +60,7 @@ class W1ThermSensor(object):
             s = W1ThermSensor.get_available_sensors()
             if not s:
                 raise W1ThermSensor.NoSensorFoundError(None, "")
-            self._type = s[0].type
-            self._id = s[0].id
+            self._type, self._id = s[0].type, s[0].id
         elif not sensor_id:
             s = W1ThermSensor.get_available_sensors([sensor_type])
             if not s:
@@ -127,11 +126,7 @@ class W1ThermSensor(object):
     def get_temperatures(self, units):
         """Returns the temperatures in the specified units"""
         sensor_value = self.raw_sensor_value
-        temperatures = []
-        for unit in units:
-            factor = self._get_unit_factor(unit)
-            temperatures.append(factor(sensor_value))
-        return temperatures
+        return [self._get_unit_factor(unit)(sensor_value) for unit in units]
 
     def _load_kernel_modules(self):
         """Load kernel modules needed by the temperature sensor"""
