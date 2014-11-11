@@ -4,6 +4,7 @@ __version__ = "0.02.00"
 __author__ = "Timo Furrer"
 __email__ = "tuxtimo@gmail.com"
 
+import time
 from os import path, listdir, system
 from glob import glob
 
@@ -54,10 +55,20 @@ class W1ThermSensor(object):
 
     def __init__(self, sensor_type=None, sensor_id=None):
         """If no sensor id is given the first found sensor will be taken"""
+	if not path.isdir(self.BASE_DIRECTORY):
+	   self._load_kernel_modules()
+	checkBaseDirAttempts = 0
+	while not path.isdir(self.BASE_DIRECTORY) and checkBaseDirAttempts <= 10:
+	    time.sleep(1.0/10)
         self._type = sensor_type
         self._id = sensor_id
         if not sensor_type and not sensor_id:
             s = W1ThermSensor.get_available_sensors()
+	    findSensorAttemps = 0;
+	    while not s and findSensorAttemps <= 10:
+		time.sleep(1.0/10)
+		findSensorAttemps+= 1
+		s = W1ThermSensor.get_available_sensors()
             if not s:
                 raise W1ThermSensor.NoSensorFoundError(None, "")
             self._type, self._id = s[0].type, s[0].id
