@@ -25,11 +25,9 @@ if path.exists(MOCKED_SENSORS_DIR):
     rmtree(MOCKED_SENSORS_DIR)
 makedirs(MOCKED_SENSORS_DIR)
 
-# set base directory for sensors
+# set base directory for sensors, note existing DIR
+# skips loading the kernel modules
 W1ThermSensor.BASE_DIRECTORY = MOCKED_SENSORS_DIR
-
-# disable kernel module loading
-W1ThermSensor.LOAD_KERNEL_MODULES = False
 
 
 def _create_w1_therm_sensor(sensor_type, sensor_id=None, temperature=20, w1_file=W1_FILE):

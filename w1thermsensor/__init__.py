@@ -19,10 +19,11 @@ class W1ThermSensor(object):
     KELVIN = 0x03
     BASE_DIRECTORY = "/sys/bus/w1/devices"
     SLAVE_FILE = "w1_slave"
-    LOAD_KERNEL_MODULES = True
     UNIT_FACTORS = {DEGREES_C: lambda x: x * 0.001, DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0, KELVIN: lambda x: x * 0.001 + 273.15}
     TYPE_NAMES = {THERM_SENSOR_DS18S20: "DS18S20", THERM_SENSOR_DS1822: "DS1822", THERM_SENSOR_DS18B20: "DS18B20"}
     RESOLVE_TYPE_STR = {"10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20}
+    RETRY_ATTEMPS = 10
+    RETRY_DELAY_SECONDS = 1.0 / float(RETRY_ATTEMPS)
 
     class W1ThermSensorError(Exception):
         """Exception Baseclass for DS18B20 sensor errors"""
@@ -55,20 +56,21 @@ class W1ThermSensor(object):
 
     def __init__(self, sensor_type=None, sensor_id=None):
         """If no sensor id is given the first found sensor will be taken"""
-	if not path.isdir(self.BASE_DIRECTORY):
-	   self._load_kernel_modules()
-	checkBaseDirAttempts = 0
-	while not path.isdir(self.BASE_DIRECTORY) and checkBaseDirAttempts <= 10:
-	    time.sleep(1.0/10)
+        if not path.isdir(self.BASE_DIRECTORY):
+            self._load_kernel_modules()
+        checkBaseDirAttempts = 0
+        while not path.isdir(self.BASE_DIRECTORY) and checkBaseDirAttempts <= self.RETRY_ATTEMPS:
+            time.sleep(self.RETRY_DELAY_SECONDS)
+            checkBaseDirAttempts += 1
         self._type = sensor_type
         self._id = sensor_id
         if not sensor_type and not sensor_id:
             s = W1ThermSensor.get_available_sensors()
-	    findSensorAttemps = 0;
-	    while not s and findSensorAttemps <= 10:
-		time.sleep(1.0/10)
-		findSensorAttemps+= 1
-		s = W1ThermSensor.get_available_sensors()
+            findSensorAttemps = 0;
+            while not s and findSensorAttemps <= self.RETRY_ATTEMPS:
+                time.sleep(self.RETRY_DELAY_SECONDS)
+                findSensorAttemps += 1
+                s = W1ThermSensor.get_available_sensors()
             if not s:
                 raise W1ThermSensor.NoSensorFoundError(None, "")
             self._type, self._id = s[0].type, s[0].id
@@ -79,9 +81,6 @@ class W1ThermSensor(object):
             self._id = s[0].id
 
         self._sensorpath = self.sensorpath
-
-        if W1ThermSensor.LOAD_KERNEL_MODULES:
-            self._load_kernel_modules()
 
     @property
     def id(self):
