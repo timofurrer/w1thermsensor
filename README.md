@@ -1,4 +1,5 @@
 # W1ThermSensor
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/timofurrer/w1thermsensor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 > This little pure python module provides a single class to get the temperature of a w1 therm sensor<br>
 > It can be easily used on are Rasperry Pi over the GPIO interface.
 
