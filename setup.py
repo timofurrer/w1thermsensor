@@ -9,7 +9,7 @@ core = load_source("core", "w1thermsensor/__init__.py")
 setup(
     name="w1thermsensor",
     version=core.__version__,
-    license="MIT",
+    license="GPLv2",
     description="This little pure python module provides a single class to get the temperature of a w1 sensor",
     author=core.__author__,
     author_email=core.__email__,
