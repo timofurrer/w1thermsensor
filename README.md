@@ -8,7 +8,7 @@
 [![Build Status](https://travis-ci.org/timofurrer/w1thermsensor.svg?branch=master)](https://travis-ci.org/timofurrer/w1thermsensor)
 
 *Author*: Timo Furrer <tuxtimo@gmail.com><br>
-*Version*: 0.02.00
+*Version*: 0.02.01
 
 ## Supported devices
 

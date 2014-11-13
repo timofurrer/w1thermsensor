@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = "0.02.00"
+__version__ = "0.02.01"
 __author__ = "Timo Furrer"
 __email__ = "tuxtimo@gmail.com"
 
