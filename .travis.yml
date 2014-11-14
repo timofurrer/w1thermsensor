@@ -6,7 +6,14 @@ python:
     - "3.4"
 # command to install dependencies
 install:
-  - "pip install -r requirements.txt"
-  - "make install"
+    - "pip install -r requirements.txt"
+    - "make install"
 # # command to run tests
 script: make tests
+notifications:
+    webhooks:
+    urls:
+        - https://webhooks.gitter.im/e/1783c332a0ad247e3476
+    on_success: always
+    on_failure: always
+    on_start: false
