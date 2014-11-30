@@ -9,6 +9,30 @@ from os import path, listdir, system
 from glob import glob
 
 
+class W1ThermSensorError(Exception):
+    """Exception Baseclass for DS18B20 sensor errors"""
+    pass
+
+class NoSensorFoundError(W1ThermSensorError):
+    """Exception when no sensor is found"""
+    def __init__(self, sensor_type, sensor_id):
+        self._sensor_type = sensor_type
+        self._sensor_id = sensor_id
+
+    def __str__(self):
+        return "No %s temperature sensor with id '%s' found" % (W1ThermSensor.TYPE_NAMES.get(self._sensor_type, "Unknown"), self._sensor_id)
+
+class SensorNotReadyError(W1ThermSensorError):
+    """Exception when the sensor is not ready yet"""
+    def __str__(self):
+        return "Sensor is not yet ready to read temperature"
+
+class UnsupportedUnitError(W1ThermSensorError):
+    """Exception when unsupported unit is given"""
+    def __str__(self):
+        return "Only Degress C, F and Kelvin are currently supported"
+
+
 class W1ThermSensor(object):
     """This class represents a temperature sensor of type w1-therm"""
     THERM_SENSOR_DS18S20 = 0x10
@@ -24,29 +48,6 @@ class W1ThermSensor(object):
     RESOLVE_TYPE_STR = {"10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20}
     RETRY_ATTEMPS = 10
     RETRY_DELAY_SECONDS = 1.0 / float(RETRY_ATTEMPS)
-
-    class W1ThermSensorError(Exception):
-        """Exception Baseclass for DS18B20 sensor errors"""
-        pass
-
-    class NoSensorFoundError(W1ThermSensorError):
-        """Exception when no sensor is found"""
-        def __init__(self, sensor_type, sensor_id):
-            self._sensor_type = sensor_type
-            self._sensor_id = sensor_id
-
-        def __str__(self):
-            return "No %s temperature sensor with id '%s' found" % (W1ThermSensor.TYPE_NAMES.get(self._sensor_type, "Unknown"), self._sensor_id)
-
-    class SensorNotReadyError(W1ThermSensorError):
-        """Exception when the sensor is not ready yet"""
-        def __str__(self):
-            return "Sensor is not yet ready to read temperature"
-
-    class UnsupportedUnitError(W1ThermSensorError):
-        """Exception when unsupported unit is given"""
-        def __str__(self):
-            return "Only Degress C, F and Kelvin are currently supported"
 
     @classmethod
     def get_available_sensors(cls, types=[THERM_SENSOR_DS18S20, THERM_SENSOR_DS1822, THERM_SENSOR_DS18B20]):
@@ -72,12 +73,12 @@ class W1ThermSensor(object):
                 find_sensor_attemps += 1
                 s = W1ThermSensor.get_available_sensors()
             if not s:
-                raise W1ThermSensor.NoSensorFoundError(None, "")
+                raise NoSensorFoundError(None, "")
             self._type, self._id = s[0].type, s[0].id
         elif not sensor_id:
             s = W1ThermSensor.get_available_sensors([sensor_type])
             if not s:
-                raise W1ThermSensor.NoSensorFoundError(sensor_type, "")
+                raise NoSensorFoundError(sensor_type, "")
             self._id = s[0].id
 
         self._sensorpath = self.sensorpath
@@ -107,7 +108,7 @@ class W1ThermSensor(object):
         """Returns the sensors slave path"""
         sensor_path = path.join(W1ThermSensor.BASE_DIRECTORY, self.slave_prefix + self._id, W1ThermSensor.SLAVE_FILE)
         if not path.exists(sensor_path):
-            raise W1ThermSensor.NoSensorFoundError(self._type, self._id)
+            raise NoSensorFoundError(self._type, self._id)
 
         return sensor_path
 
@@ -118,7 +119,7 @@ class W1ThermSensor(object):
             data = f.readlines()
 
         if data[0].strip()[-3:] != "YES":
-            raise W1ThermSensor.SensorNotReadyError()
+            raise SensorNotReadyError()
         return float(data[1].split("=")[1])
 
     def _get_unit_factor(self, unit):
@@ -126,7 +127,7 @@ class W1ThermSensor(object):
         try:
             return W1ThermSensor.UNIT_FACTORS[unit]
         except KeyError:
-            raise W1ThermSensor.UnsupportedUnitError()
+            raise UnsupportedUnitError()
 
     def get_temperature(self, unit=DEGREES_C):
         """Returns the temperature in the specified unit"""

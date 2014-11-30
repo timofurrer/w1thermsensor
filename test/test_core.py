@@ -8,7 +8,7 @@ from os import path, makedirs
 from shutil import rmtree
 from glob import glob
 
-from w1thermsensor import W1ThermSensor
+from w1thermsensor import W1ThermSensor, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
 
 MOCKED_SENSORS_DIR = "test/mockedsensors"
 W1_FILE = """9e 01 4b 46 7f ff 02 10 56 : crc=56 YES
@@ -271,11 +271,11 @@ def test_sensor_type_name():
 def test_no_sensor_found_error():
     _remove_w1_therm_sensors()
 
-    W1ThermSensor.when.called_with().should.throw(W1ThermSensor.NoSensorFoundError, "No Unknown temperature sensor with id '' found")
-    W1ThermSensor.when.called_with(W1ThermSensor.THERM_SENSOR_DS1822).should.throw(W1ThermSensor.NoSensorFoundError, "No DS1822 temperature sensor with id '' found")
+    W1ThermSensor.when.called_with().should.throw(NoSensorFoundError, "No Unknown temperature sensor with id '' found")
+    W1ThermSensor.when.called_with(W1ThermSensor.THERM_SENSOR_DS1822).should.throw(NoSensorFoundError, "No DS1822 temperature sensor with id '' found")
 
     sensor_id = RANDOM_SENSOR_ID()
-    W1ThermSensor.when.called_with(W1ThermSensor.THERM_SENSOR_DS1822, sensor_id).should.throw(W1ThermSensor.NoSensorFoundError, "No DS1822 temperature sensor with id '%s' found" % sensor_id)
+    W1ThermSensor.when.called_with(W1ThermSensor.THERM_SENSOR_DS1822, sensor_id).should.throw(NoSensorFoundError, "No DS1822 temperature sensor with id '%s' found" % sensor_id)
 
 
 def test_sensor_not_ready_error():
@@ -283,7 +283,7 @@ def test_sensor_not_ready_error():
 
     sensor_id = _create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS1822, w1_file=W1_FILE_NOT_READY)
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS1822, sensor_id)
-    sensor.get_temperature.when.called_with(W1ThermSensor.DEGREES_C).should.throw(W1ThermSensor.SensorNotReadyError, "Sensor is not yet ready to read temperature")
+    sensor.get_temperature.when.called_with(W1ThermSensor.DEGREES_C).should.throw(SensorNotReadyError, "Sensor is not yet ready to read temperature")
 
 
 def test_unsupported_unit_error():
@@ -292,4 +292,4 @@ def test_unsupported_unit_error():
     unsupported_unit = 0xFF
     sensor_id = _create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS1822)
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS1822, sensor_id)
-    sensor.get_temperature.when.called_with(unsupported_unit).should.throw(W1ThermSensor.UnsupportedUnitError, "Only Degress C, F and Kelvin are currently supported")
+    sensor.get_temperature.when.called_with(unsupported_unit).should.throw(UnsupportedUnitError, "Only Degress C, F and Kelvin are currently supported")
