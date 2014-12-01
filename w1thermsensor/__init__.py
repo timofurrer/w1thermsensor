@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+    This module provides a temperature sensor of type w1 therm.
+"""
+
 __version__ = "0.02.01"
 __author__ = "Timo Furrer"
 __email__ = "tuxtimo@gmail.com"
@@ -16,21 +20,17 @@ class W1ThermSensorError(Exception):
 class NoSensorFoundError(W1ThermSensorError):
     """Exception when no sensor is found"""
     def __init__(self, sensor_type, sensor_id):
-        self._sensor_type = sensor_type
-        self._sensor_id = sensor_id
-
-    def __str__(self):
-        return "No %s temperature sensor with id '%s' found" % (W1ThermSensor.TYPE_NAMES.get(self._sensor_type, "Unknown"), self._sensor_id)
+        W1ThermSensorError.__init__(self, "No %s temperature sensor with id '%s' found" % (W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
 
 class SensorNotReadyError(W1ThermSensorError):
     """Exception when the sensor is not ready yet"""
-    def __str__(self):
-        return "Sensor is not yet ready to read temperature"
+    def __init__(self):
+        W1ThermSensorError.__init__(self, "Sensor is not yet ready to read temperature")
 
 class UnsupportedUnitError(W1ThermSensorError):
     """Exception when unsupported unit is given"""
-    def __str__(self):
-        return "Only Degress C, F and Kelvin are currently supported"
+    def __init__(self):
+        W1ThermSensorError.__init__(self, "Only Degress C, F and Kelvin are currently supported")
 
 
 class W1ThermSensor(object):
@@ -67,7 +67,7 @@ class W1ThermSensor(object):
         self._id = sensor_id
         if not sensor_type and not sensor_id:
             s = W1ThermSensor.get_available_sensors()
-            find_sensor_attemps = 0;
+            find_sensor_attemps = 0
             while not s and find_sensor_attemps <= W1ThermSensor.RETRY_ATTEMPS:
                 time.sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
                 find_sensor_attemps += 1
@@ -122,10 +122,11 @@ class W1ThermSensor(object):
             raise SensorNotReadyError()
         return float(data[1].split("=")[1])
 
-    def _get_unit_factor(self, unit):
+    @classmethod
+    def _get_unit_factor(cls, unit):
         """Returns the unit factor depending on the unit constant"""
         try:
-            return W1ThermSensor.UNIT_FACTORS[unit]
+            return cls.UNIT_FACTORS[unit]
         except KeyError:
             raise UnsupportedUnitError()
 
@@ -139,7 +140,8 @@ class W1ThermSensor(object):
         sensor_value = self.raw_sensor_value
         return [self._get_unit_factor(unit)(sensor_value) for unit in units]
 
-    def _load_kernel_modules(self):
+    @staticmethod
+    def _load_kernel_modules():
         """Load kernel modules needed by the temperature sensor"""
         system("modprobe w1-gpio")
         system("modprobe w1-therm")
