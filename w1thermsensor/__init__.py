@@ -8,9 +8,9 @@ __version__ = "0.02.01"
 __author__ = "Timo Furrer"
 __email__ = "tuxtimo@gmail.com"
 
-import time
 from os import path, listdir, system
 from glob import glob
+from time import sleep
 
 
 class W1ThermSensorError(Exception):
@@ -63,7 +63,7 @@ class W1ThermSensor(object):
             self._load_kernel_modules()
         check_base_dir_attempts = 0
         while not path.isdir(W1ThermSensor.BASE_DIRECTORY) and check_base_dir_attempts <= self.RETRY_ATTEMPS:
-            time.sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
+            sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
             check_base_dir_attempts += 1
         self._type = sensor_type
         self._id = sensor_id
@@ -71,7 +71,7 @@ class W1ThermSensor(object):
             s = W1ThermSensor.get_available_sensors()
             find_sensor_attemps = 0
             while not s and find_sensor_attemps <= W1ThermSensor.RETRY_ATTEMPS:
-                time.sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
+                sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
                 find_sensor_attemps += 1
                 s = W1ThermSensor.get_available_sensors()
             if not s:
