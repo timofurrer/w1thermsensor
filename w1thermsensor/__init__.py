@@ -50,8 +50,10 @@ class W1ThermSensor(object):
     RETRY_DELAY_SECONDS = 1.0 / float(RETRY_ATTEMPS)
 
     @classmethod
-    def get_available_sensors(cls, types=[THERM_SENSOR_DS18S20, THERM_SENSOR_DS1822, THERM_SENSOR_DS18B20]):
+    def get_available_sensors(cls, types=None):
         """Returns all available sensors"""
+        if not types:
+            types = [W1ThermSensor.THERM_SENSOR_DS18S20, W1ThermSensor.THERM_SENSOR_DS1822, W1ThermSensor.THERM_SENSOR_DS18B20]
         is_sensor = lambda s: any(s.startswith(hex(x)[2:]) for x in types)
         return [cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:]) for s in listdir(cls.BASE_DIRECTORY) if is_sensor(s)]
 
