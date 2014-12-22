@@ -293,3 +293,13 @@ def test_unsupported_unit_error():
     sensor_id = _create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS1822)
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS1822, sensor_id)
     sensor.get_temperature.when.called_with(unsupported_unit).should.throw(UnsupportedUnitError, "Only Degress C, F and Kelvin are currently supported")
+
+
+def test_repr():
+    _remove_w1_therm_sensors()
+
+    sensor_id = _create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS18B20)
+    s1 = W1ThermSensor(W1ThermSensor.DS18B20, sensor_id)
+    s2 = eval(repr(s1))
+    assert s1.id == s2.id
+    assert s1.type == s2.type

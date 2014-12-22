@@ -85,6 +85,16 @@ class W1ThermSensor(object):
 
         self._sensorpath = self.sensorpath
 
+    def __repr__(self):
+        """ Returns a string that eval can turn back into this object """
+        return "{}(sensor_type={}, sensor_id='{}')".format(
+            self.__class__.__name__, self.type, self.id)
+
+    def __str__(self):
+        """ Returns a pretty string respresentation """
+        return "{}(name='{}', type={}(0x{:x}), id='{}')".format(
+            self.__class__.__name__, self.type_name, self.type, self.type, self.id)
+
     @property
     def id(self):
         """Returns the id of the sensor"""
