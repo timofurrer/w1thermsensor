@@ -182,7 +182,7 @@ def test_sensor_temperature_in_C():
 
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
     sensor.id.should.be.equal(sensor_id)
-    sensor.get_temperature(W1ThermSensor.DEGREES_C).should.be.equal(20)
+    sensor.get_temperature(W1ThermSensor.DEGREES_C).should.be.equal(20.0)
 
     # FIXME: sure should support float comparisation
     # create DS18B20 sensor with 26.55 C degrees
@@ -205,7 +205,7 @@ def test_sensor_temperature_in_F():
 
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
     sensor.id.should.be.equal(sensor_id)
-    sensor.get_temperature(W1ThermSensor.DEGREES_F).should.be.equal(68)
+    sensor.get_temperature(W1ThermSensor.DEGREES_F).should.be.equal(68.0)
 
     # FIXME: sure should support float comparisation
     # create DS18B20 sensor with 26.55 C degrees
