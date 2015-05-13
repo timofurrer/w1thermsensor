@@ -1,5 +1,4 @@
-mock
-six
 sure
+mock
 nose
 coverage
