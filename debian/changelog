@@ -1,0 +1,5 @@
+w1thermsensor (0.2.2) unstable; urgency=low
+
+  * first debian package
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Wed, 13 May 2015 19:53:54 +0200
