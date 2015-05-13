@@ -247,5 +247,4 @@ class W1ThermSensor(object):
             :raises SensorNotReadyError: if the sensor is not ready yet
         """
         sensor_value = self.raw_sensor_value
-
         return [self._get_unit_factor(unit)(sensor_value) for unit in units]
