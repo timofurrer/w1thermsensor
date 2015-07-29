@@ -120,8 +120,8 @@ class W1ThermSensor(object):
             :raises KernelModuleLoadError: if the kernel module could not be loaded properly
         """
         if not path.isdir(W1ThermSensor.BASE_DIRECTORY):
-            system("modprobe w1-gpio")
-            system("modprobe w1-therm")
+            system("modprobe w1-gpio >/dev/null 2>&1")
+            system("modprobe w1-therm >/dev/null 2>&1")
 
         for i in range(self.RETRY_ATTEMPS):
             if path.isdir(W1ThermSensor.BASE_DIRECTORY):  # w1 therm modules loaded correctly
