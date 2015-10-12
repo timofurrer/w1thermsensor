@@ -1,4 +1,4 @@
 sure
 mock
 nose
-coverage
+coverage==3.7.1
