@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+
+export PYBUILD_NAME=w1thermsensor
+%:
+	dh $@ --with python2,python3 --buildsystem=pybuild
+
+override_dh_auto_install:
+	dh_auto_install
+	rm -rf debian/python-w1thermsensor/trash
+
