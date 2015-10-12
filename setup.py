@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from imp import load_source
 from setuptools import setup
 
 core = load_source("core", "w1thermsensor/__init__.py")
 
-setup(
+setup_args=dict(
     name="w1thermsensor",
     version=core.__version__,
     license="MIT",
@@ -19,5 +20,9 @@ setup(
     download_url="http://github.com/timofurrer/w1thermsensor",
     packages=["w1thermsensor"],
     install_requires=["click"],
-    entry_points={"console_scripts": ["w1thermsensor = w1thermsensor.cli:cli"]}
 )
+
+if sys.version_info.major == 3:
+    setup_args["entry_points"] = {"console_scripts": ["w1thermsensor = w1thermsensor.cli:cli"]}
+
+setup(**setup_args)

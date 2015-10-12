@@ -24,3 +24,13 @@ test/mockedsensors
 
 # ignore temporary tox environments
 .tox
+
+# debian build files
+.pybuild/
+debian/debhelper-build-stamp
+debian/files
+debian/python*-w1thermsensor.debhelper.log
+debian/python*-w1thermsensor.postinst.debhelper
+debian/python*-w1thermsensor.prerm.debhelper
+debian/python*-w1thermsensor.substvars
+debian/python*-w1thermsensor/
