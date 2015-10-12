@@ -26,6 +26,16 @@ I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler)
 
 ## Installation
 
+### Create debian packages
+
+For python 2:
+
+    python setup.py --command-packages=stdeb.command bdist_deb
+
+For python 3:
+
+    python3 setup.py --command-packages=stdeb.command bdist_deb
+
 ### From Source
 
     git clone https://github.com/timofurrer/w1thermsensor.git && cd w1thermsensor
