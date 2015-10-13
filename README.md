@@ -26,6 +26,20 @@ I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler)
 
 ## Installation
 
+## On Raspbian
+
+If you are using the `w1thermsensor` module on a Rasperry Pi running raspbian you can install it from the offical repository:
+
+```bash
+sudo apt-get intall python-w1thermsensor
+```
+
+Or if you are using python 3:
+
+```bash
+sudo apt-get install python3-w1thermsensor
+```
+
 ### Create debian packages
 
 For python 2:
