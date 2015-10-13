@@ -90,7 +90,7 @@ class W1ThermSensor(object):
         self._type = sensor_type
         self._id = sensor_id
         if not sensor_type and not sensor_id:  # take first found sensor
-            for i in range(W1ThermSensor.RETRY_ATTEMPS):
+            for _ in range(W1ThermSensor.RETRY_ATTEMPS):
                 s = W1ThermSensor.get_available_sensors()
                 if s:
                     self._type, self._id = s[0].type, s[0].id
@@ -123,7 +123,7 @@ class W1ThermSensor(object):
             system("modprobe w1-gpio >/dev/null 2>&1")
             system("modprobe w1-therm >/dev/null 2>&1")
 
-        for i in range(self.RETRY_ATTEMPS):
+        for _ in range(self.RETRY_ATTEMPS):
             if path.isdir(W1ThermSensor.BASE_DIRECTORY):  # w1 therm modules loaded correctly
                 break
             sleep(self.RETRY_DELAY_SECONDS)
