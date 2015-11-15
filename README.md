@@ -1,15 +1,15 @@
 # W1ThermSensor
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/timofurrer/w1thermsensor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 > This little pure python module provides a single class to get the temperature of a w1 therm sensor<br>
-> It can be easily used on are Rasperry Pi over the GPIO interface.
+> It can be easily used on are Rasperry Pi, Beagle Bone etc. over the GPIO interface.
 
 ***
 
 [![Build Status](https://travis-ci.org/timofurrer/w1thermsensor.svg?branch=master)](https://travis-ci.org/timofurrer/w1thermsensor) [![codecov.io](http://codecov.io/github/timofurrer/w1thermsensor/coverage.svg?branch=master)](http://codecov.io/github/timofurrer/w1thermsensor?branch=master) [![Code Climate](https://codeclimate.com/github/timofurrer/w1thermsensor/badges/gpa.svg)](https://codeclimate.com/github/timofurrer/w1thermsensor)  [![Code Health](https://landscape.io/github/timofurrer/w1thermsensor/master/landscape.svg?style=flat)](https://landscape.io/github/timofurrer/w1thermsensor/master) [![PyPI version](https://badge.fury.io/py/w1thermsensor.svg)](https://badge.fury.io/py/w1thermsensor) [![PyPI](https://img.shields.io/pypi/dm/w1thermsensor.svg)]()
 
-*Author*: Timo Furrer <tuxtimo@gmail.com><br>
-*Version*: 0.2.2 <br>
-*License*: MIT
+**Author**: Timo Furrer <tuxtimo@gmail.com><br>
+**Version**: 0.2.2 <br>
+**License**: MIT
 
 ## Supported devices
 
@@ -23,7 +23,7 @@ The following w1 therm sensor devices are supported:
 
 You just need a w1 therm sensor. <br>
 Some of them can be bought here: [Adafruit: DS18B20](https://www.adafruit.com/search?q=DS18B20) <br>
-I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler)
+I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler). Other hardware like the Beagle Bone are supported, too.
 
 ## Installation
 
@@ -59,6 +59,8 @@ For python 3:
 *Note: maybe root privileges are required*
 
 ### From PIP
+
+This possibility is supported on all distribution:
 
     pip install w1thermsensor
 
