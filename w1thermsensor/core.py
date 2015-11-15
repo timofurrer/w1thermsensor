@@ -22,7 +22,7 @@ class KernelModuleLoadError(W1ThermSensorError):
 class NoSensorFoundError(W1ThermSensorError):
     """Exception when no sensor is found"""
     def __init__(self, sensor_type, sensor_id):
-        W1ThermSensorError.__init__(self, "No %s temperature sensor with id '%s' found" % (W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
+        W1ThermSensorError.__init__(self, "No {0} temperature sensor with id '{1}' found".format(W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
 
 
 class SensorNotReadyError(W1ThermSensorError):
@@ -87,13 +87,13 @@ class W1ThermSensor(object):
         # try to load kernel modules
         self._load_kernel_modules()
 
-        self._type = sensor_type
-        self._id = sensor_id
+        self.type = sensor_type
+        self.id = sensor_id
         if not sensor_type and not sensor_id:  # take first found sensor
             for _ in range(W1ThermSensor.RETRY_ATTEMPS):
                 s = W1ThermSensor.get_available_sensors()
                 if s:
-                    self._type, self._id = s[0].type, s[0].id
+                    self.type, self.id = s[0].type, s[0].id
                     break
                 sleep(self.RETRY_DELAY_SECONDS)
             else:
@@ -102,13 +102,13 @@ class W1ThermSensor(object):
             s = W1ThermSensor.get_available_sensors([sensor_type])
             if not s:
                 raise NoSensorFoundError(sensor_type, "")
-            self._id = s[0].id
+            self.id = s[0].id
 
         # store path to sensor
-        self._sensorpath = path.join(W1ThermSensor.BASE_DIRECTORY, self.slave_prefix + self._id, W1ThermSensor.SLAVE_FILE)
+        self.sensorpath = path.join(W1ThermSensor.BASE_DIRECTORY, self.slave_prefix + self.id, W1ThermSensor.SLAVE_FILE)
 
         if not self.exists():
-            raise NoSensorFoundError(self._type, self._id)
+            raise NoSensorFoundError(self.type, self.id)
 
     def _load_kernel_modules(self):
         """
@@ -147,37 +147,22 @@ class W1ThermSensor(object):
             :returns: representation of this instance
             :rtype: string
         """
-        return "{}(name='{}', type={}(0x{:x}), id='{}')".format(
-            self.__class__.__name__, self.type_name, self.type, self.type, self.id)
-
-    @property
-    def id(self):
-        """Returns the id of the sensor"""
-        return self._id
-
-    @property
-    def type(self):
-        """Returns the type of this temperature sensor"""
-        return self._type
+        return "{0}(name='{1}', type={2}(0x{2:x}), id='{3}')".format(
+            self.__class__.__name__, self.type_name, self.type, self.id)
 
     @property
     def type_name(self):
         """Returns the type name of this temperature sensor"""
-        return W1ThermSensor.TYPE_NAMES.get(self._type, "Unknown")
+        return W1ThermSensor.TYPE_NAMES.get(self.type, "Unknown")
 
     @property
     def slave_prefix(self):
         """Returns the slave prefix for this temperature sensor"""
-        return "%s-" % hex(self._type)[2:]
-
-    @property
-    def sensorpath(self):
-        """Returns the path to the sensor kernel file"""
-        return self._sensorpath
+        return "%s-" % hex(self.type)[2:]
 
     def exists(self):
         """Returns the sensors slave path"""
-        return path.exists(self._sensorpath)
+        return path.exists(self.sensorpath)
 
     @property
     def raw_sensor_value(self):
@@ -191,10 +176,10 @@ class W1ThermSensor(object):
             :raises SensorNotReadyError: if the sensor is not ready yet
         """
         try:
-            with open(self._sensorpath, "r") as f:
+            with open(self.sensorpath, "r") as f:
                 data = f.readlines()
         except IOError:
-            raise NoSensorFoundError(self._type, self._id)
+            raise NoSensorFoundError(self.type, self.id)
 
         if data[0].strip()[-3:] != "YES":
             raise SensorNotReadyError()
