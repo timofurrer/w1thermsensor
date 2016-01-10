@@ -1,6 +1,9 @@
 # vim swap files
 *.swp
 
+# emacs backup files
+*~
+
 # python bytecode files
 *.pyc
 
