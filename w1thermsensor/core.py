@@ -42,14 +42,19 @@ class W1ThermSensor(object):
     THERM_SENSOR_DS18S20 = 0x10
     THERM_SENSOR_DS1822 = 0x22
     THERM_SENSOR_DS18B20 = 0x28
+    THERM_SENSOR_MAX31850K = 0x3b
+    ALL_TYPES = [THERM_SENSOR_DS18S20, THERM_SENSOR_DS1822, THERM_SENSOR_DS18B20,
+                 THERM_SENSOR_MAX31850K]
     DEGREES_C = 0x01
     DEGREES_F = 0x02
     KELVIN = 0x03
     BASE_DIRECTORY = "/sys/bus/w1/devices"
     SLAVE_FILE = "w1_slave"
     UNIT_FACTORS = {DEGREES_C: lambda x: x * 0.001, DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0, KELVIN: lambda x: x * 0.001 + 273.15}
-    TYPE_NAMES = {THERM_SENSOR_DS18S20: "DS18S20", THERM_SENSOR_DS1822: "DS1822", THERM_SENSOR_DS18B20: "DS18B20"}
-    RESOLVE_TYPE_STR = {"10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20}
+    TYPE_NAMES = {THERM_SENSOR_DS18S20: "DS18S20", THERM_SENSOR_DS1822: "DS1822", THERM_SENSOR_DS18B20: "DS18B20",
+                  THERM_SENSOR_MAX31850K: "MAX31850K"}
+    RESOLVE_TYPE_STR = {"10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20,
+                        "3b": THERM_SENSOR_MAX31850K}
     RETRY_ATTEMPS = 10
     RETRY_DELAY_SECONDS = 1.0 / float(RETRY_ATTEMPS)
 
@@ -65,7 +70,7 @@ class W1ThermSensor(object):
 
         """
         if not types:
-            types = [W1ThermSensor.THERM_SENSOR_DS18S20, W1ThermSensor.THERM_SENSOR_DS1822, W1ThermSensor.THERM_SENSOR_DS18B20]
+            types = W1ThermSensor.ALL_TYPES
         is_sensor = lambda s: any(s.startswith(hex(x)[2:]) for x in types)
         return [cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:]) for s in listdir(cls.BASE_DIRECTORY) if is_sensor(s)]
 
