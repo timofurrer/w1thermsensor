@@ -18,7 +18,8 @@ The following w1 therm sensor devices are supported:
 * DS18S20
 * DS1822
 * DS18B20
-* MAX31850K
+* DS28EA00
+* DS1825/MAX31850K
 
 ## Setup
 
