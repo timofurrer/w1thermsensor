@@ -22,7 +22,9 @@ class KernelModuleLoadError(W1ThermSensorError):
 class NoSensorFoundError(W1ThermSensorError):
     """Exception when no sensor is found"""
     def __init__(self, sensor_type, sensor_id):
-        super(NoSensorFoundError, self).__init__("No {0} temperature sensor with id '{1}' found".format(W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
+        super(NoSensorFoundError, self).__init__(
+                "No {0} temperature sensor with id '{1}' found".format(
+                        W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
 
 
 class SensorNotReadyError(W1ThermSensorError):
@@ -102,7 +104,7 @@ class W1ThermSensor(object):
             :raises NoSensorFoundError: if the sensor with the given type and/or id does not exist or is not connected
         """
         super(W1ThermSensor, self).__init__()
-        
+
         # try to load kernel modules
         self._load_kernel_modules()
 
@@ -243,7 +245,8 @@ class W1ThermSensor(object):
 
             :param list units: the units for the sensor temperature
 
-            :returns: the sensor temperature in the given units. The order of the temperatures matches the order of the given units.
+            :returns: the sensor temperature in the given units. The order of
+            the temperatures matches the order of the given units.
             :rtype: list
 
             :raises UnsupportedUnitError: if the unit is not supported
