@@ -82,7 +82,7 @@ class W1ThermSensor(object):
 
         """
         if not types:
-            types = W1ThermSensor.ALL_TYPES
+            types = cls.ALL_TYPES
         is_sensor = lambda s: any(s.startswith(hex(x)[2:]) for x in types)
         return [cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:]) for s in listdir(cls.BASE_DIRECTORY) if is_sensor(s)]
 
@@ -107,8 +107,8 @@ class W1ThermSensor(object):
         self.type = sensor_type
         self.id = sensor_id
         if not sensor_type and not sensor_id:  # take first found sensor
-            for _ in range(W1ThermSensor.RETRY_ATTEMPTS):
-                s = W1ThermSensor.get_available_sensors()
+            for _ in range(self.RETRY_ATTEMPTS):
+                s = self.get_available_sensors()
                 if s:
                     self.type, self.id = s[0].type, s[0].id
                     break
@@ -116,13 +116,13 @@ class W1ThermSensor(object):
             else:
                 raise NoSensorFoundError(None, "")
         elif not sensor_id:
-            s = W1ThermSensor.get_available_sensors([sensor_type])
+            s = self.get_available_sensors([sensor_type])
             if not s:
                 raise NoSensorFoundError(sensor_type, "")
             self.id = s[0].id
 
         # store path to sensor
-        self.sensorpath = path.join(W1ThermSensor.BASE_DIRECTORY, self.slave_prefix + self.id, W1ThermSensor.SLAVE_FILE)
+        self.sensorpath = path.join(self.BASE_DIRECTORY, self.slave_prefix + self.id, self.SLAVE_FILE)
 
         if not self.exists():
             raise NoSensorFoundError(self.type, self.id)
@@ -136,12 +136,12 @@ class W1ThermSensor(object):
 
             :raises KernelModuleLoadError: if the kernel module could not be loaded properly
         """
-        if not path.isdir(W1ThermSensor.BASE_DIRECTORY):
+        if not path.isdir(self.BASE_DIRECTORY):
             system("modprobe w1-gpio >/dev/null 2>&1")
             system("modprobe w1-therm >/dev/null 2>&1")
 
         for _ in range(self.RETRY_ATTEMPTS):
-            if path.isdir(W1ThermSensor.BASE_DIRECTORY):  # w1 therm modules loaded correctly
+            if path.isdir(self.BASE_DIRECTORY):  # w1 therm modules loaded correctly
                 break
             sleep(self.RETRY_DELAY_SECONDS)
         else:
@@ -170,7 +170,7 @@ class W1ThermSensor(object):
     @property
     def type_name(self):
         """Returns the type name of this temperature sensor"""
-        return W1ThermSensor.TYPE_NAMES.get(self.type, "Unknown")
+        return self.TYPE_NAMES.get(self.type, "Unknown")
 
     @property
     def slave_prefix(self):
