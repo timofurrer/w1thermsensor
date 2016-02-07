@@ -34,7 +34,7 @@ class SensorNotReadyError(W1ThermSensorError):
 class UnsupportedUnitError(W1ThermSensorError):
     """Exception when unsupported unit is given"""
     def __init__(self):
-        W1ThermSensorError.__init__(self, "Only Degress C, F and Kelvin are currently supported")
+        W1ThermSensorError.__init__(self, "Only Degrees C, F and Kelvin are currently supported")
 
 
 class W1ThermSensor(object):

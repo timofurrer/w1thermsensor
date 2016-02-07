@@ -262,7 +262,7 @@ class W1ThermSensorTest(TestCase):
         unsupported_unit = 0xFF
         sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS1822)
         sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS1822, sensor_id)
-        sensor.get_temperature.when.called_with(unsupported_unit).should.throw(UnsupportedUnitError, "Only Degress C, F and Kelvin are currently supported")
+        sensor.get_temperature.when.called_with(unsupported_unit).should.throw(UnsupportedUnitError, "Only Degrees C, F and Kelvin are currently supported")
 
     @mock_kernel_modules
     def test_repr(self):
