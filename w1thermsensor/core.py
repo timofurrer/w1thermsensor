@@ -9,32 +9,32 @@ from time import sleep
 
 
 class W1ThermSensorError(Exception):
-    """Exception Baseclass for DS18B20 sensor errors"""
+    """Exception base-class for W1ThermSensor errors"""
     pass
 
 
 class KernelModuleLoadError(W1ThermSensorError):
     """Exception when the w1 therm kernel modules could not be loaded properly"""
     def __init__(self):
-        W1ThermSensorError.__init__(self, "Cannot load w1 therm kernel modules")
+        super(KernelModuleLoadError, self).__init__("Cannot load w1 therm kernel modules")
 
 
 class NoSensorFoundError(W1ThermSensorError):
     """Exception when no sensor is found"""
     def __init__(self, sensor_type, sensor_id):
-        W1ThermSensorError.__init__(self, "No {0} temperature sensor with id '{1}' found".format(W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
+        super(NoSensorFoundError, self).__init__("No {0} temperature sensor with id '{1}' found".format(W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
 
 
 class SensorNotReadyError(W1ThermSensorError):
     """Exception when the sensor is not ready yet"""
     def __init__(self):
-        W1ThermSensorError.__init__(self, "Sensor is not yet ready to read temperature")
+        super(SensorNotReadyError, self).__init__("Sensor is not yet ready to read temperature")
 
 
 class UnsupportedUnitError(W1ThermSensorError):
     """Exception when unsupported unit is given"""
     def __init__(self):
-        W1ThermSensorError.__init__(self, "Only Degrees C, F and Kelvin are currently supported")
+        super(UnsupportedUnitError, self).__init__("Only Degrees C, F and Kelvin are currently supported")
 
 
 class W1ThermSensor(object):
@@ -101,6 +101,8 @@ class W1ThermSensor(object):
             :raises KernelModuleLoadError: if the w1 therm kernel modules could not be loaded correctly
             :raises NoSensorFoundError: if the sensor with the given type and/or id does not exist or is not connected
         """
+        super(W1ThermSensor, self).__init__()
+        
         # try to load kernel modules
         self._load_kernel_modules()
 
