@@ -67,8 +67,8 @@ class W1ThermSensor(object):
         "10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20,
         "42": THERM_SENSOR_DS28EA00, "3b": THERM_SENSOR_MAX31850K
     }
-    RETRY_ATTEMPS = 10
-    RETRY_DELAY_SECONDS = 1.0 / float(RETRY_ATTEMPS)
+    RETRY_ATTEMPTS = 10
+    RETRY_DELAY_SECONDS = 1.0 / float(RETRY_ATTEMPTS)
 
     @classmethod
     def get_available_sensors(cls, types=None):
@@ -107,7 +107,7 @@ class W1ThermSensor(object):
         self.type = sensor_type
         self.id = sensor_id
         if not sensor_type and not sensor_id:  # take first found sensor
-            for _ in range(W1ThermSensor.RETRY_ATTEMPS):
+            for _ in range(W1ThermSensor.RETRY_ATTEMPTS):
                 s = W1ThermSensor.get_available_sensors()
                 if s:
                     self.type, self.id = s[0].type, s[0].id
@@ -140,7 +140,7 @@ class W1ThermSensor(object):
             system("modprobe w1-gpio >/dev/null 2>&1")
             system("modprobe w1-therm >/dev/null 2>&1")
 
-        for _ in range(self.RETRY_ATTEMPS):
+        for _ in range(self.RETRY_ATTEMPTS):
             if path.isdir(W1ThermSensor.BASE_DIRECTORY):  # w1 therm modules loaded correctly
                 break
             sleep(self.RETRY_DELAY_SECONDS)
