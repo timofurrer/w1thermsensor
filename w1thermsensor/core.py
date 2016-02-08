@@ -9,32 +9,34 @@ from time import sleep
 
 
 class W1ThermSensorError(Exception):
-    """Exception Baseclass for DS18B20 sensor errors"""
+    """Exception base-class for W1ThermSensor errors"""
     pass
 
 
 class KernelModuleLoadError(W1ThermSensorError):
     """Exception when the w1 therm kernel modules could not be loaded properly"""
     def __init__(self):
-        W1ThermSensorError.__init__(self, "Cannot load w1 therm kernel modules")
+        super(KernelModuleLoadError, self).__init__("Cannot load w1 therm kernel modules")
 
 
 class NoSensorFoundError(W1ThermSensorError):
     """Exception when no sensor is found"""
     def __init__(self, sensor_type, sensor_id):
-        W1ThermSensorError.__init__(self, "No {0} temperature sensor with id '{1}' found".format(W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
+        super(NoSensorFoundError, self).__init__(
+                "No {0} temperature sensor with id '{1}' found".format(
+                        W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
 
 
 class SensorNotReadyError(W1ThermSensorError):
     """Exception when the sensor is not ready yet"""
     def __init__(self):
-        W1ThermSensorError.__init__(self, "Sensor is not yet ready to read temperature")
+        super(SensorNotReadyError, self).__init__("Sensor is not yet ready to read temperature")
 
 
 class UnsupportedUnitError(W1ThermSensorError):
     """Exception when unsupported unit is given"""
     def __init__(self):
-        W1ThermSensorError.__init__(self, "Only Degress C, F and Kelvin are currently supported")
+        super(UnsupportedUnitError, self).__init__("Only Degrees C, F and Kelvin are currently supported")
 
 
 class W1ThermSensor(object):
@@ -67,8 +69,8 @@ class W1ThermSensor(object):
         "10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20,
         "42": THERM_SENSOR_DS28EA00, "3b": THERM_SENSOR_MAX31850K
     }
-    RETRY_ATTEMPS = 10
-    RETRY_DELAY_SECONDS = 1.0 / float(RETRY_ATTEMPS)
+    RETRY_ATTEMPTS = 10
+    RETRY_DELAY_SECONDS = 1.0 / float(RETRY_ATTEMPTS)
 
     @classmethod
     def get_available_sensors(cls, types=None):
@@ -82,7 +84,7 @@ class W1ThermSensor(object):
 
         """
         if not types:
-            types = W1ThermSensor.ALL_TYPES
+            types = cls.ALL_TYPES
         is_sensor = lambda s: any(s.startswith(hex(x)[2:]) for x in types)
         return [cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:]) for s in listdir(cls.BASE_DIRECTORY) if is_sensor(s)]
 
@@ -107,8 +109,8 @@ class W1ThermSensor(object):
         self.type = sensor_type
         self.id = sensor_id
         if not sensor_type and not sensor_id:  # take first found sensor
-            for _ in range(W1ThermSensor.RETRY_ATTEMPS):
-                s = W1ThermSensor.get_available_sensors()
+            for _ in range(self.RETRY_ATTEMPTS):
+                s = self.get_available_sensors()
                 if s:
                     self.type, self.id = s[0].type, s[0].id
                     break
@@ -116,13 +118,13 @@ class W1ThermSensor(object):
             else:
                 raise NoSensorFoundError(None, "")
         elif not sensor_id:
-            s = W1ThermSensor.get_available_sensors([sensor_type])
+            s = self.get_available_sensors([sensor_type])
             if not s:
                 raise NoSensorFoundError(sensor_type, "")
             self.id = s[0].id
 
         # store path to sensor
-        self.sensorpath = path.join(W1ThermSensor.BASE_DIRECTORY, self.slave_prefix + self.id, W1ThermSensor.SLAVE_FILE)
+        self.sensorpath = path.join(self.BASE_DIRECTORY, self.slave_prefix + self.id, self.SLAVE_FILE)
 
         if not self.exists():
             raise NoSensorFoundError(self.type, self.id)
@@ -136,12 +138,12 @@ class W1ThermSensor(object):
 
             :raises KernelModuleLoadError: if the kernel module could not be loaded properly
         """
-        if not path.isdir(W1ThermSensor.BASE_DIRECTORY):
+        if not path.isdir(self.BASE_DIRECTORY):
             system("modprobe w1-gpio >/dev/null 2>&1")
             system("modprobe w1-therm >/dev/null 2>&1")
 
-        for _ in range(self.RETRY_ATTEMPS):
-            if path.isdir(W1ThermSensor.BASE_DIRECTORY):  # w1 therm modules loaded correctly
+        for _ in range(self.RETRY_ATTEMPTS):
+            if path.isdir(self.BASE_DIRECTORY):  # w1 therm modules loaded correctly
                 break
             sleep(self.RETRY_DELAY_SECONDS)
         else:
@@ -170,7 +172,7 @@ class W1ThermSensor(object):
     @property
     def type_name(self):
         """Returns the type name of this temperature sensor"""
-        return W1ThermSensor.TYPE_NAMES.get(self.type, "Unknown")
+        return self.TYPE_NAMES.get(self.type, "Unknown")
 
     @property
     def slave_prefix(self):
@@ -241,7 +243,8 @@ class W1ThermSensor(object):
 
             :param list units: the units for the sensor temperature
 
-            :returns: the sensor temperature in the given units. The order of the temperatures matches the order of the given units.
+            :returns: the sensor temperature in the given units. The order of
+            the temperatures matches the order of the given units.
             :rtype: list
 
             :raises UnsupportedUnitError: if the unit is not supported
