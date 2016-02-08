@@ -103,8 +103,6 @@ class W1ThermSensor(object):
             :raises KernelModuleLoadError: if the w1 therm kernel modules could not be loaded correctly
             :raises NoSensorFoundError: if the sensor with the given type and/or id does not exist or is not connected
         """
-        super(W1ThermSensor, self).__init__()
-
         # try to load kernel modules
         self._load_kernel_modules()
 
