@@ -1,4 +1,1 @@
-sure
-mock
-nose
-coverage==3.7.1
+click

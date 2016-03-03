@@ -1,8 +1,8 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 from imp import load_source
-from distutils.core import setup
+from setuptools import setup
+from pip.req import parse_requirements
 
 core = load_source("core", "w1thermsensor/__init__.py")
 
@@ -18,5 +18,6 @@ setup(
     platforms=["Linux"],
     url="http://github.com/timofurrer/w1thermsensor",
     download_url="http://github.com/timofurrer/w1thermsensor",
-    packages=["w1thermsensor"]
+    packages=["w1thermsensor"],
+    install_requires=list(x.name for x in parse_requirements("requirements.txt")),
 )

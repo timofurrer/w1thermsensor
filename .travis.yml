@@ -5,16 +5,19 @@ python:
     - "3.3"
     - "3.4"
     - "3.5"
-# command to install dependencies
+
 before_install:
   - pip install codecov
+
+install:
+  - pip install tox tox-travis
+
 after_success:
   - codecov
-install:
-    - "pip install -r requirements.txt"
-    - "make install"
+
 # # command to run tests
-script: make tests
+script: tox
+
 notifications:
     webhooks:
     urls:

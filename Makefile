@@ -1,5 +1,5 @@
 tests:
-	nosetests -v -s --with-coverage --cover-erase --cover-inclusive test --cover-package=w1thermsensor
+	@tox
 
 deb:
 	debuild -us -uc
