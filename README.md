@@ -135,7 +135,7 @@ $ w1thermsensor ls
 $ w1thermsensor ls --json  # show results in JSON format
 ```
 
-List only sensors of specific type:
+List only sensors of a specific type:
 
 ```
 $ w1thermsensor ls --type DS1822
@@ -145,7 +145,7 @@ $ w1thermsensor ls --type DS1822 --json  # show results in JSON format
 
 ### Show temperatures
 
-Show temperature of all available sensors. (Some synopsis as `ls`):
+Show temperature of all available sensors: (Same synopsis as `ls`)
 
 ```
 $ w1thermsensor all --type DS1822
@@ -153,7 +153,7 @@ $ w1thermsensor all --type DS1822 --type MAX31850K  # specify multiple sensor ty
 $ w1thermsensor all --type DS1822 --json  # show results in JSON format
 ```
 
-Show temperature of single sensor
+Show temperature of a single sensor:
 
 ```
 $ w1thermsensor get 1  # 1 is the id obtained by the ls command
