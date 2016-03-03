@@ -11,6 +11,8 @@
 **Version**: 0.3.0 <br>
 **License**: MIT
 
+**New:** use [w1thermsensor as a CLI tool](#usage-as-cli-tool)! - Since version *0.3.0*
+
 ## Supported devices
 
 The following w1 therm sensor devices are supported:
