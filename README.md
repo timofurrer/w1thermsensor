@@ -11,8 +11,6 @@
 **Version**: 0.3.0 <br>
 **License**: MIT
 
-[toc]
-
 ## Supported devices
 
 The following w1 therm sensor devices are supported:
