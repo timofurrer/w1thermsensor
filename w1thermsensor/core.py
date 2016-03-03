@@ -61,6 +61,11 @@ class W1ThermSensor(object):
         DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0,
         KELVIN: lambda x: x * 0.001 + 273.15
     }
+    UNIT_FACTOR_NAMES = {
+        "celcius": DEGREES_C,
+        "fahrenheit": DEGREES_F,
+        "kelvin": KELVIN
+    }
     TYPE_NAMES = {
         THERM_SENSOR_DS18S20: "DS18S20", THERM_SENSOR_DS1822: "DS1822", THERM_SENSOR_DS18B20: "DS18B20",
         THERM_SENSOR_DS1825: "DS1825", THERM_SENSOR_DS28EA00: "DS28EA00", THERM_SENSOR_MAX31850K: "MAX31850K"
@@ -217,6 +222,8 @@ class W1ThermSensor(object):
             :raises UnsupportedUnitError: if the unit is not supported
         """
         try:
+            if isinstance(unit, str):
+                unit = cls.UNIT_FACTOR_NAMES[unit]
             return cls.UNIT_FACTORS[unit]
         except KeyError:
             raise UnsupportedUnitError()

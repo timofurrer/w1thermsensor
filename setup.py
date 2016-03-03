@@ -20,4 +20,5 @@ setup(
     download_url="http://github.com/timofurrer/w1thermsensor",
     packages=["w1thermsensor"],
     install_requires=list(x.name for x in parse_requirements("requirements.txt")),
+    entry_points={"console_scripts": ["w1thermsensor = w1thermsensor.cli:cli"]}
 )

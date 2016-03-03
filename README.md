@@ -68,7 +68,7 @@ This possibility is supported on all distribution:
 
 *Note: maybe root privileges are required*
 
-## Usage
+## Usage as python package
 
 The usage is very simple and the interface clean..
 All examples are with the `DS18B20` sensor - It works the same way for the other supported devices.
@@ -118,6 +118,45 @@ from w1thermsensor import W1ThermSensor
 
 for sensor in W1ThermSensor.get_available_sensors([W1ThermSensor.THERM_SENSOR_DS18B20]):
     print("Sensor %s has temperature %.2f" % (sensor.id, sensor.get_temperature()))
+```
+
+## Usage as CLI tool
+
+The w1thermsensor module can be used as CLI tool since version `0.3.0`.
+
+### List sensors
+
+List all available sensors:
+
+```
+$ w1thermsensor ls
+$ w1thermsensor ls --json  # show results in JSON format
+```
+
+List only sensors of specific type:
+
+```
+$ w1thermsensor ls --type DS1822
+$ w1thermsensor ls --type DS1822 --type MAX31850K  # specify multiple sensor types
+$ w1thermsensor ls --type DS1822 --json  # show results in JSON format
+```
+
+### Show temperatures
+
+Show temperature of all available sensors. (Some synopsis as `ls`):
+
+```
+$ w1thermsensor all --type DS1822
+$ w1thermsensor all --type DS1822 --type MAX31850K  # specify multiple sensor types
+$ w1thermsensor all --type DS1822 --json  # show results in JSON format
+```
+
+Show temperature of single sensor
+
+```
+$ w1thermsensor get 1  # 1 is the id obtained by the ls command
+$ w1thermsensor get --hwid 00000588806a --type DS18B20
+$ w1thermsensor get 1  # show results in JSON format
 ```
 
 ## Contribution
