@@ -31,7 +31,15 @@ I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler). Other hardware like
 
 ## Installation
 
-## On Raspbian
+### From PIP
+
+This possibility is supported on all distribution:
+
+    pip install w1thermsensor
+
+*Note: maybe root privileges are required*
+
+### On Raspbian using apt-get
 
 If you are using the `w1thermsensor` module on a Rasperry Pi running raspbian you can install it from the offical repository:
 
@@ -59,14 +67,6 @@ For python 3:
 
     git clone https://github.com/timofurrer/w1thermsensor.git && cd w1thermsensor
     python setup.py install
-
-*Note: maybe root privileges are required*
-
-### From PIP
-
-This possibility is supported on all distribution:
-
-    pip install w1thermsensor
 
 *Note: maybe root privileges are required*
 
