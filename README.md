@@ -163,10 +163,4 @@ $ w1thermsensor get 1  # show results in JSON format
 
 ## Contribution
 
-Feel free to contribute!
-If you have made any changes and you want to make a `pull request`:
-
-1. You are a **pro** to contribute to this repo!
-2. Please make the tests pass by `make tests`
-3. Now you can make the `pull request`
-4. Catch my thank!
+I'm happy about all types of contributions to this project! :beers:
