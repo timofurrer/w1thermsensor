@@ -10,8 +10,6 @@ from itertools import count
 
 from .core import W1ThermSensor
 
-W1ThermSensor.BASE_DIRECTORY = "test/mockedsensors"
-
 
 def resolve_type_name(ctx, param, value):  # pylint: disable=unused-argument
     """Resolve CLI option type name"""
