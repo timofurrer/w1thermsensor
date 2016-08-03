@@ -62,7 +62,7 @@ class W1ThermSensor(object):
         KELVIN: lambda x: x * 0.001 + 273.15
     }
     UNIT_FACTOR_NAMES = {
-        "celcius": DEGREES_C,
+        "celsius": DEGREES_C,
         "fahrenheit": DEGREES_F,
         "kelvin": KELVIN
     }
