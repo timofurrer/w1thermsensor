@@ -9,13 +9,13 @@ before_install:
   - pip install codecov
 
 install:
-  - pip install tox tox-travis
+  - pip install tox
 
 after_success:
   - codecov
 
 # # command to run tests
-script: tox
+script: nosetests -v -s --with-coverage --cover-erase --cover-inclusive test --cover-package=w1thermsensor
 
 notifications:
     webhooks:
