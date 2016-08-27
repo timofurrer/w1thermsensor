@@ -1,15 +1,11 @@
 # W1ThermSensor
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/timofurrer/w1thermsensor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-> This little pure python module provides a single class to get the temperature of a w1 therm sensor<br>
-> It can be easily used on are Rasperry Pi, Beagle Bone etc. over the GPIO interface.
+> Get the temperature from your w1 therm sensor in a single line of code!<br>
+> It's designed to be used with the Rasperry Pi hardware but also works on a Beagle Bone and others.
 
 ***
 
-[![Build Status](https://travis-ci.org/timofurrer/w1thermsensor.svg?branch=master)](https://travis-ci.org/timofurrer/w1thermsensor) [![codecov.io](http://codecov.io/github/timofurrer/w1thermsensor/coverage.svg?branch=master)](http://codecov.io/github/timofurrer/w1thermsensor?branch=master) [![Code Climate](https://codeclimate.com/github/timofurrer/w1thermsensor/badges/gpa.svg)](https://codeclimate.com/github/timofurrer/w1thermsensor)  [![Code Health](https://landscape.io/github/timofurrer/w1thermsensor/master/landscape.svg?style=flat)](https://landscape.io/github/timofurrer/w1thermsensor/master) [![PyPI version](https://badge.fury.io/py/w1thermsensor.svg)](https://badge.fury.io/py/w1thermsensor) 
-
-**Author**: Timo Furrer <tuxtimo@gmail.com><br>
-**Version**: 0.3.1 <br>
-**License**: MIT
+[![Build Status](https://travis-ci.org/timofurrer/w1thermsensor.svg?branch=master)](https://travis-ci.org/timofurrer/w1thermsensor) [![codecov.io](http://codecov.io/github/timofurrer/w1thermsensor/coverage.svg?branch=master)](http://codecov.io/github/timofurrer/w1thermsensor?branch=master) [![Code Climate](https://codeclimate.com/github/timofurrer/w1thermsensor/badges/gpa.svg)](https://codeclimate.com/github/timofurrer/w1thermsensor)  [![Code Health](https://landscape.io/github/timofurrer/w1thermsensor/master/landscape.svg?style=flat)](https://landscape.io/github/timofurrer/w1thermsensor/master) [![PyPI version](https://badge.fury.io/py/w1thermsensor.svg)](https://badge.fury.io/py/w1thermsensor)
 
 **New:** use [w1thermsensor as a CLI tool](#usage-as-cli-tool)! - Since version *0.3.0*
 
@@ -62,13 +58,6 @@ For python 2:
 For python 3:
 
     python3 setup.py --command-packages=stdeb.command bdist_deb
-
-### From Source
-
-    git clone https://github.com/timofurrer/w1thermsensor.git && cd w1thermsensor
-    python setup.py install
-
-*Note: maybe root privileges are required*
 
 ## Usage as python package
 
