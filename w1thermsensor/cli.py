@@ -5,8 +5,9 @@
 """
 
 import json
-import click
 from itertools import count
+
+import click
 
 from .core import W1ThermSensor
 
@@ -80,7 +81,7 @@ def ls(types, as_json):  # pylint: disable=invalid-name
               help="The unit of the temperature. Defaults to Celcius")
 @click.option("-j", "--json", "as_json", flag_value=True,
               help="Output result in JSON format")
-def all(types, unit, as_json):  # pylint: disable=invalid-name
+def all(types, unit, as_json):  # pylint: disable=redefined-builtin
     """Get temperatures of all available sensors"""
     sensors = W1ThermSensor.get_available_sensors(types)
     temperatures = [s.get_temperature(unit) for s in sensors]

@@ -22,9 +22,8 @@ class KernelModuleLoadError(W1ThermSensorError):
 class NoSensorFoundError(W1ThermSensorError):
     """Exception when no sensor is found"""
     def __init__(self, sensor_type, sensor_id):
-        super(NoSensorFoundError, self).__init__(
-                "No {0} temperature sensor with id '{1}' found".format(
-                        W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
+        super(NoSensorFoundError, self).__init__("No {0} temperature sensor with id '{1}' found".format(
+            W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
 
 
 class SensorNotReadyError(W1ThermSensorError):
