@@ -9,7 +9,7 @@ before_install:
   - pip install codecov
 
 install:
-  - pip install tox
+  - pip install -r development.txt
 
 after_success:
   - codecov
