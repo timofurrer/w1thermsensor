@@ -1,0 +1,17 @@
+w1thermsensor (0.3.1-0) jessie; urgency=low
+
+  * fix debian packages
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Thu, 01 Sep 2016 19:27:29 +0200
+
+w1thermsensor (0.3.0-0) jessie; urgency=low
+
+  * add command line interface
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Thu, 31 Mar 2016 14:04:27 -0700
+
+w1thermsensor (0.2.2-1) jessie; urgency=low
+
+  * source package automatically created by stdeb 0.8.2
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Mon, 12 Oct 2015 13:42:44 +0100
