@@ -1,3 +1,9 @@
+w1thermsensor (0.3.2-0) jessie; urgency=low
+
+  * small bug fixes
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Thu, 01 Sep 2016 19:27:29 +0200
+
 w1thermsensor (0.3.1-0) jessie; urgency=low
 
   * fix debian packages
