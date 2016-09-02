@@ -17,8 +17,8 @@ Description: Python w1 therm sensor module (Python 2)
 
 Package: python3-w1thermsensor
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, python-click
+Depends: ${misc:Depends}, ${python3:Depends}, python3-click
 Description: Python w1 therm sensor module (Python 3)
  This little pure python module provides a single class to get the temperature
  of a w1 therm sensor. It can be easily used on are Rasperry Pi over the GPIO
- interface.
+ interface. Including command line interface.
