@@ -51,13 +51,7 @@ sudo apt-get install python3-w1thermsensor
 
 ### Create debian packages
 
-For python 2:
-
-    python setup.py --command-packages=stdeb.command bdist_deb
-
-For python 3:
-
-    python3 setup.py --command-packages=stdeb.command bdist_deb
+    debuild -us -uc
 
 ## Usage as python package
 
