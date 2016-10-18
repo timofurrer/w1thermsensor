@@ -110,7 +110,8 @@ for sensor in W1ThermSensor.get_available_sensors([W1ThermSensor.THERM_SENSOR_DS
 
 ## Usage as CLI tool
 
-The w1thermsensor module can be used as CLI tool since version `0.3.0`.
+The w1thermsensor module can be used as CLI tool since version `0.3.0`. <br>
+*Please note that the CLI tool will only get installed with the Raspbian Python 3 package* (`sudo apt-get install python3-w1thermsensor`)
 
 ### List sensors
 
