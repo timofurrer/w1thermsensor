@@ -1,26 +1,25 @@
 language: python
 python:
-    - "2.7"
-    - "3.3"
-    - "3.4"
-    - "3.5"
-    - "3.6"
-    - "3.7-dev"
+    - '2.7'
+    - '3.3'
+    - '3.4'
+    - '3.5'
+    - '3.6'
+    - '3.7-dev'
 
 matrix:
     allow_failures:
         - python: 3.7-dev
 
 before_install:
-  - pip install codecov
+    - pip install codecov
 
 install:
-  - pip install -r development.txt
+    - pip install -r development.txt
 
 after_success:
-  - codecov
+    - codecov
 
-# # command to run tests
 script: nosetests -v -s --with-coverage --cover-erase --cover-inclusive test --cover-package=w1thermsensor
 
 notifications:
@@ -30,6 +29,17 @@ notifications:
     on_success: always
     on_failure: always
     on_start: false
+
 addons:
     code_climate:
         repo_token: ff2793d6c31bf4cf431c7f57cca9c745679f16d8c6a7fd78b1c0ca5ec1c68473
+
+deploy:
+    provider: pypi
+    user: tuxtimo
+    password:
+        secure: Eo0i4i7qHgFcLWbLX/dM3DsGZzOBOj3z1KxqjjUt14uUd0Kz1S3kpTmRo63CT44gQSP0C3pFGwa3h7yv07wryO9c/OtHC+c0H+6ZE8GO4o/sMTPFp44jIbS4dpx6PAYwxs8ZO9DaK9dCm5y5re1ynUrC+mA488yjFaQM8oRKnDg=
+    on:
+        tags: true
+        repo: timofurrer/w1thermsensor
+    distributions: sdist bdist_wheel
