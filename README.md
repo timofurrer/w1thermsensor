@@ -9,6 +9,8 @@
 
 **New:** use [w1thermsensor as a CLI tool](#usage-as-cli-tool)! - Since version *0.3.0*
 
+**Raspberry Pi:** this package is available in Rasbian as `python-w1thermsensor` and `python3-w1thermsensor`.
+
 ## Supported devices
 
 The following w1 therm sensor devices are supported:
