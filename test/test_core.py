@@ -9,7 +9,7 @@ from os import path, makedirs, remove
 from shutil import rmtree
 
 from w1thermsensor.core import W1ThermSensor, load_kernel_modules
-from w1thermsensor.core import KernelModuleLoadError, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
+from w1thermsensor.core import W1ThermSensorError, KernelModuleLoadError, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
 
 MOCKED_SENSORS_DIR = "test/mockedsensors"
 W1_FILE = """9e 01 4b 46 7f ff 02 10 56 : crc=56 YES
@@ -302,6 +302,7 @@ def test_kernel_module_not_loaded():
         load_kernel_modules.when.called_with().should.throw(KernelModuleLoadError, "Cannot load w1 therm kernel modules")
 
 
+
 def test_sensor_does_not_exist_after_init():
     sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS18B20)
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
@@ -314,3 +315,58 @@ def test_sensor_does_not_exist_after_init():
     except NoSensorFoundError as e:
         if str(e) != "No DS18B20 temperature sensor with id '%s' found" % sensor_id:
             raise RuntimeError("No NoSensorFoundError raised")
+
+
+@mock_kernel_modules
+def test_set_precision():
+    sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS18B20)
+    sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
+
+    with patch("subprocess.call") as mock_call:
+        mock_call.return_value = 0
+        sensor.set_precision(10)
+        mock_call.assert_called_with("echo {0} > {1}".format(
+            10, sensor.sensorpath))
+
+
+@mock_kernel_modules
+def test_set_precision_and_persist():
+    sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS18B20)
+    sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
+
+    with patch("subprocess.call") as mock_call:
+        mock_call.return_value = 0
+        sensor.set_precision(10, persist=True)
+        mock_call.mock_calls[0][1][0].should.be.equal("echo {0} > {1}".format(
+            10, sensor.sensorpath))
+        mock_call.mock_calls[1][1][0].should.be.equal("echo 0 > {0}".format(
+            sensor.sensorpath))
+
+
+@mock_kernel_modules
+def test_set_precision_failure():
+    sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS18B20)
+    sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
+
+    with patch("subprocess.call") as mock_call:
+        mock_call.return_value = 1
+        sensor.set_precision.when.called_with(10).should.throw(W1ThermSensorError)
+
+
+@mock_kernel_modules
+def test_set_precision_and_persist_failure():
+    sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS18B20)
+    sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
+
+    with patch("subprocess.call") as mock_call:
+        mock_call.side_effect = [0, 1]
+        sensor.set_precision.when.called_with(10, persist=True).should.throw(W1ThermSensorError)
+
+
+@mock_kernel_modules
+def test_set_invalid_precision():
+    sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS18B20)
+    sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
+
+    sensor.set_precision.when.called_with(8).should.throw(ValueError)
+    sensor.set_precision.when.called_with(13).should.throw(ValueError)

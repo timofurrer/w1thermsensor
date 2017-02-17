@@ -6,6 +6,8 @@
 
 from os import path, listdir, system, environ
 from time import sleep
+import subprocess
+
 
 
 class W1ThermSensorError(Exception):
@@ -258,9 +260,48 @@ class W1ThermSensor(object):
         sensor_value = self.raw_sensor_value
         return [self._get_unit_factor(unit)(sensor_value) for unit in units]
 
+    def set_precision(self, precision, persist=False):
+        """
+            Set the precision of the sensor for the next readings.
+
+            If the ``persist`` argument is set to ``False`` this value
+            is "only" stored in the volatile SRAM, so it is reset when
+            the sensor gets power-cycled.
+
+            If the ``persist`` argument is set to ``True`` the current set
+            precision is stored into the EEPROM. Since the EEPROM has a limited
+            amount of writes (>50k), this command should be used wisely.
+
+            Note: root permissions are required to change the sensors precision.
+
+            Note: This function is supported since kernel 4.7.
+
+            :param int precision: the sensor precision in bits.
+                                  Valid values are between 9 and 12
+            :param bool persist: if the sensor precision should be written
+                                 to the EEPROM.
+
+            :returns: if the sensor precision could be set or not.
+            :rtype: bool
+        """
+        if not 9 <= precision <= 12:
+            raise ValueError("The given sensor precision '{0}' is out of range (9-12)".format(
+                precision))
+
+        exitcode = subprocess.call("echo {0} > {1}".format(
+            precision, self.sensorpath))
+        if exitcode != 0:
+            raise W1ThermSensorError("Failed to change resolution to {0} bit".format(precision))
+
+        if persist:
+            exitcode = subprocess.call("echo 0 > {0}".format(self.sensorpath))
+            if exitcode != 0:
+                raise W1ThermSensorError("Failed to write precision configuration to sensor EEPROM")
+
+        return True
+
 
 # Load kernel modules automatically upon import.
 # Set the environment variable W1THERMSENSOR_NO_KERNEL_MODULE=1
-
 if environ.get('W1THERMSENSOR_NO_KERNEL_MODULE', '0') != '1':
     load_kernel_modules()
