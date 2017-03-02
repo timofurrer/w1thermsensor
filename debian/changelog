@@ -1,3 +1,9 @@
+w1thermsensor (0.3.4) jessie; urgency=low
+
+  * align versions between deb pkg and PyPI
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Thu, 02 Mar 2017 14:31:28 +0100
+
 w1thermsensor (0.3.3) jessie; urgency=low
 
   * prepare debian files to be valid for raspbian
