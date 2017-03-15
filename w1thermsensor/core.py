@@ -4,7 +4,7 @@
     This module provides a temperature sensor of type w1 therm.
 """
 
-from os import path, listdir, system
+from os import path, listdir, system, environ
 from time import sleep
 
 
@@ -36,6 +36,27 @@ class UnsupportedUnitError(W1ThermSensorError):
     """Exception when unsupported unit is given"""
     def __init__(self):
         super(UnsupportedUnitError, self).__init__("Only Degrees C, F and Kelvin are currently supported")
+
+
+def load_kernel_modules():
+    """
+    Load kernel modules needed by the temperature sensor
+    if they are not already loaded.
+    If the base directory then does not exist an exception is raised an the kernel module loading
+    should be treated as failed.
+
+    :raises KernelModuleLoadError: if the kernel module could not be loaded properly
+    """
+    if not path.isdir(W1ThermSensor.BASE_DIRECTORY):
+        system("modprobe w1-gpio >/dev/null 2>&1")
+        system("modprobe w1-therm >/dev/null 2>&1")
+
+    for _ in range(W1ThermSensor.RETRY_ATTEMPTS):
+        if path.isdir(W1ThermSensor.BASE_DIRECTORY):  # w1 therm modules loaded correctly
+            break
+        sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
+    else:
+        raise KernelModuleLoadError()
 
 
 class W1ThermSensor(object):
@@ -107,9 +128,6 @@ class W1ThermSensor(object):
             :raises KernelModuleLoadError: if the w1 therm kernel modules could not be loaded correctly
             :raises NoSensorFoundError: if the sensor with the given type and/or id does not exist or is not connected
         """
-        # try to load kernel modules
-        self._load_kernel_modules()
-
         self.type = sensor_type
         self.id = sensor_id
         if not sensor_type and not sensor_id:  # take first found sensor
@@ -132,26 +150,6 @@ class W1ThermSensor(object):
 
         if not self.exists():
             raise NoSensorFoundError(self.type, self.id)
-
-    def _load_kernel_modules(self):
-        """
-            Load kernel modules needed by the temperature sensor
-            if they are not already loaded.
-            If the base directory then does not exist an exception is raised an the kernel module loading
-            should be treated as failed.
-
-            :raises KernelModuleLoadError: if the kernel module could not be loaded properly
-        """
-        if not path.isdir(self.BASE_DIRECTORY):
-            system("modprobe w1-gpio >/dev/null 2>&1")
-            system("modprobe w1-therm >/dev/null 2>&1")
-
-        for _ in range(self.RETRY_ATTEMPTS):
-            if path.isdir(self.BASE_DIRECTORY):  # w1 therm modules loaded correctly
-                break
-            sleep(self.RETRY_DELAY_SECONDS)
-        else:
-            raise KernelModuleLoadError()
 
     def __repr__(self):
         """
@@ -259,3 +257,10 @@ class W1ThermSensor(object):
         """
         sensor_value = self.raw_sensor_value
         return [self._get_unit_factor(unit)(sensor_value) for unit in units]
+
+
+# Load kernel modules automatically upon import.
+# Set the environment variable W1THERMSENSOR_NO_KERNEL_MODULE=1
+
+if environ.get('W1THERMSENSOR_NO_KERNEL_MODULE', '0') != '1':
+    load_kernel_modules()

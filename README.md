@@ -110,6 +110,27 @@ for sensor in W1ThermSensor.get_available_sensors([W1ThermSensor.THERM_SENSOR_DS
     print("Sensor %s has temperature %.2f" % (sensor.id, sensor.get_temperature()))
 ```
 
+
+### Disable kernel module auto loading
+
+Upon import of the `w1thermsensor` package the `w1-therm` and `w1-gpio` kernel modules get loaded automatically.
+This requires the python process to run as root. Sometimes that's not what you want, thus you can disable the auto loading
+and load the kernel module yourself prior to talk to your sensors with `w1thermsensor`.
+
+You can disable the auto loading feature by setting the `W1THERMSENSOR_NO_KERNEL_MODULE` environment variable to `1`:
+
+```bash
+# set it globally for your shell so that sub-processes will inherit it.
+export W1THERMSENSOR_NO_KERNEL_MODULE=1
+
+# set it just for your Python process
+W1THERMSENSOR_NO_KERNEL_MODULE=1 python my_awesome_thermsensor_script.py
+```
+
+Every other values assigned to `W1THERMSENSOR_NO_KERNEL_MODULE` will case `w1thermsensor` to load the kernel modules.
+
+*Note: the examples above also apply for the CLI tool usage. See below.*
+
 ## Usage as CLI tool
 
 The w1thermsensor module can be used as CLI tool since version `0.3.0`. <br>

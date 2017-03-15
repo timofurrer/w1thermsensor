@@ -1,20 +1,46 @@
 # -*- coding: utf-8 -*-
 
+import os
 import sys
-from imp import load_source
+import ast
+import codecs
 from setuptools import setup
 
-core = load_source("core", "w1thermsensor/__init__.py")
+PROJECT_ROOT = os.path.dirname(__file__)
+
+
+class VersionFinder(ast.NodeVisitor):
+    def __init__(self):
+        self.version = None
+
+    def visit_Assign(self, node):
+        try:
+            if node.targets[0].id == 'version':
+                self.version = node.value.s
+        except:
+            pass
+
+
+def read_version():
+    """Read version from sure/__init__.py without loading any files"""
+    finder = VersionFinder()
+    path = os.path.join(PROJECT_ROOT, 'w1thermsensor', '__init__.py')
+    with codecs.open(path, 'r', encoding='utf-8') as fp:
+        file_data = fp.read().encode('utf-8')
+        finder.visit(ast.parse(file_data))
+
+    return finder.version
+
 
 setup_args=dict(
     name="w1thermsensor",
-    version=core.__version__,
+    version=read_version(),
     license="MIT",
     description="This little pure python module provides a single class to get the temperature of a w1 sensor",
-    author=core.__author__,
-    author_email=core.__email__,
-    maintainer=core.__author__,
-    maintainer_email=core.__email__,
+    author="Timo Furrer",
+    author_email="tuxtimo@gmail.com",
+    maintainer="Timo Furrer",
+    maintainer_email="tuxtimo@gmail.com",
     platforms=["Linux"],
     url="http://github.com/timofurrer/w1thermsensor",
     download_url="http://github.com/timofurrer/w1thermsensor",

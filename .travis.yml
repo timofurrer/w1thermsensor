@@ -20,6 +20,9 @@ install:
 after_success:
     - codecov
 
+env:
+    - W1THERMSENSOR_NO_KERNEL_MODULE=1
+
 script: nosetests -v -s --with-coverage --cover-erase --cover-inclusive test --cover-package=w1thermsensor
 
 notifications:
