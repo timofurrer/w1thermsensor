@@ -8,7 +8,8 @@ import random
 from os import path, makedirs, remove
 from shutil import rmtree
 
-from w1thermsensor.core import W1ThermSensor, KernelModuleLoadError, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
+from w1thermsensor.core import W1ThermSensor, load_kernel_modules
+from w1thermsensor.core import KernelModuleLoadError, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
 
 MOCKED_SENSORS_DIR = "test/mockedsensors"
 W1_FILE = """9e 01 4b 46 7f ff 02 10 56 : crc=56 YES
@@ -64,6 +65,7 @@ def test_get_available_sensors_no_sensors():
     sensors = W1ThermSensor.get_available_sensors()
     sensors.should.be.empty
 
+
 @mock_kernel_modules
 def test_get_available_sensors():
     create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS18B20)
@@ -80,6 +82,7 @@ def test_get_available_sensors():
     W1ThermSensor.THERM_SENSOR_DS1822.should.be.within(s.type for s in sensors)
     W1ThermSensor.THERM_SENSOR_DS18S20.should.be.within(s.type for s in sensors)
     W1ThermSensor.THERM_SENSOR_DS18B20.should.be.within(s.type for s in sensors)
+
 
 @mock_kernel_modules
 def test_get_available_ds18s20_sensors():
@@ -98,6 +101,7 @@ def test_get_available_ds18s20_sensors():
     sensors = W1ThermSensor.get_available_sensors([W1ThermSensor.THERM_SENSOR_DS18S20])
     sensors.should.have.length_of(3)
 
+
 @mock_kernel_modules
 def test_get_available_ds1822_sensors():
     # create 3 DS1822 sensors
@@ -114,6 +118,7 @@ def test_get_available_ds1822_sensors():
 
     sensors = W1ThermSensor.get_available_sensors([W1ThermSensor.THERM_SENSOR_DS1822])
     sensors.should.have.length_of(3)
+
 
 @mock_kernel_modules
 def test_get_available_ds18b20_sensors():
@@ -132,6 +137,7 @@ def test_get_available_ds18b20_sensors():
     sensors = W1ThermSensor.get_available_sensors([W1ThermSensor.THERM_SENSOR_DS18B20])
     sensors.should.have.length_of(3)
 
+
 @mock_kernel_modules
 def test_init_first_sensor():
     # create DS18B20 sensor
@@ -141,6 +147,7 @@ def test_init_first_sensor():
     sensor.should.be.a(W1ThermSensor)
     sensor.type.should.be.equal(W1ThermSensor.THERM_SENSOR_DS18B20)
     sensor.id.should.be.equal(sensor_id)
+
 
 @mock_kernel_modules
 def test_init_first_sensor_of_specific_type():
@@ -152,6 +159,7 @@ def test_init_first_sensor_of_specific_type():
     sensor.type.should.be.equal(W1ThermSensor.THERM_SENSOR_DS18B20)
     sensor.id.should.be.equal(sensor_id)
 
+
 @mock_kernel_modules
 def test_init_specific_sensor():
     # create DS18B20 sensor
@@ -161,6 +169,7 @@ def test_init_specific_sensor():
     sensor.should.be.a(W1ThermSensor)
     sensor.type.should.be.equal(W1ThermSensor.THERM_SENSOR_DS18B20)
     sensor.id.should.be.equal(sensor_id)
+
 
 @mock_kernel_modules
 def test_sensor_temperature_in_C():
@@ -177,6 +186,7 @@ def test_sensor_temperature_in_C():
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
     sensor.id.should.be.equal(sensor_id)
     sensor.get_temperature(W1ThermSensor.DEGREES_C).should.be.equal(26.55, epsilon=FLOAT_EPSILON)
+
 
 @mock_kernel_modules
 def test_sensor_temperature_in_F():
@@ -197,6 +207,7 @@ def test_sensor_temperature_in_F():
     sensor.id.should.be.equal(sensor_id)
     sensor.get_temperature(W1ThermSensor.DEGREES_F).should.be.equal(79.79, epsilon=FLOAT_EPSILON)
 
+
 @mock_kernel_modules
 def test_sensor_temperature_in_K():
     # 20 C = 293.15 K
@@ -216,6 +227,7 @@ def test_sensor_temperature_in_K():
     sensor.id.should.be.equal(sensor_id)
     sensor.get_temperature(W1ThermSensor.KELVIN).should.be.equal(299.7, epsilon=FLOAT_EPSILON)
 
+
 @mock_kernel_modules
 def test_sensor_all_temperature_units():
     # create DS18B20 sensor with 20 C degrees
@@ -224,6 +236,7 @@ def test_sensor_all_temperature_units():
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
     sensor.id.should.be.equal(sensor_id)
     sensor.get_temperatures([W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN]).should.be.equal([20, 68, 293.15])
+
 
 @mock_kernel_modules
 def test_sensor_type_name():
@@ -241,6 +254,7 @@ def test_sensor_type_name():
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, ds18b20_sensor_id)
     sensor.type_name.should.be.equal("DS18B20")
 
+
 @mock_kernel_modules
 def test_no_sensor_found_error():
     W1ThermSensor.when.called_with().should.throw(NoSensorFoundError, "No Unknown temperature sensor with id '' found")
@@ -249,11 +263,13 @@ def test_no_sensor_found_error():
     sensor_id = RANDOM_SENSOR_ID()
     W1ThermSensor.when.called_with(W1ThermSensor.THERM_SENSOR_DS1822, sensor_id).should.throw(NoSensorFoundError, "No DS1822 temperature sensor with id '%s' found" % sensor_id)
 
+
 @mock_kernel_modules
 def test_sensor_not_ready_error():
     sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS1822, w1_file=W1_FILE_NOT_READY)
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS1822, sensor_id)
     sensor.get_temperature.when.called_with(W1ThermSensor.DEGREES_C).should.throw(SensorNotReadyError, "Sensor is not yet ready to read temperature")
+
 
 @mock_kernel_modules
 def test_unsupported_unit_error():
@@ -261,6 +277,7 @@ def test_unsupported_unit_error():
     sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS1822)
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS1822, sensor_id)
     sensor.get_temperature.when.called_with(unsupported_unit).should.throw(UnsupportedUnitError, "Only Degrees C, F and Kelvin are currently supported")
+
 
 @mock_kernel_modules
 def test_repr():
@@ -271,6 +288,7 @@ def test_repr():
     s1.id.should.be.equal(s2.id)
     s1.type.should.be.equal(s2.type)
 
+
 @mock_kernel_modules
 def test_str():
     sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS18B20)
@@ -278,9 +296,11 @@ def test_str():
 
     str(s1).should.be.equal("W1ThermSensor(name='DS18B20', type=40(0x28), id='%s')" % sensor_id)
 
+
 def test_kernel_module_not_loaded():
     with patch("w1thermsensor.core.system"):
-        W1ThermSensor.when.called_with().should.throw(KernelModuleLoadError, "Cannot load w1 therm kernel modules")
+        load_kernel_modules.when.called_with().should.throw(KernelModuleLoadError, "Cannot load w1 therm kernel modules")
+
 
 def test_sensor_does_not_exist_after_init():
     sensor_id = create_w1_therm_sensor(W1ThermSensor.THERM_SENSOR_DS18B20)
