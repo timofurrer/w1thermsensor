@@ -1,3 +1,9 @@
+w1thermsensor (0.3.5) jessie; urgency=low
+
+  * Add option to disable kernel module auto loading
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Wed, 15 Mar 2017 19:54:30 +0100
+
 w1thermsensor (0.3.4) jessie; urgency=low
 
   * align versions between deb pkg and PyPI
