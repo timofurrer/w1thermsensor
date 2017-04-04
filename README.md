@@ -174,3 +174,7 @@ $ w1thermsensor get 1  # show results in JSON format
 ## Contribution
 
 I'm happy about all types of contributions to this project! :beers:
+
+***
+
+*<p align="center">This project is published under [MIT](LICENSE).<br>A [Timo Furrer](https://tuxtimo.me) project.<br>- :tada: -</p>*
