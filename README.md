@@ -110,6 +110,30 @@ for sensor in W1ThermSensor.get_available_sensors([W1ThermSensor.THERM_SENSOR_DS
     print("Sensor %s has temperature %.2f" % (sensor.id, sensor.get_temperature()))
 ```
 
+### Set sensor precision
+
+Some w1 therm sensors support changing the precision for the temperature reads.
+`w1thermsensor` enables to do so with the `W1ThermSensor.set_precision()` method:
+
+```python
+sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
+sensor.set_precision(5)
+```
+
+If the ``persist`` argument is set to ``False`` this value
+is "only" stored in the volatile SRAM, so it is reset when
+the sensor gets power-cycled.
+
+If the ``persist`` argument is set to ``True`` the current set
+precision is stored into the EEPROM. Since the EEPROM has a limited
+amount of writes (>50k), this command should be used wisely.
+
+```python
+sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
+sensor.set_precision(5, persist=True)
+```
+
+**Note**: this is supported since Linux Kernel 4.7
 
 ### Disable kernel module auto loading
 
@@ -169,6 +193,20 @@ Show temperature of a single sensor:
 $ w1thermsensor get 1  # 1 is the id obtained by the ls command
 $ w1thermsensor get --hwid 00000588806a --type DS18B20
 $ w1thermsensor get 1  # show results in JSON format
+```
+
+Show temperature of a single sensor in the given precision
+
+```
+$ w1thermsensor get 1 --precision 10
+$ w1thermsensor get --hwid 00000588806a --type DS18B20 --precision 11
+```
+
+### Change temperature read precision and write to EEPROM
+
+```
+$ w1thermsensor precision 1 10
+$ w1thermsensor precision --hwid 00000588806a --type DS18B20 11
 ```
 
 ## Contribution
