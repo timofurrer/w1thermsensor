@@ -195,6 +195,20 @@ $ w1thermsensor get --hwid 00000588806a --type DS18B20
 $ w1thermsensor get 1  # show results in JSON format
 ```
 
+Show temperature of a single sensor in the given precision
+
+```
+$ w1thermsensor get 1 --precision 10
+$ w1thermsensor get --hwid 00000588806a --type DS18B20 --precision 11
+```
+
+### Change temperature read precision and write to EEPROM
+
+```
+$ w1thermsensor precision 1 10
+$ w1thermsensor precision --hwid 00000588806a --type DS18B20 11
+```
+
 ## Contribution
 
 I'm happy about all types of contributions to this project! :beers:
