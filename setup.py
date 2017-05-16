@@ -15,7 +15,7 @@ class VersionFinder(ast.NodeVisitor):
 
     def visit_Assign(self, node):
         try:
-            if node.targets[0].id == 'version':
+            if node.targets[0].id == '__version__':
                 self.version = node.value.s
         except:
             pass
@@ -29,6 +29,7 @@ def read_version():
         file_data = fp.read().encode('utf-8')
         finder.visit(ast.parse(file_data))
 
+    print(finder.version)
     return finder.version
 
 
