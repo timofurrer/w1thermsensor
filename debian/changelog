@@ -1,3 +1,9 @@
+w1thermsensor (0.4.2) jessie; urgency=low
+
+  * Fix subprocess calls
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Thu, 01 Jun 2017 18:54:13 +0200
+
 w1thermsensor (0.4.1) jessie; urgency=low
 
   * support sensor precision
