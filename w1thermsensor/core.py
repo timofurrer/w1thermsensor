@@ -289,12 +289,12 @@ class W1ThermSensor(object):
                 precision))
 
         exitcode = subprocess.call("echo {0} > {1}".format(
-            precision, self.sensorpath))
+            precision, self.sensorpath), shell=True)
         if exitcode != 0:
             raise W1ThermSensorError("Failed to change resolution to {0} bit".format(precision))
 
         if persist:
-            exitcode = subprocess.call("echo 0 > {0}".format(self.sensorpath))
+            exitcode = subprocess.call("echo 0 > {0}".format(self.sensorpath), shell=True)
             if exitcode != 0:
                 raise W1ThermSensorError("Failed to write precision configuration to sensor EEPROM")
 

@@ -326,7 +326,7 @@ def test_set_precision():
         mock_call.return_value = 0
         sensor.set_precision(10)
         mock_call.assert_called_with("echo {0} > {1}".format(
-            10, sensor.sensorpath))
+            10, sensor.sensorpath), shell=True)
 
 
 @mock_kernel_modules
