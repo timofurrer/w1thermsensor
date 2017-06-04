@@ -7,6 +7,6 @@
 from .core import W1ThermSensor
 from .errors import NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
 
-__version__ = "0.4.2"
+__version__ = "0.4.3"
 __author__ = "Timo Furrer"
 __email__ = "tuxtimo@gmail.com"
