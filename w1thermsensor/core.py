@@ -1,83 +1,61 @@
 # -*- coding: utf-8 -*-
 
 """
-    This module provides a temperature sensor of type w1 therm.
+This module provides a temperature sensor of type w1 therm.
 """
 
-from os import path, listdir, system, environ
-from time import sleep
+import os
+import time
 import subprocess
 
-
-
-class W1ThermSensorError(Exception):
-    """Exception base-class for W1ThermSensor errors"""
-    pass
-
-
-class KernelModuleLoadError(W1ThermSensorError):
-    """Exception when the w1 therm kernel modules could not be loaded properly"""
-    def __init__(self):
-        super(KernelModuleLoadError, self).__init__("Cannot load w1 therm kernel modules")
-
-
-class NoSensorFoundError(W1ThermSensorError):
-    """Exception when no sensor is found"""
-    def __init__(self, sensor_type, sensor_id):
-        super(NoSensorFoundError, self).__init__("No {0} temperature sensor with id '{1}' found".format(
-            W1ThermSensor.TYPE_NAMES.get(sensor_type, "Unknown"), sensor_id))
-
-
-class SensorNotReadyError(W1ThermSensorError):
-    """Exception when the sensor is not ready yet"""
-    def __init__(self):
-        super(SensorNotReadyError, self).__init__("Sensor is not yet ready to read temperature")
-
-
-class UnsupportedUnitError(W1ThermSensorError):
-    """Exception when unsupported unit is given"""
-    def __init__(self):
-        super(UnsupportedUnitError, self).__init__("Only Degrees C, F and Kelvin are currently supported")
-
-
-def load_kernel_modules():
-    """
-    Load kernel modules needed by the temperature sensor
-    if they are not already loaded.
-    If the base directory then does not exist an exception is raised an the kernel module loading
-    should be treated as failed.
-
-    :raises KernelModuleLoadError: if the kernel module could not be loaded properly
-    """
-    if not path.isdir(W1ThermSensor.BASE_DIRECTORY):
-        system("modprobe w1-gpio >/dev/null 2>&1")
-        system("modprobe w1-therm >/dev/null 2>&1")
-
-    for _ in range(W1ThermSensor.RETRY_ATTEMPTS):
-        if path.isdir(W1ThermSensor.BASE_DIRECTORY):  # w1 therm modules loaded correctly
-            break
-        sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
-    else:
-        raise KernelModuleLoadError()
+from .errors import W1ThermSensorError, NoSensorFoundError, SensorNotReadyError
+from .errors import KernelModuleLoadError, UnsupportedUnitError
 
 
 class W1ThermSensor(object):
-    """This class represents a temperature sensor of type w1-therm"""
+    """
+    Represents a w1 therm sensor connected to the device accessed by
+    the Linux w1 therm sensor kernel modules.
+
+    Supported sensors are:
+        * DS18S20
+        * DS1822
+        * DS18B20
+        * DS1825
+        * DS28EA00
+        * MAX31850K
+
+    Supported temperature units are:
+        * Kelvin
+        * Celsius
+        * Fahrenheit
+    """
+
+    #: Holds information about supported w1therm sensors
     THERM_SENSOR_DS18S20 = 0x10
     THERM_SENSOR_DS1822 = 0x22
     THERM_SENSOR_DS18B20 = 0x28
     THERM_SENSOR_DS1825 = 0x3B
     THERM_SENSOR_DS28EA00 = 0x42
     THERM_SENSOR_MAX31850K = 0x3B
-    ALL_TYPES = [
-        THERM_SENSOR_DS18S20, THERM_SENSOR_DS1822, THERM_SENSOR_DS18B20,
-        THERM_SENSOR_DS1825, THERM_SENSOR_DS28EA00, THERM_SENSOR_MAX31850K
-    ]
+    TYPE_NAMES = {
+        THERM_SENSOR_DS18S20: "DS18S20", THERM_SENSOR_DS1822: "DS1822", THERM_SENSOR_DS18B20: "DS18B20",
+        THERM_SENSOR_DS1825: "DS1825", THERM_SENSOR_DS28EA00: "DS28EA00", THERM_SENSOR_MAX31850K: "MAX31850K"
+    }
+    RESOLVE_TYPE_STR = {
+        "10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20,
+        "42": THERM_SENSOR_DS28EA00, "3b": THERM_SENSOR_MAX31850K
+    }
+
+    #: Holds information about the location of the needed
+    #  sensor devices on the system provided by the kernel modules
+    BASE_DIRECTORY = "/sys/bus/w1/devices"
+    SLAVE_FILE = "w1_slave"
+
+    #: Holds information about temperature type conversion
     DEGREES_C = 0x01
     DEGREES_F = 0x02
     KELVIN = 0x03
-    BASE_DIRECTORY = "/sys/bus/w1/devices"
-    SLAVE_FILE = "w1_slave"
     UNIT_FACTORS = {
         DEGREES_C: lambda x: x * 0.001,
         DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0,
@@ -88,14 +66,8 @@ class W1ThermSensor(object):
         "fahrenheit": DEGREES_F,
         "kelvin": KELVIN
     }
-    TYPE_NAMES = {
-        THERM_SENSOR_DS18S20: "DS18S20", THERM_SENSOR_DS1822: "DS1822", THERM_SENSOR_DS18B20: "DS18B20",
-        THERM_SENSOR_DS1825: "DS1825", THERM_SENSOR_DS28EA00: "DS28EA00", THERM_SENSOR_MAX31850K: "MAX31850K"
-    }
-    RESOLVE_TYPE_STR = {
-        "10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20,
-        "42": THERM_SENSOR_DS28EA00, "3b": THERM_SENSOR_MAX31850K
-    }
+
+    #: Holds settings for patient retries used to access the sensors
     RETRY_ATTEMPTS = 10
     RETRY_DELAY_SECONDS = 1.0 / float(RETRY_ATTEMPTS)
 
@@ -111,9 +83,9 @@ class W1ThermSensor(object):
 
         """
         if not types:
-            types = cls.ALL_TYPES
+            types = cls.TYPE_NAMES.keys()
         is_sensor = lambda s: any(s.startswith(hex(x)[2:]) for x in types)
-        return [cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:]) for s in listdir(cls.BASE_DIRECTORY) if is_sensor(s)]
+        return [cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:]) for s in os.listdir(cls.BASE_DIRECTORY) if is_sensor(s)]
 
     def __init__(self, sensor_type=None, sensor_id=None):
         """
@@ -138,20 +110,20 @@ class W1ThermSensor(object):
                 if s:
                     self.type, self.id = s[0].type, s[0].id
                     break
-                sleep(self.RETRY_DELAY_SECONDS)
+                time.sleep(self.RETRY_DELAY_SECONDS)
             else:
-                raise NoSensorFoundError(None, "")
+                raise NoSensorFoundError("Unknown", "")
         elif not sensor_id:
             s = self.get_available_sensors([sensor_type])
             if not s:
-                raise NoSensorFoundError(sensor_type, "")
+                raise NoSensorFoundError(self.TYPE_NAMES.get(sensor_type, "Unknown"), "")
             self.id = s[0].id
 
         # store path to sensor
-        self.sensorpath = path.join(self.BASE_DIRECTORY, self.slave_prefix + self.id, self.SLAVE_FILE)
+        self.sensorpath = os.path.join(self.BASE_DIRECTORY, self.slave_prefix + self.id, self.SLAVE_FILE)
 
         if not self.exists():
-            raise NoSensorFoundError(self.type, self.id)
+            raise NoSensorFoundError(self.type_name, self.id)
 
     def __repr__(self):
         """
@@ -185,7 +157,7 @@ class W1ThermSensor(object):
 
     def exists(self):
         """Returns the sensors slave path"""
-        return path.exists(self.sensorpath)
+        return os.path.exists(self.sensorpath)
 
     @property
     def raw_sensor_value(self):
@@ -202,7 +174,7 @@ class W1ThermSensor(object):
             with open(self.sensorpath, "r") as f:
                 data = f.readlines()
         except IOError:
-            raise NoSensorFoundError(self.type, self.id)
+            raise NoSensorFoundError(self.type_name, self.id)
 
         if data[0].strip()[-3:] != "YES":
             raise SensorNotReadyError()
@@ -301,7 +273,28 @@ class W1ThermSensor(object):
         return True
 
 
+def load_kernel_modules():
+    """
+    Load kernel modules needed by the temperature sensor
+    if they are not already loaded.
+    If the base directory then does not exist an exception is raised an the kernel module loading
+    should be treated as failed.
+
+    :raises KernelModuleLoadError: if the kernel module could not be loaded properly
+    """
+    if not os.path.isdir(W1ThermSensor.BASE_DIRECTORY):
+        os.system("modprobe w1-gpio >/dev/null 2>&1")
+        os.system("modprobe w1-therm >/dev/null 2>&1")
+
+    for _ in range(W1ThermSensor.RETRY_ATTEMPTS):
+        if os.path.isdir(W1ThermSensor.BASE_DIRECTORY):  # w1 therm modules loaded correctly
+            break
+        time.sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
+    else:
+        raise KernelModuleLoadError()
+
+
 # Load kernel modules automatically upon import.
 # Set the environment variable W1THERMSENSOR_NO_KERNEL_MODULE=1
-if environ.get('W1THERMSENSOR_NO_KERNEL_MODULE', '0') != '1':
+if os.environ.get('W1THERMSENSOR_NO_KERNEL_MODULE', '0') != '1':
     load_kernel_modules()

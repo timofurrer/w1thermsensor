@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import sure
-from mock import patch
+import os
+import shutil
+import random
 from functools import wraps
 
-import random
-from os import path, makedirs, remove
-from shutil import rmtree
+import sure
+from mock import patch
 
 from w1thermsensor.core import W1ThermSensor, load_kernel_modules
-from w1thermsensor.core import W1ThermSensorError, KernelModuleLoadError, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
+from w1thermsensor.errors import W1ThermSensorError, KernelModuleLoadError, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
 
 MOCKED_SENSORS_DIR = "test/mockedsensors"
 W1_FILE = """9e 01 4b 46 7f ff 02 10 56 : crc=56 YES
@@ -30,13 +30,13 @@ def mock_kernel_modules(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         # create mocked sensors directory
-        if path.exists(MOCKED_SENSORS_DIR):
-            rmtree(MOCKED_SENSORS_DIR)
-        makedirs(MOCKED_SENSORS_DIR)
+        if os.path.exists(MOCKED_SENSORS_DIR):
+            shutil.rmtree(MOCKED_SENSORS_DIR)
+        os.makedirs(MOCKED_SENSORS_DIR)
         func(*args, **kwargs)
 
         # remove all mocked temperature sensors
-        rmtree(MOCKED_SENSORS_DIR)
+        shutil.rmtree(MOCKED_SENSORS_DIR)
     return wrapper
 
 
@@ -47,15 +47,15 @@ def create_w1_therm_sensor(sensor_type, sensor_id=None, temperature=20, w1_file=
     if not sensor_id:
         sensor_id = RANDOM_SENSOR_ID()
 
-    sensor_path = path.join(MOCKED_SENSORS_DIR, "%s-%s" % (hex(sensor_type)[2:], sensor_id))
-    if path.exists(sensor_path):
+    sensor_path = os.path.join(MOCKED_SENSORS_DIR, "%s-%s" % (hex(sensor_type)[2:], sensor_id))
+    if os.path.exists(sensor_path):
         print("Sensor already exists")
         return sensor_id
 
-    makedirs(sensor_path)
+    os.makedirs(sensor_path)
 
     data = w1_file % (temperature * 1000)
-    with open(path.join(sensor_path, W1ThermSensor.SLAVE_FILE), "w+") as f:
+    with open(os.path.join(sensor_path, W1ThermSensor.SLAVE_FILE), "w+") as f:
         f.write(data)
         return sensor_id
 
@@ -298,9 +298,8 @@ def test_str():
 
 
 def test_kernel_module_not_loaded():
-    with patch("w1thermsensor.core.system"):
+    with patch("w1thermsensor.core.os.system"):
         load_kernel_modules.when.called_with().should.throw(KernelModuleLoadError, "Cannot load w1 therm kernel modules")
-
 
 
 def test_sensor_does_not_exist_after_init():
@@ -308,7 +307,7 @@ def test_sensor_does_not_exist_after_init():
     sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, sensor_id)
 
     # remove sensor path
-    remove(sensor.sensorpath)
+    os.remove(sensor.sensorpath)
 
     try:
         sensor.raw_sensor_value
