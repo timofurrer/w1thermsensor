@@ -15,6 +15,7 @@ W1_FILE = """9e 01 4b 46 7f ff 02 10 56 : crc=56 {ready}
 9e 01 4b 46 7f ff 02 10 56 t={temperature}
 """
 
+
 def get_random_sensor_id():
     """
     Return a valid random sensor id
@@ -59,6 +60,9 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
                 temperature=sensor_temperature, ready='YES' if sensor_ready else 'NO')
             sensor_file.write(sensor_file_content)
 
-            sensors_.append({'type': sensor_type, 'id': sensor_id, 'temperature': sensor_temperature})
+            sensors_.append({
+                'type': sensor_type, 'id': sensor_id,
+                'temperature': sensor_temperature
+            })
 
     return sensors_

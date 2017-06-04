@@ -5,7 +5,8 @@ import os
 import pytest
 
 from w1thermsensor.core import W1ThermSensor, load_kernel_modules
-from w1thermsensor.errors import W1ThermSensorError, KernelModuleLoadError, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
+from w1thermsensor.errors import W1ThermSensorError, KernelModuleLoadError
+from w1thermsensor.errors import NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
 
 
 @pytest.mark.parametrize('sensors', [
@@ -62,7 +63,8 @@ def test_get_available_sensors(sensors):
             {'type': W1ThermSensor.THERM_SENSOR_MAX31850K},
             {'type': W1ThermSensor.THERM_SENSOR_DS18S20},
             {'type': W1ThermSensor.THERM_SENSOR_DS18B20}
-        ), [W1ThermSensor.THERM_SENSOR_MAX31850K, W1ThermSensor.THERM_SENSOR_DS18S20, W1ThermSensor.THERM_SENSOR_DS18B20]
+        ), [W1ThermSensor.THERM_SENSOR_MAX31850K, W1ThermSensor.THERM_SENSOR_DS18S20,
+            W1ThermSensor.THERM_SENSOR_DS18B20]
     ),
 ], indirect=['sensors'])
 def test_get_available_sensors_of_type(sensors, sensor_types):
@@ -190,13 +192,16 @@ def test_get_temperature_for_different_units_by_name(sensors, unit, expected_tem
         ({'temperature': 20.0},), [W1ThermSensor.DEGREES_C], [20.0]
     ),
     (
-        ({'temperature': 42.21},), [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F], [42.21, 107.978]
+        ({'temperature': 42.21},), [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F],
+        [42.21, 107.978]
     ),
     (
-        ({'temperature': 42.21},), [W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN], [107.978, 315.36]
+        ({'temperature': 42.21},), [W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN],
+        [107.978, 315.36]
     ),
     (
-        ({'temperature': 42.21},), [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN], [42.21, 107.978, 315.36]
+        ({'temperature': 42.21},), [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F,
+                                    W1ThermSensor.KELVIN], [42.21, 107.978, 315.36]
     )
 ], indirect=['sensors'])
 def test_get_temperature_in_multiple_units(sensors, units, expected_temperatures):
@@ -211,7 +216,8 @@ def test_get_temperature_in_multiple_units(sensors, units, expected_temperatures
 
 @pytest.mark.parametrize('sensors, expected_sensor_name', [
     (({'type': W1ThermSensor.THERM_SENSOR_DS1822},), 'DS1822'),
-    (({'type': W1ThermSensor.THERM_SENSOR_DS1825},), 'MAX31850K'),  # The DS1825 sensor is the same as MAX31850K
+    # The DS1825 sensor is the same as MAX31850K
+    (({'type': W1ThermSensor.THERM_SENSOR_DS1825},), 'MAX31850K'),
     (({'type': W1ThermSensor.THERM_SENSOR_DS18S20},), 'DS18S20'),
     (({'type': W1ThermSensor.THERM_SENSOR_DS18B20},), 'DS18B20'),
     (({'type': W1ThermSensor.THERM_SENSOR_DS28EA00},), 'DS28EA00'),
@@ -448,7 +454,8 @@ def test_setting_invalid_precision(sensors, precision):
     with pytest.raises(ValueError) as exc:
         sensor.set_precision(precision)
     # then
-    assert str(exc.value) == "The given sensor precision '{0}' is out of range (9-12)".format(precision)
+    assert str(exc.value) == "The given sensor precision '{0}' is out of range (9-12)".format(
+        precision)
 
 
 def test_kernel_module_load_error(monkeypatch):

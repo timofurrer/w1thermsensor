@@ -23,7 +23,9 @@ after_success:
 env:
     - W1THERMSENSOR_NO_KERNEL_MODULE=1
 
-script: pytest tests/ -s --cov w1thermsensor --cov-report term-missing
+script:
+    - pytest tests/ -s --cov w1thermsensor --cov-report term-missing
+    - flake8 --show-source w1thermsensor/ tests/
 
 notifications:
     webhooks:
