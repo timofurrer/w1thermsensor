@@ -6,6 +6,8 @@ python:
     - '3.5'
     - '3.6'
     - '3.7-dev'
+    - 'pypy'
+    - 'pypy-5.3.1'
 
 matrix:
     allow_failures:
@@ -45,6 +47,7 @@ deploy:
     password:
         secure: Eo0i4i7qHgFcLWbLX/dM3DsGZzOBOj3z1KxqjjUt14uUd0Kz1S3kpTmRo63CT44gQSP0C3pFGwa3h7yv07wryO9c/OtHC+c0H+6ZE8GO4o/sMTPFp44jIbS4dpx6PAYwxs8ZO9DaK9dCm5y5re1ynUrC+mA488yjFaQM8oRKnDg=
     on:
+        branch: master
         tags: true
         repo: timofurrer/w1thermsensor
     distributions: sdist bdist_wheel
