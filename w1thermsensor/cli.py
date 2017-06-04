@@ -17,9 +17,12 @@ def resolve_type_name(ctx, param, value):  # pylint: disable=unused-argument
     def _resolve(value):
         """Resolve single type name"""
         try:
-            value = [type_id for type_id, type_name in W1ThermSensor.TYPE_NAMES.items() if type_name == value][0]
+            value = [type_id for type_id, type_name in W1ThermSensor.TYPE_NAMES.items()
+                     if type_name == value][0]
         except IndexError:
-            raise click.BadOptionUsage("No sensor with hwid {0} available. Use the ls command to show all available sensors.".format(value))
+            raise click.BadOptionUsage(
+                "No sensor with hwid {0} available."
+                "Use the ls command to show all available sensors.".format(value))
         else:
             return value
 
@@ -93,7 +96,6 @@ def all(types, unit, precision, as_json):  # pylint: disable=redefined-builtin
 
         temperatures.append(sensor.get_temperature(unit))
 
-
     if as_json:
         data = [{
             "id": i,
@@ -104,7 +106,8 @@ def all(types, unit, precision, as_json):  # pylint: disable=redefined-builtin
         } for i, s, t in zip(count(start=1), sensors, temperatures)]
         click.echo(json.dumps(data, indent=4, sort_keys=True))
     else:
-        click.echo("Got temperatures of {0} sensors:".format(click.style(str(len(sensors)), bold=True)))
+        click.echo("Got temperatures of {0} sensors:".format(
+            click.style(str(len(sensors)), bold=True)))
         for i, sensor, temperature in zip(count(start=1), sensors, temperatures):
             click.echo("  Sensor {0} ({1}) measured temperature: {2} {3}".format(
                 click.style(str(i), bold=True),
@@ -138,7 +141,9 @@ def get(id_, hwid, type_, unit, precision, as_json):
         try:
             sensor = W1ThermSensor.get_available_sensors()[id_ - 1]
         except IndexError:
-            raise click.BadOptionUsage("No sensor with id {0} available. Use the ls command to show all available sensors.".format(id_))
+            raise click.BadOptionUsage(
+                "No sensor with id {0} available."
+                "Use the ls command to show all available sensors.".format(id_))
     else:
         sensor = W1ThermSensor(type_, hwid)
 
@@ -148,7 +153,10 @@ def get(id_, hwid, type_, unit, precision, as_json):
     temperature = sensor.get_temperature(unit)
 
     if as_json:
-        data = {"hwid": sensor.id, "type": sensor.type_name, "temperature": temperature, "unit": unit}
+        data = {
+            "hwid": sensor.id, "type": sensor.type_name,
+            "temperature": temperature, "unit": unit
+        }
         click.echo(json.dumps(data, indent=4, sort_keys=True))
     else:
         click.echo("Sensor {0} measured temperature: {1} {2}".format(
@@ -176,7 +184,9 @@ def precision(id_, precision, hwid, type_):
         try:
             sensor = W1ThermSensor.get_available_sensors()[id_ - 1]
         except IndexError:
-            raise click.BadOptionUsage("No sensor with id {0} available. Use the ls command to show all available sensors.".format(id_))
+            raise click.BadOptionUsage(
+                "No sensor with id {0} available."
+                "Use the ls command to show all available sensors.".format(id_))
     else:
         sensor = W1ThermSensor(type_, hwid)
 

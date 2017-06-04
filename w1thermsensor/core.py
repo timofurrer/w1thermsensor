@@ -39,8 +39,9 @@ class W1ThermSensor(object):
     THERM_SENSOR_DS28EA00 = 0x42
     THERM_SENSOR_MAX31850K = 0x3B
     TYPE_NAMES = {
-        THERM_SENSOR_DS18S20: "DS18S20", THERM_SENSOR_DS1822: "DS1822", THERM_SENSOR_DS18B20: "DS18B20",
-        THERM_SENSOR_DS1825: "DS1825", THERM_SENSOR_DS28EA00: "DS28EA00", THERM_SENSOR_MAX31850K: "MAX31850K"
+        THERM_SENSOR_DS18S20: "DS18S20", THERM_SENSOR_DS1822: "DS1822",
+        THERM_SENSOR_DS18B20: "DS18B20", THERM_SENSOR_DS1825: "DS1825",
+        THERM_SENSOR_DS28EA00: "DS28EA00", THERM_SENSOR_MAX31850K: "MAX31850K"
     }
     RESOLVE_TYPE_STR = {
         "10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20,
@@ -76,7 +77,8 @@ class W1ThermSensor(object):
         """
             Return all available sensors.
 
-            :param list types: the of the sensor to look for. If types is None it will search for all available types.
+            :param list types: the of the sensor to look for.
+                               If types is None it will search for all available types.
 
             :returns: a list of sensor instances.
             :rtype: list
@@ -84,8 +86,9 @@ class W1ThermSensor(object):
         """
         if not types:
             types = cls.TYPE_NAMES.keys()
-        is_sensor = lambda s: any(s.startswith(hex(x)[2:]) for x in types)
-        return [cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:]) for s in os.listdir(cls.BASE_DIRECTORY) if is_sensor(s)]
+        is_sensor = lambda s: any(s.startswith(hex(x)[2:]) for x in types)  # noqa
+        return [cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:]) for s
+                in os.listdir(cls.BASE_DIRECTORY) if is_sensor(s)]
 
     def __init__(self, sensor_type=None, sensor_id=None):
         """
@@ -99,8 +102,10 @@ class W1ThermSensor(object):
             :param int sensor_type: the type of the sensor.
             :param string id: the id of the sensor.
 
-            :raises KernelModuleLoadError: if the w1 therm kernel modules could not be loaded correctly
-            :raises NoSensorFoundError: if the sensor with the given type and/or id does not exist or is not connected
+            :raises KernelModuleLoadError: if the w1 therm kernel modules could not
+                                           be loaded correctly
+            :raises NoSensorFoundError: if the sensor with the given type and/or id
+                                        does not exist or is not connected
         """
         self.type = sensor_type
         self.id = sensor_id
@@ -120,7 +125,8 @@ class W1ThermSensor(object):
             self.id = s[0].id
 
         # store path to sensor
-        self.sensorpath = os.path.join(self.BASE_DIRECTORY, self.slave_prefix + self.id, self.SLAVE_FILE)
+        self.sensorpath = os.path.join(self.BASE_DIRECTORY,
+                                       self.slave_prefix + self.id, self.SLAVE_FILE)
 
         if not self.exists():
             raise NoSensorFoundError(self.type_name, self.id)
