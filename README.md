@@ -1,5 +1,5 @@
 # W1ThermSensor
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/timofurrer/w1thermsensor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timofurrer/w1thermsensor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 > Get the temperature from your w1 therm sensor in a single line of code!<br>
 > It's designed to be used with the Rasperry Pi hardware but also works on a Beagle Bone and others.
 
