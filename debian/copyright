@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: w1thermsensor
+Upstream-Contact: Timo Furrer <tuxtimo@gmail.com>
+Source: https://github.com/timofurrer/w1thermsensor
+
+Files: *
+Copyright: 2017 Timo Furrer <tuxtimo@gmail.com>
+License: MIT
