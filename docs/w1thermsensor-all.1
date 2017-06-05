@@ -1,0 +1,21 @@
+.TH "W1THERMSENSOR ALL" "1" "05-Jun-2017" "" "w1thermsensor all Manual"
+.SH NAME
+w1thermsensor\-all \- Get temperatures of all available sensors
+.SH SYNOPSIS
+.B w1thermsensor all
+[OPTIONS]
+.SH DESCRIPTION
+Get temperatures of all available sensors
+.SH OPTIONS
+.TP
+\fB\-t,\fP \-\-type [DS18S20|DS1822|DS18B20|MAX31850K|DS28EA00]
+Show only sensor of this type
+.TP
+\fB\-u,\fP \-\-unit [celsius|fahrenheit|kelvin]
+The unit of the temperature. Defaults to Celsius
+.TP
+\fB\-p,\fP \-\-precision INTEGER RANGE
+use the given precision for this read
+.TP
+\fB\-j,\fP \-\-json
+Output result in JSON format

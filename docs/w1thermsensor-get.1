@@ -1,0 +1,24 @@
+.TH "W1THERMSENSOR GET" "1" "05-Jun-2017" "" "w1thermsensor get Manual"
+.SH NAME
+w1thermsensor\-get \- Get temperature of a specific sensor
+.SH SYNOPSIS
+.B w1thermsensor get
+[OPTIONS] id
+.SH DESCRIPTION
+Get temperature of a specific sensor
+.SH OPTIONS
+.TP
+\fB\-h,\fP \-\-hwid TEXT
+The hardware id of the sensor
+.TP
+\fB\-t,\fP \-\-type [DS18S20|DS1822|DS18B20|MAX31850K|DS28EA00]
+The type of the sensor
+.TP
+\fB\-u,\fP \-\-unit [celsius|fahrenheit|kelvin]
+The unit of the temperature. Defaults to Celsius
+.TP
+\fB\-p,\fP \-\-precision INTEGER RANGE
+use the given precision for this read
+.TP
+\fB\-j,\fP \-\-json
+Output result in JSON format

@@ -1,0 +1,36 @@
+.TH "W1THERMSENSOR" "1" "05-Jun-2017" "" "w1thermsensor Manual"
+.SH NAME
+w1thermsensor \- Get the temperature from your connected w1...
+.SH SYNOPSIS
+.B w1thermsensor
+[OPTIONS] COMMAND [ARGS]...
+.SH DESCRIPTION
+Get the temperature from your connected w1 therm sensors
+
+
+Available sensors types are:
+  - DS18S20
+  - DS1822
+  - DS18B20
+  - DS28EA00
+  - DS1825/MAX31850K
+.SH COMMANDS
+.PP
+\fBls\fP
+  List all available sensors
+  See \fBw1thermsensor-ls(1)\fP for full documentation on the \fBls\fP command.
+
+.PP
+\fBall\fP
+  Get temperatures of all available sensors
+  See \fBw1thermsensor-all(1)\fP for full documentation on the \fBall\fP command.
+
+.PP
+\fBget\fP
+  Get temperature of a specific sensor
+  See \fBw1thermsensor-get(1)\fP for full documentation on the \fBget\fP command.
+
+.PP
+\fBprecision\fP
+  Change the precision for the sensor and...
+  See \fBw1thermsensor-precision(1)\fP for full documentation on the \fBprecision\fP command.

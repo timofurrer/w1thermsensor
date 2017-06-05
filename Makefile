@@ -15,3 +15,6 @@ readme:
 
 publish: readme
 	python setup.py sdist register upload
+
+manpages:
+	python setup.py --command-packages=click_man.commands man_pages --target docs/
