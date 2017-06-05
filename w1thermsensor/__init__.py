@@ -7,6 +7,6 @@
 from .core import W1ThermSensor  # noqa
 from .errors import NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError  # noqa
 
-__version__ = "0.4.3"
+__version__ = "1.0.0"
 __author__ = "Timo Furrer"
 __email__ = "tuxtimo@gmail.com"
