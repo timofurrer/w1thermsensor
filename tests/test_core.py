@@ -115,6 +115,30 @@ def test_init_first_sensor_of_type(sensors, sensor_type):
     assert sensor.type == sensor_type
 
 
+@pytest.mark.parametrize('sensors, sensor_id', [
+    (
+        (
+            {'id': '1', 'type': W1ThermSensor.THERM_SENSOR_DS18B20},
+        ), '1'
+    ),
+    (
+        (
+            {'id': '2', 'type': W1ThermSensor.THERM_SENSOR_DS18S20},
+            {'id': '1', 'type': W1ThermSensor.THERM_SENSOR_DS18B20}
+        ), '2'
+    )
+], indirect=['sensors'])
+def test_init_first_sensor_by_id(sensors, sensor_id):
+    """Test that sensor can be initialized by id"""
+    # given
+    sensor_type = sensors[0]['type']
+    # when
+    sensor = W1ThermSensor(sensor_id=sensor_id)
+    # then
+    assert sensor.id == sensor_id
+    assert sensor.type == sensor_type
+
+
 @pytest.mark.parametrize('sensors, sensor_specs', [
     (
         (
