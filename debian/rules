@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
 export PYBUILD_NAME=w1thermsensor
+export W1THERMSENSOR_NO_KERNEL_MODULE=1
 
 %:
 	dh $@ --with python2,python3 --buildsystem=pybuild
