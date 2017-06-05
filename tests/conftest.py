@@ -50,14 +50,14 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
         for sensor_conf in request.param:
             sensor_type = sensor_conf.get('type', W1ThermSensor.THERM_SENSOR_DS18B20)
             sensor_id = sensor_conf.get('id') or get_random_sensor_id()
-            sensor_temperature = sensor_conf.get('temperature', 20) * 1000.0
+            sensor_temperature = sensor_conf.get('temperature', 20)
             sensor_ready = sensor_conf.get('ready', True)
 
             sensor_dir = kernel_module_dir.mkdir('{0}-{1}'.format(hex(sensor_type)[2:], sensor_id))
 
             sensor_file = sensor_dir.join(W1ThermSensor.SLAVE_FILE)
             sensor_file_content = W1_FILE.format(
-                temperature=sensor_temperature, ready='YES' if sensor_ready else 'NO')
+                temperature=sensor_temperature * 1000.0, ready='YES' if sensor_ready else 'NO')
             sensor_file.write(sensor_file_content)
 
             sensors_.append({

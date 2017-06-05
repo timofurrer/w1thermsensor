@@ -16,15 +16,9 @@ def resolve_type_name(ctx, param, value):  # pylint: disable=unused-argument
     """Resolve CLI option type name"""
     def _resolve(value):
         """Resolve single type name"""
-        try:
-            value = [type_id for type_id, type_name in W1ThermSensor.TYPE_NAMES.items()
-                     if type_name == value][0]
-        except IndexError:
-            raise click.BadOptionUsage(
-                "No sensor with hwid {0} available."
-                "Use the ls command to show all available sensors.".format(value))
-        else:
-            return value
+        value = [type_id for type_id, type_name in W1ThermSensor.TYPE_NAMES.items()
+                 if type_name == value][0]
+        return value
 
     if not value:
         return value
@@ -112,7 +106,7 @@ def all(types, unit, precision, as_json):  # pylint: disable=redefined-builtin
             click.echo("  Sensor {0} ({1}) measured temperature: {2} {3}".format(
                 click.style(str(i), bold=True),
                 click.style(sensor.id, bold=True),
-                click.style(str(temperature), bold=True),
+                click.style(str(round(temperature, 2)), bold=True),
                 click.style(unit, bold=True)
             ))
 
@@ -142,7 +136,7 @@ def get(id_, hwid, type_, unit, precision, as_json):
             sensor = W1ThermSensor.get_available_sensors()[id_ - 1]
         except IndexError:
             raise click.BadOptionUsage(
-                "No sensor with id {0} available."
+                "No sensor with id {0} available. "
                 "Use the ls command to show all available sensors.".format(id_))
     else:
         sensor = W1ThermSensor(type_, hwid)
@@ -167,15 +161,15 @@ def get(id_, hwid, type_, unit, precision, as_json):
 
 
 @cli.command()
-@click.argument("id_", metavar="id", required=False, type=click.INT)
 @click.argument("precision", required=True, type=click.IntRange(9, 12))
+@click.argument("id_", metavar="id", required=False, type=click.INT)
 @click.option("-h", "--hwid",
               help="The hardware id of the sensor")
 @click.option("-t", "--type", "type_",
               type=click.Choice(W1ThermSensor.TYPE_NAMES.values()),
               callback=resolve_type_name,
               help="The type of the sensor")
-def precision(id_, precision, hwid, type_):
+def precision(precision, id_, hwid, type_):
     """Change the precision for the sensor and persist it in the sensor's EEPROM"""
     if id_ and (hwid or type_):
         raise click.BadOptionUsage("If --id is given --hwid and --type are not allowed.")
@@ -185,7 +179,7 @@ def precision(id_, precision, hwid, type_):
             sensor = W1ThermSensor.get_available_sensors()[id_ - 1]
         except IndexError:
             raise click.BadOptionUsage(
-                "No sensor with id {0} available."
+                "No sensor with id {0} available. "
                 "Use the ls command to show all available sensors.".format(id_))
     else:
         sensor = W1ThermSensor(type_, hwid)

@@ -107,8 +107,6 @@ class W1ThermSensor(object):
             :raises NoSensorFoundError: if the sensor with the given type and/or id
                                         does not exist or is not connected
         """
-        self.type = sensor_type
-        self.id = sensor_id
         if not sensor_type and not sensor_id:  # take first found sensor
             for _ in range(self.RETRY_ATTEMPTS):
                 s = self.get_available_sensors()
@@ -122,7 +120,17 @@ class W1ThermSensor(object):
             s = self.get_available_sensors([sensor_type])
             if not s:
                 raise NoSensorFoundError(self.TYPE_NAMES.get(sensor_type, "Unknown"), "")
+            self.type = sensor_type
             self.id = s[0].id
+        elif not sensor_type:  # get sensor by id
+            sensor = next((s for s in self.get_available_sensors() if s.id == sensor_id), None)
+            if not sensor:
+                raise NoSensorFoundError('N/A', sensor_id)
+            self.type = sensor.type
+            self.id = sensor.id
+        else:
+            self.type = sensor_type
+            self.id = sensor_id
 
         # store path to sensor
         self.sensorpath = os.path.join(self.BASE_DIRECTORY,
