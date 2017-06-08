@@ -1,3 +1,9 @@
+w1thermsensor (1.0.1) jessie; urgency=low
+
+  * Depend on python-mock
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Thu, 08 Jun 2017 16:29:44 +0200
+
 w1thermsensor (1.0.0) jessie; urgency=low
 
   * Add CLI tests
