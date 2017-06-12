@@ -1,3 +1,9 @@
+w1thermsensor (1.0.2) jessie; urgency=low
+
+  * Only deploy man pages with python3 package
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Mon, 12 Jun 2017 12:25:50 +0200
+
 w1thermsensor (1.0.1) jessie; urgency=low
 
   * Depend on python-mock
