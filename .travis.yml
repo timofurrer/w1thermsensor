@@ -9,6 +9,9 @@ python:
     - 'pypy'
     - 'pypy-5.3.1'
 
+services:
+    - docker
+
 matrix:
     allow_failures:
         - python: 3.7-dev
@@ -17,6 +20,7 @@ before_install:
     - pip install codecov
 
 install:
+    - pip install .
     - pip install -r requirements-dev.txt
 
 after_success:
@@ -26,8 +30,9 @@ env:
     - W1THERMSENSOR_NO_KERNEL_MODULE=1
 
 script:
-    - pytest tests/ -s --cov w1thermsensor --cov-report term-missing
-    - flake8 --show-source w1thermsensor/ tests/
+    - coverage run --source w1thermsensor -m pytest tests/unit/ -s
+    - coverage report
+    - flake8 --show-source w1thermsensor/ tests/unit/
 
 notifications:
     webhooks:

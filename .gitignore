@@ -19,9 +19,6 @@ w1thermsensor.egg-info
 # coverage data
 .coverage
 
-# mocked sensors
-test/mockedsensors
-
 # ignore temporary tox environments
 .tox
 
@@ -34,3 +31,4 @@ debian/python*-w1thermsensor.postinst.debhelper
 debian/python*-w1thermsensor.prerm.debhelper
 debian/python*-w1thermsensor.substvars
 debian/python*-w1thermsensor/
+deb/
