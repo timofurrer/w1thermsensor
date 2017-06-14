@@ -1,3 +1,9 @@
+w1thermsensor (1.0.3) jessie; urgency=low
+
+  * Add docker integration tests
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Wed, 14 Jun 2017 09:08:09 +0200
+
 w1thermsensor (1.0.2) jessie; urgency=low
 
   * Only deploy man pages with python3 package
