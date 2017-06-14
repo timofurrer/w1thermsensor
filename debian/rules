@@ -1,7 +1,17 @@
 #!/usr/bin/make -f
 
 export PYBUILD_NAME=w1thermsensor
+export PYBUILD_TEST_PYTEST = 1
+export PYBUILD_TEST_ARGS = {dir}/tests/ -s
+
 export W1THERMSENSOR_NO_KERNEL_MODULE=1
 
 %:
 	dh $@ --with python2,python3 --buildsystem=pybuild
+
+# FIXME(TF): the pytest version in debian jessie
+#            is missing crucial features and bugfixes
+#            in order to run these tests.
+#            Therefore they are disabled for now.
+override_dh_auto_test:
+	@echo Tests are temporarily disabled due to debian jessie pytest incompatibility

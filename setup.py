@@ -4,7 +4,7 @@ import os
 import sys
 import ast
 import codecs
-from setuptools import setup
+from setuptools import setup, find_packages
 
 PROJECT_ROOT = os.path.dirname(__file__)
 
@@ -45,8 +45,9 @@ setup_args=dict(
     platforms=["Linux"],
     url="http://github.com/timofurrer/w1thermsensor",
     download_url="http://github.com/timofurrer/w1thermsensor",
-    packages=["w1thermsensor"],
+    packages=find_packages(exclude=['*tests*']),
     install_requires=["click"],
+    include_package_data=True
 )
 
 if sys.version_info.major == 3:
