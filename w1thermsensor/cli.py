@@ -30,6 +30,7 @@ def resolve_type_name(ctx, param, value):  # pylint: disable=unused-argument
 
 
 @click.group()
+@click.version_option()
 def cli():
     """Get the temperature from your connected w1 therm sensors
 

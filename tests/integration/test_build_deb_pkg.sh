@@ -13,6 +13,9 @@ dpkg -i ../*.deb
 W1THERMSENSOR_NO_KERNEL_MODULE=1 python -c 'import w1thermsensor'
 W1THERMSENSOR_NO_KERNEL_MODULE=1 python3 -c 'import w1thermsensor'
 
+# check if CLI tool can be called
+W1THERMSENSOR_NO_KERNEL_MODULE=1 w1thermsensor --version
+
 # copy results in output directory
 rm -rf deb/
 mkdir deb/
