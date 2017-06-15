@@ -1,6 +1,7 @@
 FROM jsurf/rpi-raspbian
 MAINTAINER Timo Furrer <tuxtimo@gmail.com>
 
+ENV QEMU_EXECVE 1
 ENV DEBIAN_FRONTEND noninteractive
 
 # update the raspbian
