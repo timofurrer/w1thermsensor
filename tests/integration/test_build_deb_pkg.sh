@@ -9,6 +9,10 @@ debuild -us -uc -b
 # install built debian packages
 dpkg -i ../*.deb
 
+# check if w1thermsensor module is importable in Python 2 and Python 3
+W1THERMSENSOR_NO_KERNEL_MODULE=1 python -c 'import w1thermsensor'
+W1THERMSENSOR_NO_KERNEL_MODULE=1 python3 -c 'import w1thermsensor'
+
 # copy results in output directory
 rm -rf deb/
 mkdir deb/

@@ -56,9 +56,8 @@ jobs:
               on:
                 tags: true
                 repo: timofurrer/w1thermsensor
-    allow_failures:
-        - stage: Raspbian integration tests
-
+    #allow_failures:
+        #- stage: Raspbian integration tests
 
 notifications:
     webhooks:
