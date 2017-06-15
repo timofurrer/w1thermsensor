@@ -1,3 +1,10 @@
+w1thermsensor (1.0.4) jessie; urgency=low
+
+  * Run Raspbian integration tests on Travis CI
+  * Deploy debian package to GitHub releases on tags
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Thu, 15 Jun 2017 17:12:55 +0200
+
 w1thermsensor (1.0.3) jessie; urgency=low
 
   * Add docker integration tests

@@ -44,13 +44,16 @@ jobs:
           install:
               - docker version
               - make travis-prepare-integration
-          script: make travis-integration-tests
+          script:
+              - make travis-integration-tests
+              - ls -l deb/
           # we don't need this env variable
           env: W1THERMSENSOR_NO_KERNEL_MODULE=None
           deploy:
               provider: releases
               api_key:
                 secure: IAzzKHT/Hckgwz07wL/oEyvNraPPUHVd/JAD2U7bgZGg0zAEnM6A14OK7XrRh2DBuvgSemlFosxiE6W8baBT0qGrP6kQ1zXo9FghohFJxG1yeCB0YKWmRPJOtY191U9XdyTv9kOFHiFR5xMGaAXBNz/zjn9dHAKLDITz7RDUaQI=
+              file_glob: true
               file: deb/*.deb
               skip_cleanup: true
               on:
@@ -81,3 +84,4 @@ deploy:
         tags: true
         repo: timofurrer/w1thermsensor
     distributions: sdist bdist_wheel
+    skip_cleanup: true
