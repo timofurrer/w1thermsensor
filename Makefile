@@ -1,3 +1,5 @@
+.PHONY: tests deb
+
 tests:
 	@tox
 
@@ -9,6 +11,12 @@ deb:
 docker-deb:
 	docker build . -t tuxtimo/w1thermsensor
 	docker run --rm -v $(shell pwd):/src tuxtimo/w1thermsensor /src/tests/integration/test_build_deb_pkg.sh
+
+travis-prepare-integration:
+	./tests/integration/travis-run-hack.sh docker build . -t tuxtimo/w1thermsensor
+
+travis-integration-tests:
+	./tests/integration/travis-run-hack.sh docker run --rm -v $(shell pwd):/src tuxtimo/w1thermsensor /src/tests/integration/test_build_deb_pkg.sh
 
 lint:
 	pylint w1thermsensor

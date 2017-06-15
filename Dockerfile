@@ -1,4 +1,4 @@
-FROM socialdefect/raspbian-jessie-core
+FROM jsurf/rpi-raspbian
 MAINTAINER Timo Furrer <tuxtimo@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
