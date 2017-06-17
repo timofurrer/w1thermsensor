@@ -37,19 +37,21 @@ This possibility is supported on all distribution:
 
 *Note: maybe root privileges are required*
 
-### On Raspbian using apt-get
+### On Raspbian using `apt-get`
 
-If you are using the `w1thermsensor` module on a Rasperry Pi running raspbian you can install it from the offical repository:
+If you are using the `w1thermsensor` module on a Rasperry Pi running Raspbian you can install it from the official repository:
+
+```bash
+sudo apt-get install python3-w1thermsensor
+```
+
+Or if you are still using Python 2:
 
 ```bash
 sudo apt-get install python-w1thermsensor
 ```
 
-Or if you are using python 3:
-
-```bash
-sudo apt-get install python3-w1thermsensor
-```
+**Note:** The Python 2 package does **not** contain the CLI tool.
 
 ### Create debian packages
 
