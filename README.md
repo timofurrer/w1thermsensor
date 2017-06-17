@@ -7,9 +7,7 @@
 
 [![Build Status](https://travis-ci.org/timofurrer/w1thermsensor.svg?branch=master)](https://travis-ci.org/timofurrer/w1thermsensor) [![codecov.io](http://codecov.io/github/timofurrer/w1thermsensor/coverage.svg?branch=master)](http://codecov.io/github/timofurrer/w1thermsensor?branch=master) [![Code Climate](https://codeclimate.com/github/timofurrer/w1thermsensor/badges/gpa.svg)](https://codeclimate.com/github/timofurrer/w1thermsensor)  [![Code Health](https://landscape.io/github/timofurrer/w1thermsensor/master/landscape.svg?style=flat)](https://landscape.io/github/timofurrer/w1thermsensor/master) [![PyPI version](https://badge.fury.io/py/w1thermsensor.svg)](https://badge.fury.io/py/w1thermsensor)
 
-**New:** use [w1thermsensor as a CLI tool](#usage-as-cli-tool)! - Since version *0.3.0*
-
-**Raspberry Pi:** this package is available in Rasbian as `python-w1thermsensor` and `python3-w1thermsensor`.
+**Raspberry Pi:** this package is available in Raspbian as `python-w1thermsensor` and `python3-w1thermsensor`.
 
 ## Supported devices
 
@@ -23,15 +21,17 @@ The following w1 therm sensor devices are supported:
 
 ## Setup
 
-You just need a w1 therm sensor. <br>
-Some of them can be bought here: [Adafruit: DS18B20](https://www.adafruit.com/search?q=DS18B20) <br>
-I've used a Raspberry Pi with an GPIO Breakout (Pi Cobbler). Other hardware like the Beagle Bone are supported, too.
+The following hardware is needed:
+
+* w1 therm compatible sensor (some of them can be bought here: [Adafruit: DS18B20](https://www.adafruit.com/search?q=DS18B20))
+* wires to connect the sensor to your board (you might need a breadboard, too)
+* a board like the Raspberry Pi or the Beagle Bone)
 
 ## Installation
 
 ### From PIP
 
-This possibility is supported on all distribution:
+This possibility is supported on all distributions:
 
     pip install w1thermsensor
 
@@ -53,9 +53,10 @@ sudo apt-get install python-w1thermsensor
 
 **Note:** The Python 2 package does **not** contain the CLI tool.
 
-### Create debian packages
+### Manually build and install the debian package
 
     debuild -us -uc
+    dpkg -i ../python3-w1thermsensor_*.deb
 
 ## Usage as python package
 
