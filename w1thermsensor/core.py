@@ -77,7 +77,7 @@ class W1ThermSensor(object):
         """
             Return all available sensors.
 
-            :param list types: the of the sensor to look for.
+            :param list types: the type of the sensor to look for.
                                If types is None it will search for all available types.
 
             :returns: a list of sensor instances.
