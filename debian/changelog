@@ -1,3 +1,9 @@
+w1thermsensor (1.0.5) stable; urgency=low
+
+  * Add need-root hint in exception when failed to change precision
+
+ -- Timo Furrer <tuxtimo@gmail.com>  Sat, 14 Oct 2017 07:11:39 +0200
+
 w1thermsensor (1.0.4) jessie; urgency=low
 
   * Run Raspbian integration tests on Travis CI
