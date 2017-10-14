@@ -277,7 +277,9 @@ class W1ThermSensor(object):
         exitcode = subprocess.call("echo {0} > {1}".format(
             precision, self.sensorpath), shell=True)
         if exitcode != 0:
-            raise W1ThermSensorError("Failed to change resolution to {0} bit".format(precision))
+            raise W1ThermSensorError("Failed to change resolution to {0} bit. "
+                                     "You might have to be root to change the precision".format(
+                                         precision))
 
         if persist:
             exitcode = subprocess.call("echo 0 > {0}".format(self.sensorpath), shell=True)

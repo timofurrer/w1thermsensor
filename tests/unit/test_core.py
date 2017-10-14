@@ -431,7 +431,8 @@ def test_setting_sensor_precision_failure(sensors, precision, mocker):
     with pytest.raises(W1ThermSensorError) as exc:
         sensor.set_precision(precision)
     # then
-    assert str(exc.value) == 'Failed to change resolution to {0} bit'.format(precision)
+    assert str(exc.value) == 'Failed to change resolution to {0} bit. ' \
+                             'You might have to be root to change the precision'.format(precision)
 
 
 @pytest.mark.parametrize('sensors, precision', [
