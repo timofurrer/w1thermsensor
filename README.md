@@ -44,6 +44,7 @@ This possibility is supported on all distributions:
 If you are using the `w1thermsensor` module on a Rasperry Pi running Raspbian you can install it from the official repository:
 
 ```bash
+sudo apt-get install python3-setuptools
 sudo apt-get install python3-w1thermsensor
 ```
 
