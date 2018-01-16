@@ -13,7 +13,7 @@ Homepage: https://github.com/timofurrer/w1thermsensor
 
 Package: python-w1thermsensor
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}
+Depends: ${misc:Depends}, ${python:Depends}, python-setuptools
 Description: Python w1 therm sensor module (Python 2)
  This little pure python module provides a single class to get the temperature
  of a w1 therm sensor. It can be easily used on are Rasperry Pi over the GPIO
@@ -21,7 +21,7 @@ Description: Python w1 therm sensor module (Python 2)
 
 Package: python3-w1thermsensor
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, python3-click
+Depends: ${misc:Depends}, ${python3:Depends}, python3-setuptools, python3-click
 Description: Python w1 therm sensor module (Python 3)
  This little pure python module provides a single class to get the temperature
  of a w1 therm sensor. It can be easily used on are Rasperry Pi over the GPIO
