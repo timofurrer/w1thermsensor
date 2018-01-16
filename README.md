@@ -44,7 +44,6 @@ This possibility is supported on all distributions:
 If you are using the `w1thermsensor` module on a Rasperry Pi running Raspbian you can install it from the official repository:
 
 ```bash
-sudo apt-get install python3-setuptools
 sudo apt-get install python3-w1thermsensor
 ```
 
@@ -54,7 +53,9 @@ Or if you are still using Python 2:
 sudo apt-get install python-w1thermsensor
 ```
 
-**Note:** The Python 2 package does **not** contain the CLI tool.
+**Note:** For older versions of this package you might get the following error: `ImportError: No module named 'pkg_resources'` which indicates that you need to install `python-setuptools` or `python3-setuptools` respectively. 
+
+**Note 2:** The Python 2 package does **not** contain the CLI tool.
 
 ### Manually build and install the debian package
 
