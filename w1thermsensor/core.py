@@ -39,13 +39,19 @@ class W1ThermSensor(object):
     THERM_SENSOR_DS28EA00 = 0x42
     THERM_SENSOR_MAX31850K = 0x3B
     TYPE_NAMES = {
-        THERM_SENSOR_DS18S20: "DS18S20", THERM_SENSOR_DS1822: "DS1822",
-        THERM_SENSOR_DS18B20: "DS18B20", THERM_SENSOR_DS1825: "DS1825",
-        THERM_SENSOR_DS28EA00: "DS28EA00", THERM_SENSOR_MAX31850K: "MAX31850K"
+        THERM_SENSOR_DS18S20: "DS18S20",
+        THERM_SENSOR_DS1822: "DS1822",
+        THERM_SENSOR_DS18B20: "DS18B20",
+        THERM_SENSOR_DS1825: "DS1825",
+        THERM_SENSOR_DS28EA00: "DS28EA00",
+        THERM_SENSOR_MAX31850K: "MAX31850K",
     }
     RESOLVE_TYPE_STR = {
-        "10": THERM_SENSOR_DS18S20, "22": THERM_SENSOR_DS1822, "28": THERM_SENSOR_DS18B20,
-        "42": THERM_SENSOR_DS28EA00, "3b": THERM_SENSOR_MAX31850K
+        "10": THERM_SENSOR_DS18S20,
+        "22": THERM_SENSOR_DS1822,
+        "28": THERM_SENSOR_DS18B20,
+        "42": THERM_SENSOR_DS28EA00,
+        "3b": THERM_SENSOR_MAX31850K,
     }
 
     #: Holds information about the location of the needed
@@ -60,12 +66,12 @@ class W1ThermSensor(object):
     UNIT_FACTORS = {
         DEGREES_C: lambda x: x * 0.001,
         DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0,
-        KELVIN: lambda x: x * 0.001 + 273.15
+        KELVIN: lambda x: x * 0.001 + 273.15,
     }
     UNIT_FACTOR_NAMES = {
         "celsius": DEGREES_C,
         "fahrenheit": DEGREES_F,
-        "kelvin": KELVIN
+        "kelvin": KELVIN,
     }
 
     #: Holds settings for patient retries used to access the sensors
@@ -87,8 +93,11 @@ class W1ThermSensor(object):
         if not types:
             types = cls.TYPE_NAMES.keys()
         is_sensor = lambda s: any(s.startswith(hex(x)[2:]) for x in types)  # noqa
-        return [cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:]) for s
-                in os.listdir(cls.BASE_DIRECTORY) if is_sensor(s)]
+        return [
+            cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:])
+            for s in os.listdir(cls.BASE_DIRECTORY)
+            if is_sensor(s)
+        ]
 
     def __init__(self, sensor_type=None, sensor_id=None):
         """
@@ -119,13 +128,17 @@ class W1ThermSensor(object):
         elif not sensor_id:
             s = self.get_available_sensors([sensor_type])
             if not s:
-                raise NoSensorFoundError(self.TYPE_NAMES.get(sensor_type, "Unknown"), "")
+                raise NoSensorFoundError(
+                    self.TYPE_NAMES.get(sensor_type, "Unknown"), ""
+                )
             self.type = sensor_type
             self.id = s[0].id
         elif not sensor_type:  # get sensor by id
-            sensor = next((s for s in self.get_available_sensors() if s.id == sensor_id), None)
+            sensor = next(
+                (s for s in self.get_available_sensors() if s.id == sensor_id), None
+            )
             if not sensor:
-                raise NoSensorFoundError('N/A', sensor_id)
+                raise NoSensorFoundError("N/A", sensor_id)
             self.type = sensor.type
             self.id = sensor.id
         else:
@@ -133,8 +146,9 @@ class W1ThermSensor(object):
             self.id = sensor_id
 
         # store path to sensor
-        self.sensorpath = os.path.join(self.BASE_DIRECTORY,
-                                       self.slave_prefix + self.id, self.SLAVE_FILE)
+        self.sensorpath = os.path.join(
+            self.BASE_DIRECTORY, self.slave_prefix + self.id, self.SLAVE_FILE
+        )
 
         if not self.exists():
             raise NoSensorFoundError(self.type_name, self.id)
@@ -147,7 +161,8 @@ class W1ThermSensor(object):
             :rtype: string
         """
         return "{}(sensor_type={}, sensor_id='{}')".format(
-            self.__class__.__name__, self.type, self.id)
+            self.__class__.__name__, self.type, self.id
+        )
 
     def __str__(self):
         """
@@ -157,7 +172,8 @@ class W1ThermSensor(object):
             :rtype: string
         """
         return "{0}(name='{1}', type={2}(0x{2:x}), id='{3}')".format(
-            self.__class__.__name__, self.type_name, self.type, self.id)
+            self.__class__.__name__, self.type_name, self.type, self.id
+        )
 
     @property
     def type_name(self):
@@ -280,20 +296,29 @@ class W1ThermSensor(object):
             :rtype: bool
         """
         if not 9 <= precision <= 12:
-            raise ValueError("The given sensor precision '{0}' is out of range (9-12)".format(
-                precision))
+            raise ValueError(
+                "The given sensor precision '{0}' is out of range (9-12)".format(
+                    precision
+                )
+            )
 
-        exitcode = subprocess.call("echo {0} > {1}".format(
-            precision, self.sensorpath), shell=True)
+        exitcode = subprocess.call(
+            "echo {0} > {1}".format(precision, self.sensorpath), shell=True
+        )
         if exitcode != 0:
-            raise W1ThermSensorError("Failed to change resolution to {0} bit. "
-                                     "You might have to be root to change the precision".format(
-                                         precision))
+            raise W1ThermSensorError(
+                "Failed to change resolution to {0} bit. "
+                "You might have to be root to change the precision".format(precision)
+            )
 
         if persist:
-            exitcode = subprocess.call("echo 0 > {0}".format(self.sensorpath), shell=True)
+            exitcode = subprocess.call(
+                "echo 0 > {0}".format(self.sensorpath), shell=True
+            )
             if exitcode != 0:
-                raise W1ThermSensorError("Failed to write precision configuration to sensor EEPROM")
+                raise W1ThermSensorError(
+                    "Failed to write precision configuration to sensor EEPROM"
+                )
 
         return True
 
@@ -312,7 +337,9 @@ def load_kernel_modules():
         os.system("modprobe w1-therm >/dev/null 2>&1")
 
     for _ in range(W1ThermSensor.RETRY_ATTEMPTS):
-        if os.path.isdir(W1ThermSensor.BASE_DIRECTORY):  # w1 therm modules loaded correctly
+        if os.path.isdir(
+            W1ThermSensor.BASE_DIRECTORY
+        ):  # w1 therm modules loaded correctly
             break
         time.sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
     else:
@@ -321,5 +348,5 @@ def load_kernel_modules():
 
 # Load kernel modules automatically upon import.
 # Set the environment variable W1THERMSENSOR_NO_KERNEL_MODULE=1
-if os.environ.get('W1THERMSENSOR_NO_KERNEL_MODULE', '0') != '1':
+if os.environ.get("W1THERMSENSOR_NO_KERNEL_MODULE", "0") != "1":
     load_kernel_modules()
