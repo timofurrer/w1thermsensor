@@ -9,7 +9,7 @@ import time
 import subprocess
 
 from .errors import W1ThermSensorError, NoSensorFoundError, SensorNotReadyError
-from .errors import KernelModuleLoadError, UnsupportedUnitError
+from .errors import KernelModuleLoadError, UnsupportedUnitError, ResetValueError
 
 
 class W1ThermSensor(object):
@@ -191,8 +191,17 @@ class W1ThermSensor(object):
             raise NoSensorFoundError(self.type_name, self.id)
 
         if data[0].strip()[-3:] != "YES":
-            raise SensorNotReadyError()
-        return float(data[1].split("=")[1])
+            raise SensorNotReadyError(self)
+
+        # read the sensor raw sensor value in millicelsius
+        millicelsius = float(data[1].split("=")[1])
+
+        # check if the sensor value is the reset value
+        if self.type == self.THERM_SENSOR_DS18B20:
+            if millicelsius == 85000:
+                raise ResetValueError(self)
+
+        return millicelsius
 
     @classmethod
     def _get_unit_factor(cls, unit):

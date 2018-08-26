@@ -7,6 +7,7 @@ import pytest
 from w1thermsensor.core import W1ThermSensor, load_kernel_modules
 from w1thermsensor.errors import W1ThermSensorError, KernelModuleLoadError
 from w1thermsensor.errors import NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
+from w1thermsensor.errors import ResetValueError
 
 
 @pytest.mark.parametrize('sensors', [
@@ -491,5 +492,22 @@ def test_kernel_module_load_error(monkeypatch):
     # when
     with pytest.raises(KernelModuleLoadError) as exc:
         load_kernel_modules()
-    # then
-    assert str(exc.value) == 'Cannot load w1 therm kernel modules'
+
+
+@pytest.mark.parametrize('sensors', [
+    (
+        ({'temperature': 85.00},)
+    ),
+], indirect=['sensors'])
+def test_handling_reset_value(sensors):
+    """Test handling the reset value from a sensor reading"""
+    # given
+    sensor = W1ThermSensor()
+    expected_error_msg = (
+            "Sensor {} yields the reset value of 85 degree millicelsius. "
+            "Please check the hardware.".format(sensor.id)
+    )
+
+    # when & then
+    with pytest.raises(ResetValueError, message=expected_error_msg):
+        sensor.get_temperature()
