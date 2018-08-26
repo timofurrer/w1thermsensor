@@ -73,6 +73,7 @@ setup_args = dict(
     license="MIT",
     description="This little pure python module provides a single class to get the temperature of a w1 sensor",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Timo Furrer",
     author_email="tuxtimo@gmail.com",
     maintainer="Timo Furrer",
