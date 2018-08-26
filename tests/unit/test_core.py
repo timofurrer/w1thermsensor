@@ -261,15 +261,11 @@ def test_sensor_type_name(sensors, expected_sensor_name):
 @pytest.mark.parametrize('sensors', [tuple()], indirect=['sensors'])
 def test_no_sensor_found(sensors):
     """Test exception when no sensor was found"""
-    with pytest.raises(NoSensorFoundError) as exc:
+    with pytest.raises(NoSensorFoundError, message="No Unknown temperature sensor with id '' found"):
         W1ThermSensor()
 
-    assert str(exc.value) == "No Unknown temperature sensor with id '' found"
-
-    with pytest.raises(NoSensorFoundError) as exc:
+    with pytest.raises(NoSensorFoundError, message="No DS1822 temperature sensor with id '1' found"):
         W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS1822, '1')
-
-    assert str(exc.value) == "No DS1822 temperature sensor with id '1' found"
 
 
 @pytest.mark.parametrize('sensors', [
@@ -279,12 +275,12 @@ def test_sensor_not_ready(sensors):
     """Test exception when sensor is not ready yet"""
     # given
     sensor = W1ThermSensor()
-    # when
-    with pytest.raises(SensorNotReadyError) as exc:
-        sensor.get_temperature()
+    expected_error_msg = "Sensor {} is not yet ready to read temperature".format(
+            sensor.id)
 
-    # then
-    assert str(exc.value) == 'Sensor is not yet ready to read temperature'
+    # when & then
+    with pytest.raises(SensorNotReadyError, message=expected_error_msg):
+        sensor.get_temperature()
 
 
 @pytest.mark.parametrize('sensors', [
@@ -295,12 +291,11 @@ def test_unsupported_unit_error(sensors):
     """Test exception when requested to read temperature in unsupported unit"""
     # given
     sensor = W1ThermSensor()
-    # when
-    with pytest.raises(UnsupportedUnitError) as exc:
-        sensor.get_temperature(unit=0xFF)  # 0xFF is no valid unit id
+    expected_error_msg = "Only Degrees C, F and Kelvin are currently supported"
 
-    # then
-    assert str(exc.value) == 'Only Degrees C, F and Kelvin are currently supported'
+    # when & then
+    with pytest.raises(UnsupportedUnitError, message=expected_error_msg):
+        sensor.get_temperature(unit=0xFF)  # 0xFF is no valid unit id
 
 
 @pytest.mark.parametrize('sensors', [
@@ -339,13 +334,14 @@ def test_sensor_disconnect_after_init(sensors):
     """Test exception when sensor is disconnected after initialization"""
     # given
     sensor = W1ThermSensor()
+    expected_error_msg = "No DS18B20 temperature sensor with id '{}' found".format(sensor.id)
+
     # disconnect sensor
     os.remove(sensor.sensorpath)
-    # when
-    with pytest.raises(NoSensorFoundError) as exc:
+
+    # when & then
+    with pytest.raises(NoSensorFoundError, message=expected_error_msg):
         sensor.raw_sensor_value
-    # then
-    assert str(exc.value) == "No DS18B20 temperature sensor with id '{0}' found".format(sensor.id)
 
 
 @pytest.mark.parametrize('sensors, precision', [
@@ -425,15 +421,19 @@ def test_setting_sensor_precision_failure(sensors, precision, mocker):
     """Test setting sensor precision failure"""
     # given
     sensor = W1ThermSensor()
+    expected_error_msg = (
+            "Failed to change resolution to {0} bit. "
+            "You might have to be root to change the precision".format(
+                precision)
+    )
+
     # mock subprocess.call
     subprocess_call = mocker.patch('subprocess.call')
     subprocess_call.return_value = 1
-    # when
-    with pytest.raises(W1ThermSensorError) as exc:
+
+    # when & then
+    with pytest.raises(W1ThermSensorError, message=expected_error_msg):
         sensor.set_precision(precision)
-    # then
-    assert str(exc.value) == 'Failed to change resolution to {0} bit. ' \
-                             'You might have to be root to change the precision'.format(precision)
 
 
 @pytest.mark.parametrize('sensors, precision', [
@@ -454,14 +454,15 @@ def test_setting_and_persisting_sensor_precision_failure(sensors, precision, moc
     """Test setting and persisting sensor precision failure"""
     # given
     sensor = W1ThermSensor()
+    expected_error_msg = "Failed to write precision configuration to sensor EEPROM"
+
     # mock subprocess.call
     subprocess_call = mocker.patch('subprocess.call')
     subprocess_call.side_effect = [0, 1]
-    # when
-    with pytest.raises(W1ThermSensorError) as exc:
+
+    # when & then
+    with pytest.raises(W1ThermSensorError, message=expected_error_msg):
         sensor.set_precision(precision, persist=True)
-    # then
-    assert str(exc.value) == 'Failed to write precision configuration to sensor EEPROM'
 
 
 @pytest.mark.parametrize('sensors, precision', [
@@ -476,12 +477,12 @@ def test_setting_invalid_precision(sensors, precision):
     """Test setting invalid precision for sensor"""
     # given
     sensor = W1ThermSensor()
-    # when
-    with pytest.raises(ValueError) as exc:
+    expected_error_msg = "The given sensor precision '{}' is out of range (9-12)".format(
+            precision)
+
+    # when & then
+    with pytest.raises(ValueError, message=expected_error_msg):
         sensor.set_precision(precision)
-    # then
-    assert str(exc.value) == "The given sensor precision '{0}' is out of range (9-12)".format(
-        precision)
 
 
 def test_kernel_module_load_error(monkeypatch):
@@ -489,8 +490,10 @@ def test_kernel_module_load_error(monkeypatch):
     # given
     # prevent os.system calls
     monkeypatch.setattr(os, 'system', lambda x: True)
-    # when
-    with pytest.raises(KernelModuleLoadError) as exc:
+    expected_error_msg = "Cannot load w1 therm kernel modules"
+
+    # when & then
+    with pytest.raises(KernelModuleLoadError, message=expected_error_msg):
         load_kernel_modules()
 
 

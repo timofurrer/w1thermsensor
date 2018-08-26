@@ -26,9 +26,11 @@ class NoSensorFoundError(W1ThermSensorError):
 
 class SensorNotReadyError(W1ThermSensorError):
     """Exception when the sensor is not ready yet"""
-    def __init__(self):
+    def __init__(self, sensor):
         super(SensorNotReadyError, self).__init__(
-            "Sensor is not yet ready to read temperature")
+            "Sensor {} is not yet ready to read temperature".format(
+                sensor.id))
+        self.sensor = sensor
 
 
 class UnsupportedUnitError(W1ThermSensorError):
