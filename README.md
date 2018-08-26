@@ -212,7 +212,7 @@ $ w1thermsensor get --hwid 00000588806a --type DS18B20 --precision 11
 ### Change temperature read precision and write to EEPROM
 
 ```
-$ w1thermsensor precision 1 10
+$ w1thermsensor precision 10 1
 $ w1thermsensor precision --hwid 00000588806a --type DS18B20 11
 ```
 
