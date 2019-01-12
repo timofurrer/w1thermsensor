@@ -299,6 +299,11 @@ class W1ThermSensor(object):
         sensor_value = self.get_temperature(self.DEGREES_C)
         return [self._get_unit_factor(unit)(sensor_value) for unit in units]
 
+    def get_precision(self):
+        config_str = self.raw_sensor_strings[1].split()[4] # Byte 5 is the config register
+        bit_base = int(config_str, 16) >> 5 # Bit 5-6 contain the resolution, cut off the rest
+        return bit_base + 9 # min. is 9 bits
+        
     def set_precision(self, precision, persist=False):
         """
             Set the precision of the sensor for the next readings.
