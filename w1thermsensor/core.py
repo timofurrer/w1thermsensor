@@ -46,6 +46,12 @@ class W1ThermSensor(object):
         THERM_SENSOR_DS28EA00: "DS28EA00",
         THERM_SENSOR_MAX31850K: "MAX31850K",
     }
+    TYPES_12BIT_STANDARD = [
+        THERM_SENSOR_DS1822,
+        THERM_SENSOR_DS18B20,
+        THERM_SENSOR_DS1825,
+        THERM_SENSOR_DS28EA00,
+    ]
     RESOLVE_TYPE_STR = {
         "10": THERM_SENSOR_DS18S20,
         "22": THERM_SENSOR_DS1822,
@@ -231,8 +237,6 @@ class W1ThermSensor(object):
         # Convert from 16 bit hex string into int
         int16 = int(bytes[1] + bytes[0], 16)
 
-        # TODO drop insignificant bits if resolution < 12 bit
-
         # check first signing bit
         if int16 >> 15 == 0: 
             return int16 # positive values need no processing
@@ -251,10 +255,10 @@ class W1ThermSensor(object):
             :raises NoSensorFoundError: if the sensor could not be found
             :raises SensorNotReadyError: if the sensor is not ready yet
         """
-        
+
         # return the value in millicelsius
         return float(self.raw_sensor_strings[1].split("=")[1])
-    
+
 
     @classmethod
     def _get_unit_factor(cls, unit):
@@ -289,11 +293,11 @@ class W1ThermSensor(object):
             :raises SensorNotReadyError: if the sensor is not ready yet
             :raises ResetValueError: if the sensor has still the initial value and no measurment
         """
-        if self.type == self.THERM_SENSOR_DS18B20:
+        if self.type in self.TYPES_12BIT_STANDARD:
             value = self.raw_sensor_count
             # the int part is 8 bit wide, 4 bit are left on 12 bit
             # so divide with 2^4 = 16 to get the celsius fractions
-            value /= 16.0 
+            value /= 16.0
 
             # check if the sensor value is the reset value
             if value == 85.0:
@@ -302,9 +306,9 @@ class W1ThermSensor(object):
             factor = self._get_unit_factor(unit)
             return factor(value)
 
-        else: 
-            factor = self._get_unit_factor(unit)
-            return factor(self.raw_sensor_temp * 0.001)
+        # Fallback to precalculated value for other sensor types
+        factor = self._get_unit_factor(unit)
+        return factor(self.raw_sensor_temp * 0.001)
 
     def get_temperatures(self, units):
         """
@@ -333,7 +337,7 @@ class W1ThermSensor(object):
         config_str = self.raw_sensor_strings[1].split()[4] # Byte 5 is the config register
         bit_base = int(config_str, 16) >> 5 # Bit 5-6 contains the resolution, cut off the rest
         return bit_base + 9 # min. is 9 bits
-        
+  
     def set_precision(self, precision, persist=False):
         """
             Set the precision of the sensor for the next readings.
