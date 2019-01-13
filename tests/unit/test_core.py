@@ -527,6 +527,26 @@ def test_setting_invalid_precision(sensors, precision):
         sensor.set_precision(precision)
 
 
+@pytest.mark.parametrize(
+    "sensors, expected_precision",
+    [
+        (({"config": 0x1f},), 9),
+        (({"config": 0x3f},), 10),
+        (({"config": 0x5f},), 11),
+        (({"config": 0x7f},), 12),
+    ],
+    indirect=["sensors"],
+)
+def test_get_precision(sensors, expected_precision):
+    """Test getting the sensor precison"""
+    # given
+    sensor = W1ThermSensor()
+    # when
+    precision = sensor.get_precision()
+    # then
+    assert precision == pytest.approx(expected_precision)
+
+
 def test_kernel_module_load_error(monkeypatch):
     """Test exception if kernel modules cannot be loaded"""
     # given
