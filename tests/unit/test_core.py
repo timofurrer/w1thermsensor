@@ -197,9 +197,13 @@ def test_init_sensor_by_type_and_id(sensors, sensor_specs):
     "sensors, unit, expected_temperature",
     [
         (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},), W1ThermSensor.DEGREES_C, 20.0),
+        (({"msb": 0xff, "lsb": 0xf8, "temperature": -0.5},), W1ThermSensor.DEGREES_C, -0.5),
+        (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), W1ThermSensor.DEGREES_C, -55),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "celsius", 25.0625),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "fahrenheit", 77.1125),
+        (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), "fahrenheit", -67),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "kelvin", 298.2125),
+        (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), "kelvin", 218.15),
     ],
     indirect=["sensors"],
 )
