@@ -50,10 +50,11 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
         for sensor_conf in request.param:
             sensor_type = sensor_conf.get("type", W1ThermSensor.THERM_SENSOR_DS18B20)
             sensor_id = sensor_conf.get("id") or get_random_sensor_id()
-            sensor_msb = sensor_conf.get("msb", 0x01)
-            sensor_lsb = sensor_conf.get("lsb", 0x40)
-            sensor_config_bit = sensor_conf.get("config", 0x7f)
             sensor_temperature = sensor_conf.get("temperature", 20)
+            sensor_counts = int(sensor_temperature * 16.0)
+            sensor_msb = sensor_conf.get("msb", sensor_counts >> 8)
+            sensor_lsb = sensor_conf.get("lsb", sensor_counts & 0xff)
+            sensor_config_bit = sensor_conf.get("config", 0x7f)
             sensor_ready = sensor_conf.get("ready", True)
 
             sensor_dir = kernel_module_dir.mkdir(
@@ -68,7 +69,6 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
                 config=sensor_config_bit,
                 ready="YES" if sensor_ready else "NO",
             )
-            print(sensor_file_content)
             sensor_file.write(sensor_file_content)
 
             sensors_.append(
