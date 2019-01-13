@@ -559,7 +559,11 @@ def test_kernel_module_load_error(monkeypatch):
         load_kernel_modules()
 
 
-@pytest.mark.parametrize("sensors", [(({"msb": 0x05, "lsb": 0x50, "temperature": 85.00},))], indirect=["sensors"])
+@pytest.mark.parametrize(
+    "sensors",
+    [(({"msb": 0x05, "lsb": 0x50, "temperature": 85.00},))],
+    indirect=["sensors"]
+)
 def test_handling_reset_value(sensors):
     """Test handling the reset value from a sensor reading"""
     # given

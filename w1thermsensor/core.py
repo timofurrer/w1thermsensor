@@ -216,13 +216,14 @@ class W1ThermSensor(object):
             raise SensorNotReadyError(self)
 
         return data
-    
+
     @property
     def raw_sensor_count(self):
         """
             Returns the raw integer ADC count from the sensor
 
-            Note: Must be divided depending on the max. sensor resolution to get floating point celsius
+            Note: Must be divided depending on the max. sensor resolution
+            to get floating point celsius
 
             :returns: the raw value from the sensor ADC
             :rtype: int
@@ -238,11 +239,10 @@ class W1ThermSensor(object):
         int16 = int(bytes[1] + bytes[0], 16)
 
         # check first signing bit
-        if int16 >> 15 == 0: 
-            return int16 # positive values need no processing
+        if int16 >> 15 == 0:
+            return int16  # positive values need no processing
         else:
-            return int16 - (1 << 16) # substract 2^16 to get correct negative value
-
+            return int16 - (1 << 16)  # substract 2^16 to get correct negative value
 
     @property
     def raw_sensor_temp(self):
@@ -258,7 +258,6 @@ class W1ThermSensor(object):
 
         # return the value in millicelsius
         return float(self.raw_sensor_strings[1].split("=")[1])
-
 
     @classmethod
     def _get_unit_factor(cls, unit):
@@ -334,10 +333,10 @@ class W1ThermSensor(object):
             :returns: sensor resolution from 9-12 bits
             :rtype: int
         """
-        config_str = self.raw_sensor_strings[1].split()[4] # Byte 5 is the config register
-        bit_base = int(config_str, 16) >> 5 # Bit 5-6 contains the resolution, cut off the rest
-        return bit_base + 9 # min. is 9 bits
-  
+        config_str = self.raw_sensor_strings[1].split()[4]  # Byte 5 is the config register
+        bit_base = int(config_str, 16) >> 5  # Bit 5-6 contains the resolution, cut off the rest
+        return bit_base + 9  # min. is 9 bits
+
     def set_precision(self, precision, persist=False):
         """
             Set the precision of the sensor for the next readings.
