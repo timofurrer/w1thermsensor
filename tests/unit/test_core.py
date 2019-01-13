@@ -196,10 +196,10 @@ def test_init_sensor_by_type_and_id(sensors, sensor_specs):
 @pytest.mark.parametrize(
     "sensors, unit, expected_temperature",
     [
-        (({"temperature": 20.0},), W1ThermSensor.DEGREES_C, 20.0),
-        (({"temperature": 42.21},), W1ThermSensor.DEGREES_C, 42.21),
-        (({"temperature": 42.21},), W1ThermSensor.DEGREES_F, 107.978),
-        (({"temperature": 42.21},), W1ThermSensor.KELVIN, 315.36),
+        (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},), W1ThermSensor.DEGREES_C, 20.0),
+        (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "celsius", 25.0625),
+        (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "fahrenheit", 77.1125),
+        (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "kelvin", 298.2125),
     ],
     indirect=["sensors"],
 )
@@ -216,9 +216,9 @@ def test_get_temperature_for_different_units(sensors, unit, expected_temperature
 @pytest.mark.parametrize(
     "sensors, unit, expected_temperature",
     [
-        (({"temperature": 42.21},), "celsius", 42.21),
-        (({"temperature": 42.21},), "fahrenheit", 107.978),
-        (({"temperature": 42.21},), "kelvin", 315.36),
+        (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "celsius", 25.0625),
+        (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "fahrenheit", 77.1125),
+        (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "kelvin", 298.2125),
     ],
     indirect=["sensors"],
 )
@@ -237,21 +237,24 @@ def test_get_temperature_for_different_units_by_name(
 @pytest.mark.parametrize(
     "sensors, units, expected_temperatures",
     [
-        (({"temperature": 20.0},), [W1ThermSensor.DEGREES_C], [20.0]),
         (
-            ({"temperature": 42.21},),
+            ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
+            [W1ThermSensor.DEGREES_C],
+            [20.0]),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
             [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F],
-            [42.21, 107.978],
+            [25.0625, 77.1125],
         ),
         (
-            ({"temperature": 42.21},),
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.06251},),
             [W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN],
-            [107.978, 315.36],
+            [77.1125, 298.2125],
         ),
         (
-            ({"temperature": 42.21},),
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
             [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN],
-            [42.21, 107.978, 315.36],
+            [25.0625, 77.1125, 298.2125],
         ),
     ],
     indirect=["sensors"],
@@ -391,7 +394,7 @@ def test_sensor_disconnect_after_init(sensors):
 
     # when & then
     with pytest.raises(NoSensorFoundError, message=expected_error_msg):
-        sensor.raw_sensor_value
+        sensor.raw_sensor_temp
 
 
 @pytest.mark.parametrize(
@@ -532,7 +535,7 @@ def test_kernel_module_load_error(monkeypatch):
         load_kernel_modules()
 
 
-@pytest.mark.parametrize("sensors", [(({"temperature": 85.00},))], indirect=["sensors"])
+@pytest.mark.parametrize("sensors", [(({"msb": 0x05, "lsb": 0x50, "temperature": 85.00},))], indirect=["sensors"])
 def test_handling_reset_value(sensors):
     """Test handling the reset value from a sensor reading"""
     # given
