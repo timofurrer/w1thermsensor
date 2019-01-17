@@ -11,8 +11,8 @@ import pytest
 from w1thermsensor import W1ThermSensor
 
 #: Holds sample contents for a ready and not ready sensor
-W1_FILE = """9e 01 4b 46 7f ff 02 10 56 : crc=56 {ready}
-9e 01 4b 46 7f ff 02 10 56 t={temperature}
+W1_FILE = """{lsb:x} {msb:x} 4b 46 {config:x} ff 02 10 56 : crc=56 {ready}
+{lsb:x} {msb:x} 4b 46 {config:x} ff 02 10 56 t={temperature}
 """
 
 
@@ -51,6 +51,10 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
             sensor_type = sensor_conf.get("type", W1ThermSensor.THERM_SENSOR_DS18B20)
             sensor_id = sensor_conf.get("id") or get_random_sensor_id()
             sensor_temperature = sensor_conf.get("temperature", 20)
+            sensor_counts = int(sensor_temperature * 16.0)
+            sensor_msb = sensor_conf.get("msb", sensor_counts >> 8)
+            sensor_lsb = sensor_conf.get("lsb", sensor_counts & 0xff)
+            sensor_config_bit = sensor_conf.get("config", 0x7f)
             sensor_ready = sensor_conf.get("ready", True)
 
             sensor_dir = kernel_module_dir.mkdir(
@@ -59,7 +63,10 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
 
             sensor_file = sensor_dir.join(W1ThermSensor.SLAVE_FILE)
             sensor_file_content = W1_FILE.format(
+                msb=sensor_msb,
+                lsb=sensor_lsb,
                 temperature=sensor_temperature * 1000.0,
+                config=sensor_config_bit,
                 ready="YES" if sensor_ready else "NO",
             )
             sensor_file.write(sensor_file_content)

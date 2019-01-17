@@ -46,6 +46,12 @@ class W1ThermSensor(object):
         THERM_SENSOR_DS28EA00: "DS28EA00",
         THERM_SENSOR_MAX31850K: "MAX31850K",
     }
+    TYPES_12BIT_STANDARD = [
+        THERM_SENSOR_DS1822,
+        THERM_SENSOR_DS18B20,
+        THERM_SENSOR_DS1825,
+        THERM_SENSOR_DS28EA00,
+    ]
     RESOLVE_TYPE_STR = {
         "10": THERM_SENSOR_DS18S20,
         "22": THERM_SENSOR_DS1822,
@@ -64,9 +70,9 @@ class W1ThermSensor(object):
     DEGREES_F = 0x02
     KELVIN = 0x03
     UNIT_FACTORS = {
-        DEGREES_C: lambda x: x * 0.001,
-        DEGREES_F: lambda x: x * 0.001 * 1.8 + 32.0,
-        KELVIN: lambda x: x * 0.001 + 273.15,
+        DEGREES_C: lambda x: x,
+        DEGREES_F: lambda x: x * 1.8 + 32.0,
+        KELVIN: lambda x: x + 273.15,
     }
     UNIT_FACTOR_NAMES = {
         "celsius": DEGREES_C,
@@ -190,12 +196,12 @@ class W1ThermSensor(object):
         return os.path.exists(self.sensorpath)
 
     @property
-    def raw_sensor_value(self):
+    def raw_sensor_strings(self):
         """
-            Returns the raw sensor value
+            Reads the raw strings from the kernel module sysfs interface
 
-            :returns: the raw value read from the sensor
-            :rtype: int
+            :returns: raw strings containing all bytes from the sensor memory
+            :rtype: str
 
             :raises NoSensorFoundError: if the sensor could not be found
             :raises SensorNotReadyError: if the sensor is not ready yet
@@ -209,15 +215,49 @@ class W1ThermSensor(object):
         if data[0].strip()[-3:] != "YES":
             raise SensorNotReadyError(self)
 
-        # read the sensor raw sensor value in millicelsius
-        millicelsius = float(data[1].split("=")[1])
+        return data
 
-        # check if the sensor value is the reset value
-        if self.type == self.THERM_SENSOR_DS18B20:
-            if millicelsius == 85000:
-                raise ResetValueError(self)
+    @property
+    def raw_sensor_count(self):
+        """
+            Returns the raw integer ADC count from the sensor
 
-        return millicelsius
+            Note: Must be divided depending on the max. sensor resolution
+            to get floating point celsius
+
+            :returns: the raw value from the sensor ADC
+            :rtype: int
+
+            :raises NoSensorFoundError: if the sensor could not be found
+            :raises SensorNotReadyError: if the sensor is not ready yet
+        """
+
+        # two complement bytes, MSB comes after LSB!
+        bytes = self.raw_sensor_strings[1].split()
+
+        # Convert from 16 bit hex string into int
+        int16 = int(bytes[1] + bytes[0], 16)
+
+        # check first signing bit
+        if int16 >> 15 == 0:
+            return int16  # positive values need no processing
+        else:
+            return int16 - (1 << 16)  # substract 2^16 to get correct negative value
+
+    @property
+    def raw_sensor_temp(self):
+        """
+            Returns the raw sensor value in milicelsius
+
+            :returns: the milicelsius value read from the sensor
+            :rtype: int
+
+            :raises NoSensorFoundError: if the sensor could not be found
+            :raises SensorNotReadyError: if the sensor is not ready yet
+        """
+
+        # return the value in millicelsius
+        return float(self.raw_sensor_strings[1].split("=")[1])
 
     @classmethod
     def _get_unit_factor(cls, unit):
@@ -250,9 +290,24 @@ class W1ThermSensor(object):
             :raises UnsupportedUnitError: if the unit is not supported
             :raises NoSensorFoundError: if the sensor could not be found
             :raises SensorNotReadyError: if the sensor is not ready yet
+            :raises ResetValueError: if the sensor has still the initial value and no measurment
         """
+        if self.type in self.TYPES_12BIT_STANDARD:
+            value = self.raw_sensor_count
+            # the int part is 8 bit wide, 4 bit are left on 12 bit
+            # so divide with 2^4 = 16 to get the celsius fractions
+            value /= 16.0
+
+            # check if the sensor value is the reset value
+            if value == 85.0:
+                raise ResetValueError(self)
+
+            factor = self._get_unit_factor(unit)
+            return factor(value)
+
+        # Fallback to precalculated value for other sensor types
         factor = self._get_unit_factor(unit)
-        return factor(self.raw_sensor_value)
+        return factor(self.raw_sensor_temp * 0.001)
 
     def get_temperatures(self, units):
         """
@@ -268,8 +323,19 @@ class W1ThermSensor(object):
             :raises NoSensorFoundError: if the sensor could not be found
             :raises SensorNotReadyError: if the sensor is not ready yet
         """
-        sensor_value = self.raw_sensor_value
+        sensor_value = self.get_temperature(self.DEGREES_C)
         return [self._get_unit_factor(unit)(sensor_value) for unit in units]
+
+    def get_precision(self):
+        """
+            Get the current precision from the sensor.
+
+            :returns: sensor resolution from 9-12 bits
+            :rtype: int
+        """
+        config_str = self.raw_sensor_strings[1].split()[4]  # Byte 5 is the config register
+        bit_base = int(config_str, 16) >> 5  # Bit 5-6 contains the resolution, cut off the rest
+        return bit_base + 9  # min. is 9 bits
 
     def set_precision(self, precision, persist=False):
         """
