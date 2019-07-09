@@ -124,7 +124,7 @@ Some w1 therm sensors support changing the precision for the temperature reads.
 
 ```python
 sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
-sensor.set_precision(5)
+sensor.set_precision(9)
 ```
 
 If the ``persist`` argument is set to ``False`` this value
@@ -137,7 +137,7 @@ amount of writes (>50k), this command should be used wisely.
 
 ```python
 sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
-sensor.set_precision(5, persist=True)
+sensor.set_precision(9, persist=True)
 ```
 
 **Note**: this is supported since Linux Kernel 4.7
