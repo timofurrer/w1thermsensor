@@ -29,6 +29,21 @@ The following hardware is needed:
 
 On the Raspberry Pi, you will need to add `dtoverlay=w1-gpio"` (for regular connection) or `dtoverlay=w1-gpio,pullup="y"` (for parasitic connection) to your /boot/config.txt. The default data pin is GPIO4 (RaspPi connector pin 7), but that can be changed from 4 to `x` with `dtoverlay=w1-gpio,gpiopin=x`.
 
+### Hardware-connection
+
+
+    Raspi VCC (3V3) Pin 1 -----------------------------   VCC    DS18B20
+
+
+    Raspi GPIO 4    Pin 7 -----------------------------   Data   DS18B20
+                                                   |
+                                                   |
+                                                   R1 = 4k7 ...10k 
+                                                   |
+                                                   |
+    Raspi GND       Pin 6 -----------------------------   GND    DS18B20
+
+
 ## Installation
 
 ### From PIP
