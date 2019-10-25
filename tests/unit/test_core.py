@@ -550,8 +550,8 @@ def test_get_precision(sensors, expected_precision):
 def test_kernel_module_load_error(monkeypatch):
     """Test exception if kernel modules cannot be loaded"""
     # given
-    # prevent os.system calls
     monkeypatch.setattr(os, "system", lambda x: True)
+    monkeypatch.setattr(os.path, "isdir", lambda x: False)
     expected_error_msg = "Cannot load w1 therm kernel modules"
 
     # when & then
