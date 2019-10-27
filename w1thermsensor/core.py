@@ -130,13 +130,13 @@ class W1ThermSensor(object):
                     break
                 time.sleep(self.RETRY_DELAY_SECONDS)
             else:
-                raise NoSensorFoundError("Unknown", "")
+                raise NoSensorFoundError("Could not find any sensor")
         elif not sensor_id:
             s = self.get_available_sensors([sensor_type])
             if not s:
-                raise NoSensorFoundError(
-                    self.TYPE_NAMES.get(sensor_type, "Unknown"), ""
-                )
+                sensor_type_name = self.TYPE_NAMES.get(sensor_type, hex(sensor_type)) 
+                error_msg = "Could not find any sensor of type {}".format(sensor_type_name)
+                raise NoSensorFoundError(error_msg)
             self.type = sensor_type
             self.id = s[0].id
         elif not sensor_type:  # get sensor by id
@@ -144,7 +144,7 @@ class W1ThermSensor(object):
                 (s for s in self.get_available_sensors() if s.id == sensor_id), None
             )
             if not sensor:
-                raise NoSensorFoundError("N/A", sensor_id)
+                raise NoSensorFoundError("Could not find sensor with id {}".format(sensor_id))
             self.type = sensor.type
             self.id = sensor.id
         else:
@@ -157,7 +157,7 @@ class W1ThermSensor(object):
         )
 
         if not self.exists():
-            raise NoSensorFoundError(self.type_name, self.id)
+            raise NoSensorFoundError("Could not find sensor of type {} with id {}".format(self.type_name, self.id))
 
     def __repr__(self):
         """
@@ -210,7 +210,7 @@ class W1ThermSensor(object):
             with open(self.sensorpath, "r") as f:
                 data = f.readlines()
         except IOError:
-            raise NoSensorFoundError(self.type_name, self.id)
+            raise NoSensorFoundError("Could not find sensor of type {} with id {}".format(self.type_name, self.id))
 
         if data[0].strip()[-3:] != "YES":
             raise SensorNotReadyError(self)

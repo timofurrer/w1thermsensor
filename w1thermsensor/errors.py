@@ -4,6 +4,8 @@
 This module provides exceptions for the w1thermsensor.
 """
 
+import textwrap
+
 
 class W1ThermSensorError(Exception):
     """Exception base-class for W1ThermSensor errors"""
@@ -23,11 +25,15 @@ class KernelModuleLoadError(W1ThermSensorError):
 class NoSensorFoundError(W1ThermSensorError):
     """Exception when no sensor is found"""
 
-    def __init__(self, sensor_name, sensor_id):
-        super(NoSensorFoundError, self).__init__(
-            "No {0} temperature sensor with id '{1}' found".format(
-                sensor_name, sensor_id
-            )
+    def __init__(self, message):
+        super(NoSensorFoundError, self).__init__(textwrap.dedent(
+            """
+            {}   
+            Please check cabeling and check your /boot/config.txt for
+            dtoverlay=w1-gpio
+            """.format(
+                message
+            )).rstrip()
         )
 
 
