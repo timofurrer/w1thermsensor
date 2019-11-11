@@ -196,9 +196,21 @@ def test_init_sensor_by_type_and_id(sensors, sensor_specs):
 @pytest.mark.parametrize(
     "sensors, unit, expected_temperature",
     [
-        (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},), W1ThermSensor.DEGREES_C, 20.0),
-        (({"msb": 0xff, "lsb": 0xf8, "temperature": -0.5},), W1ThermSensor.DEGREES_C, -0.5),
-        (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), W1ThermSensor.DEGREES_C, -55),
+        (
+            ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
+            W1ThermSensor.DEGREES_C,
+            20.0,
+        ),
+        (
+            ({"msb": 0xFF, "lsb": 0xF8, "temperature": -0.5},),
+            W1ThermSensor.DEGREES_C,
+            -0.5,
+        ),
+        (
+            ({"msb": 0xFC, "lsb": 0x90, "temperature": -55},),
+            W1ThermSensor.DEGREES_C,
+            -55,
+        ),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "celsius", 25.0625),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "fahrenheit", 77.1125),
         (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), "fahrenheit", -67),
@@ -244,7 +256,8 @@ def test_get_temperature_for_different_units_by_name(
         (
             ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
             [W1ThermSensor.DEGREES_C],
-            [20.0]),
+            [20.0],
+        ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
             [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F],
@@ -530,10 +543,10 @@ def test_setting_invalid_precision(sensors, precision):
 @pytest.mark.parametrize(
     "sensors, expected_precision",
     [
-        (({"config": 0x1f},), 9),
-        (({"config": 0x3f},), 10),
-        (({"config": 0x5f},), 11),
-        (({"config": 0x7f},), 12),
+        (({"config": 0x1F},), 9),
+        (({"config": 0x3F},), 10),
+        (({"config": 0x5F},), 11),
+        (({"config": 0x7F},), 12),
     ],
     indirect=["sensors"],
 )
@@ -562,7 +575,7 @@ def test_kernel_module_load_error(monkeypatch):
 @pytest.mark.parametrize(
     "sensors",
     [(({"msb": 0x05, "lsb": 0x50, "temperature": 85.00},))],
-    indirect=["sensors"]
+    indirect=["sensors"],
 )
 def test_handling_reset_value(sensors):
     """Test handling the reset value from a sensor reading"""

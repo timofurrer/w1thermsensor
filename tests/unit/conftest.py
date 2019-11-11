@@ -53,8 +53,8 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
             sensor_temperature = sensor_conf.get("temperature", 20)
             sensor_counts = int(sensor_temperature * 16.0)
             sensor_msb = sensor_conf.get("msb", sensor_counts >> 8)
-            sensor_lsb = sensor_conf.get("lsb", sensor_counts & 0xff)
-            sensor_config_bit = sensor_conf.get("config", 0x7f)
+            sensor_lsb = sensor_conf.get("lsb", sensor_counts & 0xFF)
+            sensor_config_bit = sensor_conf.get("config", 0x7F)
             sensor_ready = sensor_conf.get("ready", True)
 
             sensor_dir = kernel_module_dir.mkdir(
