@@ -26,14 +26,16 @@ class NoSensorFoundError(W1ThermSensorError):
     """Exception when no sensor is found"""
 
     def __init__(self, message):
-        super(NoSensorFoundError, self).__init__(textwrap.dedent(
-            """
+        super(NoSensorFoundError, self).__init__(
+            textwrap.dedent(
+                """
             {}   
             Please check cabeling and check your /boot/config.txt for
             dtoverlay=w1-gpio
             """.format(
-                message
-            )).rstrip()
+                    message
+                )
+            ).rstrip()
         )
 
 
