@@ -29,7 +29,7 @@ class NoSensorFoundError(W1ThermSensorError):
         super(NoSensorFoundError, self).__init__(
             textwrap.dedent(
                 """
-            {}   
+            {}
             Please check cabling and check your /boot/config.txt for
             dtoverlay=w1-gpio
             """.format(
