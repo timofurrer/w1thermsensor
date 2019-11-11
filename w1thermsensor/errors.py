@@ -30,7 +30,7 @@ class NoSensorFoundError(W1ThermSensorError):
             textwrap.dedent(
                 """
             {}   
-            Please check cabeling and check your /boot/config.txt for
+            Please check cabling and check your /boot/config.txt for
             dtoverlay=w1-gpio
             """.format(
                     message
