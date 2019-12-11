@@ -35,14 +35,14 @@ After that, don't forget to reboot.
 
 
     Raspi VCC (3V3) Pin 1 -----------------------------   VCC    DS18B20
-
-
-    Raspi GPIO 4    Pin 7 -----------------------------   Data   DS18B20
                                                    |
                                                    |
                                                    R1 = 4k7 ...10k 
                                                    |
                                                    |
+    Raspi GPIO 4    Pin 7 -----------------------------   Data   DS18B20
+
+    
     Raspi GND       Pin 6 -----------------------------   GND    DS18B20
 
 
