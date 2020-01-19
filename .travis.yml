@@ -6,7 +6,6 @@ python:
     - '3.6'
     - '3.7-dev'
     - 'pypy'
-    - 'pypy-5.3.1'
 
 services:
     - docker
