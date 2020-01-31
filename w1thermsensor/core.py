@@ -115,7 +115,7 @@ class W1ThermSensor(object):
             if is_sensor(s)
         ]
 
-    def __init__(self, sensor_type=None, sensor_id=None):
+    def __init__(self, sensor_type=None, sensor_id=None, offset=0.0, offset_unit=DEGREES_C):
         """
             Initializes a W1ThermSensor.
             If the W1ThermSensor base directory is not found it will automatically load
@@ -176,6 +176,8 @@ class W1ThermSensor(object):
                     self.type_name, self.id
                 )
             )
+
+        self.set_offset(offset, offset_unit)
 
     def __repr__(self):
         """
@@ -329,11 +331,11 @@ class W1ThermSensor(object):
                 raise ResetValueError(self)
 
             factor = self._get_unit_factor(self.DEGREES_C, unit)
-            return factor(value)
+            return factor(value + self.offset)
 
         # Fallback to precalculated value for other sensor types
         factor = self._get_unit_factor(self.DEGREES_C, unit)
-        return factor(self.raw_sensor_temp * 0.001)
+        return factor((self.raw_sensor_temp * 0.001) + self.offset)
 
     def get_temperatures(self, units):
         """
@@ -417,6 +419,49 @@ class W1ThermSensor(object):
                 )
 
         return True
+
+    def set_offset(self, offset, unit=DEGREES_C):
+        """
+            Set an offset to be applied to each temperature reading. This is
+            used to tune sensors which report values which are either too high
+            or too low.
+
+            The offset is converted as needed when getting temperatures in
+            other units than Celcius.
+
+            :param float offset: The value to add or subtract from the
+                                 temperature measurement. Positive values
+                                 increase themperature, negative values
+                                 decrease temperature.
+
+            :param: int unit: The unit in which offset is expressed. Default is
+                              Celcius.
+
+            :rtype: None
+        """
+
+        # We need to subtract `factor(0)` from the result, in order to
+        # eliminate any offset temperatures used in the conversion formulas
+        # (such as 32F, when converting from C to F).
+        factor = self._get_unit_factor(unit, self.DEGREES_C)
+        self.offset = factor(offset) - factor(0)
+
+    def get_offset(self, unit=DEGREES_C):
+        """
+            Get the offset set for this sensor. If no offset has been set, 0.0
+            is returned.
+
+            :param: int unit: The unit to return the temperature offset in
+
+            :returns: The offset set for this temperature sensor
+            :rtype: float
+        """
+
+        # We need to subtract `factor(0)` from the result, in order to
+        # eliminate any offset temperatures used in the conversion formulas
+        # (such as 32F, when converting from C to F).
+        factor = self._get_unit_factor(self.DEGREES_C, unit)
+        return factor(self.offset) - factor(0)
 
 
 def load_kernel_modules():
