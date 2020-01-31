@@ -357,6 +357,7 @@ def test_get_temperature_of_sensor_json(sensors):
     sensor = sensors[0]
     expected_json_output = {
         "hwid": sensor["id"],
+        "offset": 0.0,
         "type": W1ThermSensor.TYPE_NAMES[sensor["type"]],
         "temperature": sensor["temperature"],
         "unit": "celsius",
@@ -414,6 +415,7 @@ def test_get_temperature_of_sensor_by_hwid(sensors, hwid):
     sensor = [s for s in sensors if s["id"] == hwid][0]
     expected_json_output = {
         "hwid": sensor["id"],
+        "offset": 0.0,
         "type": W1ThermSensor.TYPE_NAMES[sensor["type"]],
         "temperature": sensor["temperature"],
         "unit": "celsius",
@@ -445,6 +447,32 @@ def test_get_temperature_of_sensor_with_precision(sensors, mocker):
     sensor = sensors[0]
     expected_output = "Sensor {0} measured temperature: {1} celsius".format(
         sensor["id"], sensor["temperature"]
+    )
+    assert expected_output in result.output
+
+
+@pytest.mark.parametrize(
+    "sensors, offset, expected_temperature",
+    [
+        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "temperature": 20.0},), 10, 30.0,),
+        (({"type": W1ThermSensor.THERM_SENSOR_DS18S20, "temperature": -8.0},), 10, 2.0,),
+    ],
+    indirect=["sensors"],
+)
+def test_get_temperature_of_sensor_with_offset(
+        sensors, offset, expected_temperature, mocker
+):
+    """Test getting temperature of a single sensor with an offset"""
+    # given
+    runner = CliRunner()
+    # when
+    result = runner.invoke(cli, ["get", "--offset", offset])
+    # then
+    assert result.exit_code == 0
+    # expect the single sensor to be reported correctly, with offset applied
+    sensor = sensors[0]
+    expected_output = "Sensor {0} measured temperature: {1} celsius".format(
+        sensor["id"], expected_temperature
     )
     assert expected_output in result.output
 

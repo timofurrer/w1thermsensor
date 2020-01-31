@@ -298,9 +298,8 @@ def test_get_temperature_for_different_units_by_name_with_offsets(
 ):
     """Test getting offset sensor values for different units"""
     # given
-    sensor = W1ThermSensor()
+    sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, 0, offset, offset_unit)
     # when
-    sensor.set_offset(offset, offset_unit)
     temperature = sensor.get_temperature(result_unit)
     gotten_offset = sensor.get_offset(result_unit)
     # then
