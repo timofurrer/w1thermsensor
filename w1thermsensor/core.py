@@ -76,9 +76,9 @@ class W1ThermSensor(object):
         (DEGREES_C, DEGREES_F): lambda x: x * 1.8 + 32.0,
         (DEGREES_C, KELVIN): lambda x: x + 273.15,
 
-        (DEGREES_F, DEGREES_C): lambda x: (x - 32) * (5.0/9.0),
+        (DEGREES_F, DEGREES_C): lambda x: (x - 32) * (5.0 / 9.0),
         (DEGREES_F, DEGREES_F): lambda x: x,
-        (DEGREES_F, KELVIN): lambda x: ((x - 32) * (5.0/9.0)) + 273.15,
+        (DEGREES_F, KELVIN): lambda x: ((x - 32) * (5.0 / 9.0)) + 273.15,
 
         (KELVIN, DEGREES_C): lambda x: x - 273.15,
         (KELVIN, DEGREES_F): lambda x: (x - 273.15) * 1.8 + 32,
@@ -126,6 +126,9 @@ class W1ThermSensor(object):
 
             :param int sensor_type: the type of the sensor.
             :param string id: the id of the sensor.
+            :param float offset: a calibration offset for the temperature sensor readings
+                                 in the unit of ``offset_unit``.
+            :param offset_unit: the unit in which the offset is provided.
 
             :raises KernelModuleLoadError: if the w1 therm kernel modules could not
                                            be loaded correctly
