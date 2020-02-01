@@ -515,7 +515,7 @@ def test_sensor_disconnect_after_init(sensors):
 
 
 @pytest.mark.parametrize(
-    "sensors, precision",
+    "sensors, resolution",
     [
         (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 9),
         (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 10),
@@ -524,23 +524,23 @@ def test_sensor_disconnect_after_init(sensors):
     ],
     indirect=["sensors"],
 )
-def test_setting_sensor_precision(sensors, precision, mocker):
-    """Test setting sensor precision"""
+def test_setting_sensor_resolution(sensors, resolution, mocker):
+    """Test setting sensor resolution"""
     # given
     sensor = W1ThermSensor()
     # mock subprocess.call
     subprocess_call = mocker.patch("subprocess.call")
     subprocess_call.return_value = 0
     # when
-    sensor.set_precision(precision)
+    sensor.set_resolution(resolution)
     # then
     subprocess_call.assert_called_with(
-        "echo {0} > {1}".format(precision, sensor.sensorpath), shell=True
+        "echo {0} > {1}".format(resolution, sensor.sensorpath), shell=True
     )
 
 
 @pytest.mark.parametrize(
-    "sensors, precision",
+    "sensors, resolution",
     [
         (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 9),
         (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 10),
@@ -549,17 +549,17 @@ def test_setting_sensor_precision(sensors, precision, mocker):
     ],
     indirect=["sensors"],
 )
-def test_setting_and_persisting_sensor_precision(sensors, precision, mocker):
-    """Test setting and persisting sensor precision"""
+def test_setting_and_persisting_sensor_resolution(sensors, resolution, mocker):
+    """Test setting and persisting sensor resolution"""
     # given
     sensor = W1ThermSensor()
     # mock subprocess.call
     subprocess_call = mocker.patch("subprocess.call")
     subprocess_call.return_value = 0
     # when
-    sensor.set_precision(precision, persist=True)
+    sensor.set_resolution(resolution, persist=True)
     expected_calls = [
-        mocker.call("echo {0} > {1}".format(precision, sensor.sensorpath), shell=True),
+        mocker.call("echo {0} > {1}".format(resolution, sensor.sensorpath), shell=True),
         mocker.call("echo 0 > {0}".format(sensor.sensorpath), shell=True),
     ]
     # then
@@ -567,7 +567,7 @@ def test_setting_and_persisting_sensor_precision(sensors, precision, mocker):
 
 
 @pytest.mark.parametrize(
-    "sensors, precision",
+    "sensors, resolution",
     [
         (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 9),
         (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 10),
@@ -576,13 +576,13 @@ def test_setting_and_persisting_sensor_precision(sensors, precision, mocker):
     ],
     indirect=["sensors"],
 )
-def test_setting_sensor_precision_failure(sensors, precision, mocker):
-    """Test setting sensor precision failure"""
+def test_setting_sensor_resolution_failure(sensors, resolution, mocker):
+    """Test setting sensor resolution failure"""
     # given
     sensor = W1ThermSensor()
     expected_error_msg = (
         "Failed to change resolution to {0} bit. "
-        "You might have to be root to change the precision".format(precision)
+        "You might have to be root to change the resolution".format(resolution)
     )
 
     # mock subprocess.call
@@ -591,11 +591,11 @@ def test_setting_sensor_precision_failure(sensors, precision, mocker):
 
     # when & then
     with pytest.raises(W1ThermSensorError, message=expected_error_msg):
-        sensor.set_precision(precision)
+        sensor.set_resolution(resolution)
 
 
 @pytest.mark.parametrize(
-    "sensors, precision",
+    "sensors, resolution",
     [
         (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 9),
         (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 10),
@@ -604,11 +604,11 @@ def test_setting_sensor_precision_failure(sensors, precision, mocker):
     ],
     indirect=["sensors"],
 )
-def test_setting_and_persisting_sensor_precision_failure(sensors, precision, mocker):
-    """Test setting and persisting sensor precision failure"""
+def test_setting_and_persisting_sensor_resolution_failure(sensors, resolution, mocker):
+    """Test setting and persisting sensor resolution failure"""
     # given
     sensor = W1ThermSensor()
-    expected_error_msg = "Failed to write precision configuration to sensor EEPROM"
+    expected_error_msg = "Failed to write resolution configuration to sensor EEPROM"
 
     # mock subprocess.call
     subprocess_call = mocker.patch("subprocess.call")
@@ -616,32 +616,32 @@ def test_setting_and_persisting_sensor_precision_failure(sensors, precision, moc
 
     # when & then
     with pytest.raises(W1ThermSensorError, message=expected_error_msg):
-        sensor.set_precision(precision, persist=True)
+        sensor.set_resolution(resolution, persist=True)
 
 
 @pytest.mark.parametrize(
-    "sensors, precision",
+    "sensors, resolution",
     [
         (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 8),
         (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 13),
     ],
     indirect=["sensors"],
 )
-def test_setting_invalid_precision(sensors, precision):
-    """Test setting invalid precision for sensor"""
+def test_setting_invalid_resolution(sensors, resolution):
+    """Test setting invalid resolution for sensor"""
     # given
     sensor = W1ThermSensor()
-    expected_error_msg = "The given sensor precision '{}' is out of range (9-12)".format(
-        precision
+    expected_error_msg = "The given sensor resolution '{}' is out of range (9-12)".format(
+        resolution
     )
 
     # when & then
     with pytest.raises(ValueError, message=expected_error_msg):
-        sensor.set_precision(precision)
+        sensor.set_resolution(resolution)
 
 
 @pytest.mark.parametrize(
-    "sensors, expected_precision",
+    "sensors, expected_resolution",
     [
         (({"config": 0x1F},), 9),
         (({"config": 0x3F},), 10),
@@ -650,14 +650,14 @@ def test_setting_invalid_precision(sensors, precision):
     ],
     indirect=["sensors"],
 )
-def test_get_precision(sensors, expected_precision):
+def test_get_resolution(sensors, expected_resolution):
     """Test getting the sensor precison"""
     # given
     sensor = W1ThermSensor()
     # when
-    precision = sensor.get_precision()
+    resolution = sensor.get_resolution()
     # then
-    assert precision == pytest.approx(expected_precision)
+    assert resolution == pytest.approx(expected_resolution)
 
 
 def test_kernel_module_load_error(monkeypatch):

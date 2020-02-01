@@ -105,20 +105,20 @@ def ls(types, as_json):  # pylint: disable=invalid-name
 )
 @click.option(
     "-p",
-    "--precision",
+    "--resolution",
     type=click.IntRange(9, 12),
-    help="use the given precision for this read",
+    help="use the given resolution for this read",
 )
 @click.option(
     "-j", "--json", "as_json", flag_value=True, help="Output result in JSON format"
 )
-def all(types, unit, precision, as_json):  # pylint: disable=redefined-builtin
+def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
     """Get temperatures of all available sensors"""
     sensors = W1ThermSensor.get_available_sensors(types)
     temperatures = []
     for sensor in sensors:
-        if precision:
-            sensor.set_precision(precision, persist=False)
+        if resolution:
+            sensor.set_resolution(resolution, persist=False)
 
         temperatures.append(sensor.get_temperature(unit))
 
@@ -165,9 +165,9 @@ def all(types, unit, precision, as_json):  # pylint: disable=redefined-builtin
 )
 @click.option(
     "-p",
-    "--precision",
+    "--resolution",
     type=click.IntRange(9, 12),
-    help="use the given precision for this read",
+    help="use the given resolution for this read",
 )
 @click.option(
     "-j", "--json", "as_json", flag_value=True, help="Output result in JSON format"
@@ -179,7 +179,7 @@ def all(types, unit, precision, as_json):  # pylint: disable=redefined-builtin
     type=click.FLOAT,
     help="Offset the temperature reading by the given offset temperature.",
 )
-def get(id_, hwid, type_, unit, precision, as_json, offset):
+def get(id_, hwid, type_, unit, resolution, as_json, offset):
     """Get temperature of a specific sensor"""
     if id_ and (hwid or type_):
         raise click.BadOptionUsage(
@@ -197,8 +197,8 @@ def get(id_, hwid, type_, unit, precision, as_json, offset):
     else:
         sensor = W1ThermSensor(type_, hwid)
 
-    if precision:
-        sensor.set_precision(precision, persist=False)
+    if resolution:
+        sensor.set_resolution(resolution, persist=False)
 
     if offset:
         sensor.set_offset(offset, unit)
@@ -225,7 +225,7 @@ def get(id_, hwid, type_, unit, precision, as_json, offset):
 
 
 @cli.command()
-@click.argument("precision", required=True, type=click.IntRange(9, 12))
+@click.argument("resolution", required=True, type=click.IntRange(9, 12))
 @click.argument("id_", metavar="id", required=False, type=click.INT)
 @click.option("-h", "--hwid", help="The hardware id of the sensor")
 @click.option(
@@ -236,8 +236,8 @@ def get(id_, hwid, type_, unit, precision, as_json, offset):
     callback=resolve_type_name,
     help="The type of the sensor",
 )
-def precision(precision, id_, hwid, type_):
-    """Change the precision for the sensor and persist it in the sensor's EEPROM"""
+def resolution(resolution, id_, hwid, type_):
+    """Change the resolution for the sensor and persist it in the sensor's EEPROM"""
     if id_ and (hwid or type_):
         raise click.BadOptionUsage(
             "If --id is given --hwid and --type are not allowed."
@@ -254,4 +254,4 @@ def precision(precision, id_, hwid, type_):
     else:
         sensor = W1ThermSensor(type_, hwid)
 
-    sensor.set_precision(precision, persist=True)
+    sensor.set_resolution(resolution, persist=True)

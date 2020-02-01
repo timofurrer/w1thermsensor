@@ -7,6 +7,7 @@ This module provides a temperature sensor of type w1 therm.
 import os
 import time
 import subprocess
+import warnings
 
 from .errors import W1ThermSensorError, NoSensorFoundError, SensorNotReadyError
 from .errors import KernelModuleLoadError, UnsupportedUnitError, ResetValueError
@@ -357,9 +358,9 @@ class W1ThermSensor(object):
         sensor_value = self.get_temperature(self.DEGREES_C)
         return [self._get_unit_factor(self.DEGREES_C, unit)(sensor_value) for unit in units]
 
-    def get_precision(self):
+    def get_resolution(self):
         """
-            Get the current precision from the sensor.
+            Get the current resolution from the sensor.
 
             :returns: sensor resolution from 9-12 bits
             :rtype: int
@@ -372,44 +373,44 @@ class W1ThermSensor(object):
         )  # Bit 5-6 contains the resolution, cut off the rest
         return bit_base + 9  # min. is 9 bits
 
-    def set_precision(self, precision, persist=False):
+    def set_resolution(self, resolution, persist=False):
         """
-            Set the precision of the sensor for the next readings.
+            Set the resolution of the sensor for the next readings.
 
             If the ``persist`` argument is set to ``False`` this value
             is "only" stored in the volatile SRAM, so it is reset when
             the sensor gets power-cycled.
 
             If the ``persist`` argument is set to ``True`` the current set
-            precision is stored into the EEPROM. Since the EEPROM has a limited
+            resolution is stored into the EEPROM. Since the EEPROM has a limited
             amount of writes (>50k), this command should be used wisely.
 
-            Note: root permissions are required to change the sensors precision.
+            Note: root permissions are required to change the sensors resolution.
 
             Note: This function is supported since kernel 4.7.
 
-            :param int precision: the sensor precision in bits.
+            :param int resolution: the sensor resolution in bits.
                                   Valid values are between 9 and 12
-            :param bool persist: if the sensor precision should be written
+            :param bool persist: if the sensor resolution should be written
                                  to the EEPROM.
 
-            :returns: if the sensor precision could be set or not.
+            :returns: if the sensor resolution could be set or not.
             :rtype: bool
         """
-        if not 9 <= precision <= 12:
+        if not 9 <= resolution <= 12:
             raise ValueError(
-                "The given sensor precision '{0}' is out of range (9-12)".format(
-                    precision
+                "The given sensor resolution '{0}' is out of range (9-12)".format(
+                    resolution
                 )
             )
 
         exitcode = subprocess.call(
-            "echo {0} > {1}".format(precision, self.sensorpath), shell=True
+            "echo {0} > {1}".format(resolution, self.sensorpath), shell=True
         )
         if exitcode != 0:
             raise W1ThermSensorError(
                 "Failed to change resolution to {0} bit. "
-                "You might have to be root to change the precision".format(precision)
+                "You might have to be root to change the resolution".format(resolution)
             )
 
         if persist:
@@ -418,10 +419,44 @@ class W1ThermSensor(object):
             )
             if exitcode != 0:
                 raise W1ThermSensorError(
-                    "Failed to write precision configuration to sensor EEPROM"
+                    "Failed to write resolution configuration to sensor EEPROM"
                 )
 
         return True
+
+    def get_precision(self):
+        """Deprecated method to get the current sensor resolution.
+
+        Use ``W1ThermSensor.get_resolution`` instead.
+        """
+        warnings.simplefilter('always', DeprecationWarning)
+        warnings.warn(
+            (
+                "The W1ThermSensor.get_precision() is deprecated and "
+                "should be replaced by W1ThermSensor.get_resolution()."
+            ),
+            category=DeprecationWarning,
+            stacklevel=2
+        )
+        warnings.simplefilter('default', DeprecationWarning)
+        return self.get_resolution()
+
+    def set_precision(self, precision, persist=False):
+        """Deprecated method to set the sensor resolution.
+
+        Use ``W1ThermSensor.set_resolution`` instead.
+        """
+        warnings.simplefilter('always', DeprecationWarning)
+        warnings.warn(
+            (
+                "The W1ThermSensor.set_precision() is deprecated and "
+                "should be replaced by W1ThermSensor.set_resolution()."
+            ),
+            category=DeprecationWarning,
+            stacklevel=2
+        )
+        warnings.simplefilter('default', DeprecationWarning)
+        return self.set_precision(precision, persist=persist)
 
     def set_offset(self, offset, unit=DEGREES_C):
         """

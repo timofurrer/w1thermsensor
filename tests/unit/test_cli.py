@@ -201,18 +201,18 @@ def test_get_temperature_all_sensors_json(sensors):
     ],
     indirect=["sensors"],
 )
-def test_get_temperature_all_sensors_with_precision(sensors, mocker):
+def test_get_temperature_all_sensors_with_resolution(sensors, mocker):
     """Test getting temperature from all sensors"""
     # given
     runner = CliRunner()
-    set_precision_mock = mocker.patch("w1thermsensor.W1ThermSensor.set_precision")
-    set_precision_mock.return_value = 0
+    set_resolution_mock = mocker.patch("w1thermsensor.W1ThermSensor.set_resolution")
+    set_resolution_mock.return_value = 0
     # when
-    result = runner.invoke(cli, ["all", "--precision", "10"])
+    result = runner.invoke(cli, ["all", "--resolution", "10"])
     # then
     assert result.exit_code == 0
-    # expect that set precision was called
-    set_precision_mock.assert_called_with(10, persist=False)
+    # expect that set resolution was called
+    set_resolution_mock.assert_called_with(10, persist=False)
     # expect the correct amount of sensors being detected
     assert "Got temperatures of {0} sensors:".format(len(sensors)) in result.output
     # expect every sensor is detected
@@ -431,18 +431,18 @@ def test_get_temperature_of_sensor_by_hwid(sensors, hwid):
     ],
     indirect=["sensors"],
 )
-def test_get_temperature_of_sensor_with_precision(sensors, mocker):
-    """Test getting temperature of a single sensor with precision"""
+def test_get_temperature_of_sensor_with_resolution(sensors, mocker):
+    """Test getting temperature of a single sensor with resolution"""
     # given
     runner = CliRunner()
-    set_precision_mock = mocker.patch("w1thermsensor.W1ThermSensor.set_precision")
-    set_precision_mock.return_value = 0
+    set_resolution_mock = mocker.patch("w1thermsensor.W1ThermSensor.set_resolution")
+    set_resolution_mock.return_value = 0
     # when
-    result = runner.invoke(cli, ["get", "--precision", "10"])
+    result = runner.invoke(cli, ["get", "--resolution", "10"])
     # then
     assert result.exit_code == 0
-    # expect that precision was called
-    set_precision_mock.assert_called_with(10, persist=False)
+    # expect that resolution was called
+    set_resolution_mock.assert_called_with(10, persist=False)
     # expect the single sensor to be reported correctly
     sensor = sensors[0]
     expected_output = "Sensor {0} measured temperature: {1} celsius".format(
@@ -507,13 +507,13 @@ def test_get_temperature_of_sensor_with_invalid_id(sensors):
     )
 
 
-def test_set_precision_of_sensor_with_invalid_options():
+def test_set_resolution_of_sensor_with_invalid_options():
     """Test exception which is raised when passing incompatible options to preicison sensor cmd"""
     # given
     runner = CliRunner()
     # when
     result = runner.invoke(
-        cli, ["precision", "10", "1", "--type", "DS18B20", "--hwid", "1"]
+        cli, ["resolution", "10", "1", "--type", "DS18B20", "--hwid", "1"]
     )
     # then
     assert result.exit_code != 0
@@ -557,23 +557,23 @@ def test_set_precision_of_sensor_with_invalid_options():
     ],
     indirect=["sensors"],
 )
-def test_set_precision_of_sensor_by_hwid(sensors, hwid):
-    """Test setting temperature precision of a single sensor by hwid"""
+def test_set_resolution_of_sensor_by_hwid(sensors, hwid):
+    """Test setting temperature resolution of a single sensor by hwid"""
     # given
     runner = CliRunner()
     # when
-    result = runner.invoke(cli, ["precision", "9", "--hwid", hwid])
+    result = runner.invoke(cli, ["resolution", "9", "--hwid", hwid])
     # then
     assert result.exit_code == 0
 
 
 @pytest.mark.parametrize("sensors", [tuple()], indirect=["sensors"])
-def test_set_precision_of_sensor_with_invalid_id(sensors):
+def test_set_resolution_of_sensor_with_invalid_id(sensors):
     """Test exception which is raised when passing invalid sensor id options to get sensor"""
     # given
     runner = CliRunner()
     # when
-    result = runner.invoke(cli, ["precision", "9", "1"])
+    result = runner.invoke(cli, ["resolution", "9", "1"])
     # then
     assert result.exit_code != 0
     assert result.exception
