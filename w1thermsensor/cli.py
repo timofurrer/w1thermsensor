@@ -172,7 +172,14 @@ def all(types, unit, precision, as_json):  # pylint: disable=redefined-builtin
 @click.option(
     "-j", "--json", "as_json", flag_value=True, help="Output result in JSON format"
 )
-def get(id_, hwid, type_, unit, precision, as_json):
+@click.option(
+    "-o",
+    "--offset",
+    default=0.0,
+    type=click.FLOAT,
+    help="Offset the temperature reading by the given offset temperature.",
+)
+def get(id_, hwid, type_, unit, precision, as_json, offset):
     """Get temperature of a specific sensor"""
     if id_ and (hwid or type_):
         raise click.BadOptionUsage(
@@ -193,11 +200,15 @@ def get(id_, hwid, type_, unit, precision, as_json):
     if precision:
         sensor.set_precision(precision, persist=False)
 
+    if offset:
+        sensor.set_offset(offset, unit)
+
     temperature = sensor.get_temperature(unit)
 
     if as_json:
         data = {
             "hwid": sensor.id,
+            "offset": offset,
             "type": sensor.type_name,
             "temperature": temperature,
             "unit": unit,

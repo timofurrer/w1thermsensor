@@ -251,6 +251,63 @@ def test_get_temperature_for_different_units_by_name(
 
 
 @pytest.mark.parametrize(
+    "sensors, result_unit, offset_unit, offset, expected_offset, expected_temperature",
+    [
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "celsius", "celsius", 10, 10, 35.0625
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "fahrenheit", "celsius", 10, 18, 95.1125
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "kelvin", "celsius", 10, 10, 308.2125
+        ),
+
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "celsius", "fahrenheit", 18, 10, 35.0625),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "fahrenheit", "fahrenheit", 18, 18, 95.1125
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "kelvin", "fahrenheit", 18, 10, 308.2125
+        ),
+
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "celsius", "kelvin", 10, 10, 35.0625
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "fahrenheit", "kelvin", 10, 18, 95.1125
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "kelvin", "kelvin", 10, 10, 308.2125
+        ),
+    ],
+    indirect=["sensors"],
+)
+def test_get_temperature_for_different_units_by_name_with_offsets(
+    sensors, result_unit, offset_unit, offset, expected_offset, expected_temperature
+):
+    """Test getting offset sensor values for different units"""
+    # given
+    sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, 0, offset, offset_unit)
+    # when
+    temperature = sensor.get_temperature(result_unit)
+    gotten_offset = sensor.get_offset(result_unit)
+    # then
+    assert temperature == pytest.approx(expected_temperature)
+    assert gotten_offset == expected_offset
+
+
+@pytest.mark.parametrize(
     "sensors, units, expected_temperatures",
     [
         (
@@ -281,6 +338,49 @@ def test_get_temperature_in_multiple_units(sensors, units, expected_temperatures
     # given
     sensor = W1ThermSensor()
     # when
+    temperatures = sensor.get_temperatures(units)
+    # then
+    assert temperatures == pytest.approx(expected_temperatures)
+
+
+@pytest.mark.parametrize(
+    "sensors, units, offset, expected_temperatures",
+    [
+        (
+            ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
+            [W1ThermSensor.DEGREES_C],
+            -10,
+            [10.0],
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F],
+            10,
+            [35.0625, 95.1125],
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.06251},),
+            [W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN],
+            10,
+            [95.1125, 308.2125],
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN],
+            10,
+            [35.0625, 95.1125, 308.2125],
+        ),
+    ],
+    indirect=["sensors"],
+)
+def test_get_temperature_in_multiple_units_with_offsets(
+        sensors, units, offset, expected_temperatures
+):
+    """Test getting a sensor temperature in multiple units"""
+    # given
+    sensor = W1ThermSensor()
+    # when
+    sensor.set_offset(offset)
     temperatures = sensor.get_temperatures(units)
     # then
     assert temperatures == pytest.approx(expected_temperatures)

@@ -69,10 +69,20 @@ class W1ThermSensor(object):
     DEGREES_C = 0x01
     DEGREES_F = 0x02
     KELVIN = 0x03
+
+    # Conversions from one unit to another
     UNIT_FACTORS = {
-        DEGREES_C: lambda x: x,
-        DEGREES_F: lambda x: x * 1.8 + 32.0,
-        KELVIN: lambda x: x + 273.15,
+        (DEGREES_C, DEGREES_C): lambda x: x,
+        (DEGREES_C, DEGREES_F): lambda x: x * 1.8 + 32.0,
+        (DEGREES_C, KELVIN): lambda x: x + 273.15,
+
+        (DEGREES_F, DEGREES_C): lambda x: (x - 32) * (5.0/9.0),
+        (DEGREES_F, DEGREES_F): lambda x: x,
+        (DEGREES_F, KELVIN): lambda x: ((x - 32) * (5.0/9.0)) + 273.15,
+
+        (KELVIN, DEGREES_C): lambda x: x - 273.15,
+        (KELVIN, DEGREES_F): lambda x: (x - 273.15) * 1.8 + 32,
+        (KELVIN, KELVIN): lambda x: x,
     }
     UNIT_FACTOR_NAMES = {
         "celsius": DEGREES_C,
@@ -105,7 +115,7 @@ class W1ThermSensor(object):
             if is_sensor(s)
         ]
 
-    def __init__(self, sensor_type=None, sensor_id=None):
+    def __init__(self, sensor_type=None, sensor_id=None, offset=0.0, offset_unit=DEGREES_C):
         """
             Initializes a W1ThermSensor.
             If the W1ThermSensor base directory is not found it will automatically load
@@ -166,6 +176,8 @@ class W1ThermSensor(object):
                     self.type_name, self.id
                 )
             )
+
+        self.set_offset(offset, offset_unit)
 
     def __repr__(self):
         """
@@ -272,21 +284,25 @@ class W1ThermSensor(object):
         return float(self.raw_sensor_strings[1].split("=")[1])
 
     @classmethod
-    def _get_unit_factor(cls, unit):
+    def _get_unit_factor(cls, unit_from, unit_to):
         """
-            Returns the unit factor depending on the unit constant
+            Returns the unit factor depending on the 'from' and 'to' unit constants
 
-            :param int unit: the unit of the factor requested
+            :param int unit_from: the unit to convert from
+            :param int unit_to: the unit to convert into
 
-            :returns: a function to convert the raw sensor value to the given unit
+            :returns: a function to convert temperatures from one unit to another
             :rtype: lambda function
 
-            :raises UnsupportedUnitError: if the unit is not supported
+            :raises UnsupportedUnitError: if the unit pair is not supported
         """
         try:
-            if isinstance(unit, str):
-                unit = cls.UNIT_FACTOR_NAMES[unit]
-            return cls.UNIT_FACTORS[unit]
+            if isinstance(unit_from, str):
+                unit_from = cls.UNIT_FACTOR_NAMES[unit_from]
+            if isinstance(unit_to, str):
+                unit_to = cls.UNIT_FACTOR_NAMES[unit_to]
+
+            return cls.UNIT_FACTORS[(unit_from, unit_to)]
         except KeyError:
             raise UnsupportedUnitError()
 
@@ -314,12 +330,12 @@ class W1ThermSensor(object):
             if value == 85.0:
                 raise ResetValueError(self)
 
-            factor = self._get_unit_factor(unit)
-            return factor(value)
+            factor = self._get_unit_factor(self.DEGREES_C, unit)
+            return factor(value + self.offset)
 
         # Fallback to precalculated value for other sensor types
-        factor = self._get_unit_factor(unit)
-        return factor(self.raw_sensor_temp * 0.001)
+        factor = self._get_unit_factor(self.DEGREES_C, unit)
+        return factor((self.raw_sensor_temp * 0.001) + self.offset)
 
     def get_temperatures(self, units):
         """
@@ -336,7 +352,7 @@ class W1ThermSensor(object):
             :raises SensorNotReadyError: if the sensor is not ready yet
         """
         sensor_value = self.get_temperature(self.DEGREES_C)
-        return [self._get_unit_factor(unit)(sensor_value) for unit in units]
+        return [self._get_unit_factor(self.DEGREES_C, unit)(sensor_value) for unit in units]
 
     def get_precision(self):
         """
@@ -403,6 +419,49 @@ class W1ThermSensor(object):
                 )
 
         return True
+
+    def set_offset(self, offset, unit=DEGREES_C):
+        """
+            Set an offset to be applied to each temperature reading. This is
+            used to tune sensors which report values which are either too high
+            or too low.
+
+            The offset is converted as needed when getting temperatures in
+            other units than Celcius.
+
+            :param float offset: The value to add or subtract from the
+                                 temperature measurement. Positive values
+                                 increase themperature, negative values
+                                 decrease temperature.
+
+            :param: int unit: The unit in which offset is expressed. Default is
+                              Celcius.
+
+            :rtype: None
+        """
+
+        # We need to subtract `factor(0)` from the result, in order to
+        # eliminate any offset temperatures used in the conversion formulas
+        # (such as 32F, when converting from C to F).
+        factor = self._get_unit_factor(unit, self.DEGREES_C)
+        self.offset = factor(offset) - factor(0)
+
+    def get_offset(self, unit=DEGREES_C):
+        """
+            Get the offset set for this sensor. If no offset has been set, 0.0
+            is returned.
+
+            :param: int unit: The unit to return the temperature offset in
+
+            :returns: The offset set for this temperature sensor
+            :rtype: float
+        """
+
+        # We need to subtract `factor(0)` from the result, in order to
+        # eliminate any offset temperatures used in the conversion formulas
+        # (such as 32F, when converting from C to F).
+        factor = self._get_unit_factor(self.DEGREES_C, unit)
+        return factor(self.offset) - factor(0)
 
 
 def load_kernel_modules():
