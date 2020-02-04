@@ -37,12 +37,12 @@ After that, don't forget to reboot.
     Raspi VCC (3V3) Pin 1 -----------------------------   VCC    DS18B20
                                                    |
                                                    |
-                                                   R1 = 4k7 ...10k 
+                                                   R1 = 4k7 ...10k
                                                    |
                                                    |
     Raspi GPIO 4    Pin 7 -----------------------------   Data   DS18B20
 
-    
+
     Raspi GND       Pin 6 -----------------------------   GND    DS18B20
 
 
@@ -134,14 +134,14 @@ for sensor in W1ThermSensor.get_available_sensors([W1ThermSensor.THERM_SENSOR_DS
     print("Sensor %s has temperature %.2f" % (sensor.id, sensor.get_temperature()))
 ```
 
-### Set sensor precision
+### Set sensor resolution
 
-Some w1 therm sensors support changing the precision for the temperature reads.
-`w1thermsensor` enables to do so with the `W1ThermSensor.set_precision()` method:
+Some w1 therm sensors support changing the resolution for the temperature reads.
+`w1thermsensor` enables to do so with the `W1ThermSensor.set_resolution()` method:
 
 ```python
 sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
-sensor.set_precision(9)
+sensor.set_resolution(9)
 ```
 
 If the ``persist`` argument is set to ``False`` this value
@@ -149,12 +149,12 @@ is "only" stored in the volatile SRAM, so it is reset when
 the sensor gets power-cycled.
 
 If the ``persist`` argument is set to ``True`` the current set
-precision is stored into the EEPROM. Since the EEPROM has a limited
+resolution is stored into the EEPROM. Since the EEPROM has a limited
 amount of writes (>50k), this command should be used wisely.
 
 ```python
 sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
-sensor.set_precision(9, persist=True)
+sensor.set_resolution(9, persist=True)
 ```
 
 **Note**: this is supported since Linux Kernel 4.7
@@ -219,18 +219,18 @@ $ w1thermsensor get --hwid 00000588806a --type DS18B20
 $ w1thermsensor get 1  # show results in JSON format
 ```
 
-Show temperature of a single sensor in the given precision
+Show temperature of a single sensor in the given resolution
 
 ```
-$ w1thermsensor get 1 --precision 10
-$ w1thermsensor get --hwid 00000588806a --type DS18B20 --precision 11
+$ w1thermsensor get 1 --resolution 10
+$ w1thermsensor get --hwid 00000588806a --type DS18B20 --resolution 11
 ```
 
-### Change temperature read precision and write to EEPROM
+### Change temperature read resolution and write to EEPROM
 
 ```
-$ w1thermsensor precision 10 1
-$ w1thermsensor precision --hwid 00000588806a --type DS18B20 11
+$ w1thermsensor resolution 10 1
+$ w1thermsensor resolution --hwid 00000588806a --type DS18B20 11
 ```
 
 ## Contribution
