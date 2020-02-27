@@ -50,9 +50,13 @@ After that, don't forget to reboot.
 
 ### From PIP
 
-This possibility is supported on all distributions:
+To install the W1Thermsensor python module, this possibility is supported on all distributions:
 
     pip install w1thermsensor
+
+The `w1thermsensor` command has additional dependencies. In order to ensure `w1thermsensor` works properly, also install additional dependencies using the following command:
+
+    pip install "w1thermsensor[CLI]"
 
 *Note: maybe root privileges are required*
 

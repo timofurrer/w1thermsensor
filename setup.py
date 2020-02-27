@@ -19,8 +19,6 @@ if sys.argv[-1] == "publish":
     os.system("python setup.py sdist bdist_wheel upload")
     sys.exit()
 
-required = ["click"]
-
 
 class UploadCommand(Command):
     """Support setup.py upload."""
@@ -82,7 +80,7 @@ setup_args = dict(
     url="http://github.com/timofurrer/w1thermsensor",
     download_url="http://github.com/timofurrer/w1thermsensor",
     packages=find_packages(exclude=["*tests*"]),
-    install_requires=required,
+    extras_require=dict(CLI="click>=7.0"),
     include_package_data=True,
     classifiers=(
         "Development Status :: 5 - Production/Stable",
@@ -105,7 +103,7 @@ setup_args = dict(
 
 if sys.version_info.major == 3:
     setup_args["entry_points"] = {
-        "console_scripts": ["w1thermsensor = w1thermsensor.cli:cli"]
+        "console_scripts": ["w1thermsensor = w1thermsensor.cli:cli [CLI]"]
     }
 
 setup(**setup_args)
