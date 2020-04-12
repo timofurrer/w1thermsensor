@@ -157,7 +157,8 @@ sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
 sensor.set_resolution(9, persist=True)
 ```
 
-**Note**: this is supported since Linux Kernel 4.7
+**Note**: this is supported since Linux Kernel 4.7<br>
+**Note**: this requires `root` privileges
 
 ### Disable kernel module auto loading
 
@@ -229,9 +230,11 @@ $ w1thermsensor get --hwid 00000588806a --type DS18B20 --resolution 11
 ### Change temperature read resolution and write to EEPROM
 
 ```
-$ w1thermsensor resolution 10 1
-$ w1thermsensor resolution --hwid 00000588806a --type DS18B20 11
+# w1thermsensor resolution 10 1
+# w1thermsensor resolution --hwid 00000588806a --type DS18B20 11
 ```
+
+**Note**: this requires `root` privileges
 
 ## Contribution
 
