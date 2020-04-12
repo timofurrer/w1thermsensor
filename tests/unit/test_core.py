@@ -689,3 +689,17 @@ def test_handling_reset_value(sensors):
     # when & then
     with pytest.raises(ResetValueError, message=expected_error_msg):
         sensor.get_temperature()
+
+
+@pytest.mark.parametrize("sensors", [({"zero_values": True},)], indirect=["sensors"])
+def test_sensor_partially_disconnected(sensors):
+    """Test handling the partially disconnected sensor with wrong value"""
+    # given
+    sensor = W1ThermSensor()
+    expected_error_msg = "Sensor {} is not yet ready to read temperature".format(
+        sensor.id
+    )
+
+    # when & then
+    with pytest.raises(SensorNotReadyError, message=expected_error_msg):
+        sensor.get_temperature()
