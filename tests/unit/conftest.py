@@ -14,6 +14,10 @@ from w1thermsensor import W1ThermSensor
 W1_FILE = """{lsb:x} {msb:x} 4b 46 {config:x} ff 02 10 56 : crc=56 {ready}
 {lsb:x} {msb:x} 4b 46 {config:x} ff 02 10 56 t={temperature}
 """
+#: Holds sample content for a partially disconnected sensor which only repors zero bytes
+W1_FILE_ZEROVALUES = """00 00 00 00 00 00 00 00 00 : crc=00 YES
+00 00 00 00 00 00 00 00 00 t=0
+"""
 
 
 def get_random_sensor_id():
@@ -56,6 +60,7 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
             sensor_lsb = sensor_conf.get("lsb", sensor_counts & 0xFF)
             sensor_config_bit = sensor_conf.get("config", 0x7F)
             sensor_ready = sensor_conf.get("ready", True)
+            sensor_zerovalues = sensor_conf.get("zero_values", False)
 
             sensor_dir = kernel_module_dir.mkdir(
                 "{0}-{1}".format(hex(sensor_type)[2:], sensor_id)
@@ -68,7 +73,7 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
                 temperature=sensor_temperature * 1000.0,
                 config=sensor_config_bit,
                 ready="YES" if sensor_ready else "NO",
-            )
+            ) if not sensor_zerovalues else W1_FILE_ZEROVALUES
             sensor_file.write(sensor_file_content)
 
             sensors_.append(

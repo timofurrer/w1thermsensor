@@ -240,7 +240,7 @@ class W1ThermSensor(object):
                 )
             )
 
-        if data[0].strip()[-3:] != "YES":
+        if data[0].strip()[-3:] != "YES" or "00 00 00 00 00 00 00 00 00" in data[0]:
             raise SensorNotReadyError(self)
 
         return data
