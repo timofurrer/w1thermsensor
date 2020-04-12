@@ -19,6 +19,7 @@ W1_FILE_ZEROVALUES = """00 00 00 00 00 00 00 00 00 : crc=00 YES
 00 00 00 00 00 00 00 00 00 t=0
 """
 
+
 def get_random_sensor_id():
     """
     Return a valid random sensor id
