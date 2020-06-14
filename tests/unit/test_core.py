@@ -1,3 +1,13 @@
+"""
+w1thermsensor
+~~~~~~~~~~~~~
+
+A Python package and CLI tool to work with w1 temperature sensors.
+
+:copyright: (c) 2020 by Timo Furrer <tuxtimo@gmail.com>
+:license: MIT, see LICENSE for more details.
+"""
+
 import os
 import time
 
