@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
     Command Line Interface to get sensor data
 """

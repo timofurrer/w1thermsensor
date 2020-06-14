@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 This module provides a temperature sensor of type w1 therm.
 """
@@ -13,7 +11,7 @@ from .errors import W1ThermSensorError, NoSensorFoundError, SensorNotReadyError
 from .errors import KernelModuleLoadError, UnsupportedUnitError, ResetValueError
 
 
-class W1ThermSensor(object):
+class W1ThermSensor:
     """
     Represents a w1 therm sensor connected to the device accessed by
     the Linux w1 therm sensor kernel modules.

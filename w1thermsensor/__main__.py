@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
     Main module to launch w1thermsensor CLI.
 """
