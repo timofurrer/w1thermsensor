@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os
 
 import pytest
@@ -413,12 +411,12 @@ def test_sensor_type_name(sensors, expected_sensor_name):
 def test_no_sensor_found(sensors):
     """Test exception when no sensor was found"""
     with pytest.raises(
-        NoSensorFoundError, message="No Unknown temperature sensor with id '' found"
+        NoSensorFoundError, match="Could not find any sensor"
     ):
         W1ThermSensor()
 
     with pytest.raises(
-        NoSensorFoundError, message="No DS1822 temperature sensor with id '1' found"
+        NoSensorFoundError, match="Could not find sensor of type DS1822 with id 1"
     ):
         W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS1822, "1")
 
@@ -433,7 +431,7 @@ def test_sensor_not_ready(sensors):
     )
 
     # when & then
-    with pytest.raises(SensorNotReadyError, message=expected_error_msg):
+    with pytest.raises(SensorNotReadyError, match=expected_error_msg):
         sensor.get_temperature()
 
 
@@ -452,7 +450,7 @@ def test_unsupported_unit_error(sensors):
     expected_error_msg = "Only Degrees C, F and Kelvin are currently supported"
 
     # when & then
-    with pytest.raises(UnsupportedUnitError, message=expected_error_msg):
+    with pytest.raises(UnsupportedUnitError, match=expected_error_msg):
         sensor.get_temperature(unit=0xFF)  # 0xFF is no valid unit id
 
 
@@ -502,15 +500,13 @@ def test_sensor_disconnect_after_init(sensors):
     """Test exception when sensor is disconnected after initialization"""
     # given
     sensor = W1ThermSensor()
-    expected_error_msg = "No DS18B20 temperature sensor with id '{}' found".format(
-        sensor.id
-    )
+    expected_error_msg = "Could not find sensor of type DS18B20 with id 1"
 
     # disconnect sensor
     os.remove(sensor.sensorpath)
 
     # when & then
-    with pytest.raises(NoSensorFoundError, message=expected_error_msg):
+    with pytest.raises(NoSensorFoundError, match=expected_error_msg):
         sensor.raw_sensor_temp
 
 
@@ -590,7 +586,7 @@ def test_setting_sensor_resolution_failure(sensors, resolution, mocker):
     subprocess_call.return_value = 1
 
     # when & then
-    with pytest.raises(W1ThermSensorError, message=expected_error_msg):
+    with pytest.raises(W1ThermSensorError, match=expected_error_msg):
         sensor.set_resolution(resolution)
 
 
@@ -615,7 +611,7 @@ def test_setting_and_persisting_sensor_resolution_failure(sensors, resolution, m
     subprocess_call.side_effect = [0, 1]
 
     # when & then
-    with pytest.raises(W1ThermSensorError, message=expected_error_msg):
+    with pytest.raises(W1ThermSensorError, match=expected_error_msg):
         sensor.set_resolution(resolution, persist=True)
 
 
@@ -631,12 +627,12 @@ def test_setting_invalid_resolution(sensors, resolution):
     """Test setting invalid resolution for sensor"""
     # given
     sensor = W1ThermSensor()
-    expected_error_msg = "The given sensor resolution '{}' is out of range (9-12)".format(
+    expected_error_msg = r"The given sensor resolution '{}' is out of range \(9-12\)".format(
         resolution
     )
 
     # when & then
-    with pytest.raises(ValueError, message=expected_error_msg):
+    with pytest.raises(ValueError, match=expected_error_msg):
         sensor.set_resolution(resolution)
 
 
@@ -668,7 +664,7 @@ def test_kernel_module_load_error(monkeypatch):
     expected_error_msg = "Cannot load w1 therm kernel modules"
 
     # when & then
-    with pytest.raises(KernelModuleLoadError, message=expected_error_msg):
+    with pytest.raises(KernelModuleLoadError, match=expected_error_msg):
         load_kernel_modules()
 
 
@@ -687,19 +683,5 @@ def test_handling_reset_value(sensors):
     )
 
     # when & then
-    with pytest.raises(ResetValueError, message=expected_error_msg):
-        sensor.get_temperature()
-
-
-@pytest.mark.parametrize("sensors", [({"zero_values": True},)], indirect=["sensors"])
-def test_sensor_partially_disconnected(sensors):
-    """Test handling the partially disconnected sensor with wrong value"""
-    # given
-    sensor = W1ThermSensor()
-    expected_error_msg = "Sensor {} is not yet ready to read temperature".format(
-        sensor.id
-    )
-
-    # when & then
-    with pytest.raises(SensorNotReadyError, message=expected_error_msg):
+    with pytest.raises(ResetValueError, match=expected_error_msg):
         sensor.get_temperature()

@@ -3,14 +3,14 @@ name: CI
 on: [push]
 
 jobs:
-  build:
+  ci:
 
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       max-parallel: 4
       matrix:
-        python-version: [2.7, 3.5, 3.6, 3.7, 3.8]
+        python-version: [3.5, 3.6, 3.7, 3.8]
         os: [ubuntu-latest]
 
     steps:
@@ -33,6 +33,64 @@ jobs:
         run: |
           pip install check-manifest
           check-manifest
+      - name: Unit Test with pytest
+        run: |
+          python -m pip install .
+          coverage run -p -m pytest
+        env:
+          W1THERMSENSOR_NO_KERNEL_MODULE: 1
+
+  debian-stretch-config:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [3.5]
+        os: [ubuntu-16.04]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Setup build and test environment
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+      - name: Build Python Package
+        run: |
+          python -m pip install '.[tests]'
+      - name: Manually install dependencies matching the distribution
+        run: |
+          python -m pip install -U click==6.6
+      - name: Unit Test with pytest
+        run: |
+          python -m pip install .
+          coverage run -p -m pytest
+        env:
+          W1THERMSENSOR_NO_KERNEL_MODULE: 1
+
+  debian-buster-config:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [3.7]
+        os: [ubuntu-18.04]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Setup build and test environment
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+      - name: Build Python Package
+        run: |
+          python -m pip install '.[tests]'
+      - name: Manually install dependencies matching the distribution
+        run: |
+          python -m pip install -U click==7.0
       - name: Unit Test with pytest
         run: |
           python -m pip install .
@@ -76,7 +134,7 @@ jobs:
 
   publish:
     #needs: [build, docs]
-    needs: [build]
+    needs: [ci, debian-stretch-config, debian-buster-config]
     runs-on: ubuntu-latest
 
     steps:

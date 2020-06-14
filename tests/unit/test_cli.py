@@ -577,7 +577,4 @@ def test_set_resolution_of_sensor_with_invalid_id(sensors):
     # then
     assert result.exit_code != 0
     assert result.exception
-    assert (
-        "No sensor with id 1 available. "
-        "Use the ls command to show all available sensors." in result.output
-    )
+    assert "No sensor with id 1 available. Use the ls command to show all available sensors." in result.output  # noqa

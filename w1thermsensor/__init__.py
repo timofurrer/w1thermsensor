@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
     This module provides a temperature sensor of type w1 therm.
 """

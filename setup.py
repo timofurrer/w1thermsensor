@@ -1,23 +1,23 @@
-import os
+import functools
 import re
+from pathlib import Path
 
 from setuptools import find_packages, setup
 
 #: Holds a list of packages to install with the binary distribution
 PACKAGES = find_packages(where=".")
-META_FILE = os.path.join(os.path.dirname(__file__), "w1thermsensor", "__init__.py")
+META_FILE = Path(".").absolute() / "w1thermsensor" / "__init__.py"
 KEYWORDS = ["w1", "w1-therm", "therm", "sensor", "raspberry", "raspberry pi", "gpio", "ds"]
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
-    "Programming Language :: Python :: 2",
-    "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: Implementation",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -25,11 +25,11 @@ CLASSIFIERS = [
 
 #: Holds the runtime requirements for the end user
 INSTALL_REQUIRES = [
-    "click==6.6",
+    "click",
 ]
 #: Holds runtime requirements and development requirements
 EXTRAS_REQUIRES = {
-    "tests": ["coverage==4.4.1", "pytest==3.1.1", "pytest-mock==1.6.0"],
+    "tests": ["coverage>=5", "pytest>5", "pytest-mock"],
 }
 
 EXTRAS_REQUIRES["dev"] = (
@@ -37,17 +37,16 @@ EXTRAS_REQUIRES["dev"] = (
 )
 
 #: Holds the contents of the README file
-# with open("README.md", encoding="utf-8") as readme:
-with open("README.md") as readme:
+with open("README.md", encoding="utf-8") as readme:
     __README_CONTENTS__ = readme.read()
 
 
-# @functools.lru_cache()
+@functools.lru_cache()
 def read(metafile):
     """
     Return the contents of the given meta data file assuming UTF-8 encoding.
     """
-    with open(str(metafile)) as f:
+    with metafile.open(encoding="utf-8") as f:
         return f.read()
 
 

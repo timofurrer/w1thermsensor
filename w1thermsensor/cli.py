@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
     Command Line Interface to get sensor data
 """
@@ -10,6 +8,10 @@ from itertools import count
 import click
 
 from .core import W1ThermSensor
+
+
+#: major click version to compensate API changes
+CLICK_MAJOR_VERSION = int(click.__version__.split(".")[0])
 
 
 def resolve_type_name(ctx, param, value):  # pylint: disable=unused-argument
@@ -182,7 +184,7 @@ def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
 def get(id_, hwid, type_, unit, resolution, as_json, offset):
     """Get temperature of a specific sensor"""
     if id_ and (hwid or type_):
-        raise click.BadOptionUsage(
+        raise click.BadArgumentUsage(
             "If --id is given --hwid and --type are not allowed."
         )
 
@@ -190,10 +192,19 @@ def get(id_, hwid, type_, unit, resolution, as_json, offset):
         try:
             sensor = W1ThermSensor.get_available_sensors()[id_ - 1]
         except IndexError:
-            raise click.BadOptionUsage(
-                "No sensor with id {0} available. "
-                "Use the ls command to show all available sensors.".format(id_)
+            error_msg = (
+                "No sensor with id {0} available. ".format(id_) +
+                "Use the ls command to show all available sensors."
             )
+            if CLICK_MAJOR_VERSION >= 7:
+                raise click.BadOptionUsage(
+                    "--id",
+                    error_msg
+                )
+            else:
+                raise click.BadOptionUsage(
+                    error_msg
+                )
     else:
         sensor = W1ThermSensor(type_, hwid)
 
@@ -239,7 +250,7 @@ def get(id_, hwid, type_, unit, resolution, as_json, offset):
 def resolution(resolution, id_, hwid, type_):
     """Change the resolution for the sensor and persist it in the sensor's EEPROM"""
     if id_ and (hwid or type_):
-        raise click.BadOptionUsage(
+        raise click.BadArgumentUsage(
             "If --id is given --hwid and --type are not allowed."
         )
 
@@ -247,10 +258,19 @@ def resolution(resolution, id_, hwid, type_):
         try:
             sensor = W1ThermSensor.get_available_sensors()[id_ - 1]
         except IndexError:
-            raise click.BadOptionUsage(
-                "No sensor with id {0} available. "
-                "Use the ls command to show all available sensors.".format(id_)
+            error_msg = (
+                "No sensor with id {0} available. ".format(id_) +
+                "Use the ls command to show all available sensors."
             )
+            if CLICK_MAJOR_VERSION >= 7:
+                raise click.BadOptionUsage(
+                    "--id",
+                    error_msg
+                )
+            else:
+                raise click.BadOptionUsage(
+                    error_msg
+                )
     else:
         sensor = W1ThermSensor(type_, hwid)
 
