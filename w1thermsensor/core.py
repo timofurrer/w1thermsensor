@@ -76,11 +76,9 @@ class W1ThermSensor(object):
         (DEGREES_C, DEGREES_C): lambda x: x,
         (DEGREES_C, DEGREES_F): lambda x: x * 1.8 + 32.0,
         (DEGREES_C, KELVIN): lambda x: x + 273.15,
-
         (DEGREES_F, DEGREES_C): lambda x: (x - 32) * (5.0 / 9.0),
         (DEGREES_F, DEGREES_F): lambda x: x,
         (DEGREES_F, KELVIN): lambda x: ((x - 32) * (5.0 / 9.0)) + 273.15,
-
         (KELVIN, DEGREES_C): lambda x: x - 273.15,
         (KELVIN, DEGREES_F): lambda x: (x - 273.15) * 1.8 + 32,
         (KELVIN, KELVIN): lambda x: x,
@@ -116,7 +114,9 @@ class W1ThermSensor(object):
             if is_sensor(s)
         ]
 
-    def __init__(self, sensor_type=None, sensor_id=None, offset=0.0, offset_unit=DEGREES_C):
+    def __init__(
+        self, sensor_type=None, sensor_id=None, offset=0.0, offset_unit=DEGREES_C
+    ):
         """
             Initializes a W1ThermSensor.
             If the W1ThermSensor base directory is not found it will automatically load
@@ -356,7 +356,9 @@ class W1ThermSensor(object):
             :raises SensorNotReadyError: if the sensor is not ready yet
         """
         sensor_value = self.get_temperature(self.DEGREES_C)
-        return [self._get_unit_factor(self.DEGREES_C, unit)(sensor_value) for unit in units]
+        return [
+            self._get_unit_factor(self.DEGREES_C, unit)(sensor_value) for unit in units
+        ]
 
     def get_resolution(self):
         """
@@ -429,16 +431,16 @@ class W1ThermSensor(object):
 
         Use ``W1ThermSensor.get_resolution`` instead.
         """
-        warnings.simplefilter('always', DeprecationWarning)
+        warnings.simplefilter("always", DeprecationWarning)
         warnings.warn(
             (
                 "The W1ThermSensor.get_precision() is deprecated and "
                 "should be replaced by W1ThermSensor.get_resolution()."
             ),
             category=DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
-        warnings.simplefilter('default', DeprecationWarning)
+        warnings.simplefilter("default", DeprecationWarning)
         return self.get_resolution()
 
     def set_precision(self, precision, persist=False):
@@ -446,16 +448,16 @@ class W1ThermSensor(object):
 
         Use ``W1ThermSensor.set_resolution`` instead.
         """
-        warnings.simplefilter('always', DeprecationWarning)
+        warnings.simplefilter("always", DeprecationWarning)
         warnings.warn(
             (
                 "The W1ThermSensor.set_precision() is deprecated and "
                 "should be replaced by W1ThermSensor.set_resolution()."
             ),
             category=DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
-        warnings.simplefilter('default', DeprecationWarning)
+        warnings.simplefilter("default", DeprecationWarning)
         return self.set_precision(precision, persist=persist)
 
     def set_offset(self, offset, unit=DEGREES_C):

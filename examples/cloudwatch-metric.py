@@ -24,33 +24,28 @@ from w1thermsensor import W1ThermSensor
 import boto3
 
 # Modify these values for your setup
-namespace = 'Climate Logging'
-location = 'Workshop'
-sensor_names = {
-    "xxxxxxxxxxxx": "Indoor",
-    "yyyyyyyyyyyy": "Outdoor"
-}
+namespace = "Climate Logging"
+location = "Workshop"
+sensor_names = {"xxxxxxxxxxxx": "Indoor", "yyyyyyyyyyyy": "Outdoor"}
 
 metrics = []
 for sensor in W1ThermSensor.get_available_sensors():
-    print("Sensor \"%s\" has temperature %.2f" % (sensor_names[sensor.id], sensor.get_temperature()))
+    print(
+        'Sensor "%s" has temperature %.2f'
+        % (sensor_names[sensor.id], sensor.get_temperature())
+    )
     metrics.append(
         {
-            'MetricName': 'Temperature',
-            'Dimensions': [
-                {
-                    'Name': 'Location',
-                    'Value': location,
-                },
-                {
-                    'Name': 'Placement',
-                    'Value': sensor_names[sensor.id],
-                }
+            "MetricName": "Temperature",
+            "Dimensions": [
+                {"Name": "Location", "Value": location},
+                {"Name": "Placement", "Value": sensor_names[sensor.id]},
             ],
-            'Unit': 'None',
-            'Value': sensor.get_temperature(),
-        })
+            "Unit": "None",
+            "Value": sensor.get_temperature(),
+        }
+    )
 
 # Send the metrics to CloudWatch
-client = boto3.client('cloudwatch')
+client = boto3.client("cloudwatch")
 response = client.put_metric_data(Namespace=namespace, MetricData=metrics)

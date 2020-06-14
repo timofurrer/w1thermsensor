@@ -1,111 +1,91 @@
-# -*- coding: utf-8 -*-
-
-import io
 import os
-import sys
-import codecs
-from shutil import rmtree
+import re
 
-from setuptools import find_packages, setup, Command
+from setuptools import find_packages, setup
 
+#: Holds a list of packages to install with the binary distribution
+PACKAGES = find_packages(where=".")
+META_FILE = os.path.join(os.path.dirname(__file__), "w1thermsensor", "__init__.py")
+KEYWORDS = ["w1", "w1-therm", "therm", "sensor", "raspberry", "raspberry pi", "gpio", "ds"]
+CLASSIFIERS = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: Implementation",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
-here = os.path.abspath(os.path.dirname(__file__))
+#: Holds the runtime requirements for the end user
+INSTALL_REQUIRES = [
+    "click==6.6",
+]
+#: Holds runtime requirements and development requirements
+EXTRAS_REQUIRES = {
+    "tests": ["coverage==4.4.1", "pytest==3.1.1", "pytest-mock==1.6.0"],
+}
 
-with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
-    long_description = "\n" + f.read()
-
-
-if sys.argv[-1] == "publish":
-    os.system("python setup.py sdist bdist_wheel upload")
-    sys.exit()
-
-required = ["click"]
-
-
-class UploadCommand(Command):
-    """Support setup.py upload."""
-
-    description = "Build and publish the package."
-    user_options = []
-
-    @staticmethod
-    def status(s):
-        """Prints things in bold."""
-        print("\033[1m{0}\033[0m".format(s))
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        try:
-            self.status("Removing previous builds…")
-            rmtree(os.path.join(here, "dist"))
-        except OSError:
-            pass
-
-        self.status("Building Source and Wheel (universal) distribution…")
-        os.system("{0} setup.py sdist bdist_wheel --universal".format(sys.executable))
-
-        self.status("Uploading the package to PyPi via Twine…")
-        os.system("twine upload dist/*")
-
-        self.status("Pushing git tags…")
-        os.system("git tag v{0}".format(about["__version__"]))
-        os.system("git push --tags")
-
-        sys.exit()
-
-
-# About dict to store version and package info
-about = dict()
-with codecs.open(
-    os.path.join(here, "w1thermsensor", "__version__.py"), "r", encoding="utf-8"
-) as f:
-    exec(f.read(), about)
-
-
-setup_args = dict(
-    name="w1thermsensor",
-    version=about["__version__"],
-    license="MIT",
-    description="This little pure python module provides a single class to get the temperature of a w1 sensor",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    author="Timo Furrer",
-    author_email="tuxtimo@gmail.com",
-    maintainer="Timo Furrer",
-    maintainer_email="tuxtimo@gmail.com",
-    platforms=["Linux"],
-    url="http://github.com/timofurrer/w1thermsensor",
-    download_url="http://github.com/timofurrer/w1thermsensor",
-    packages=find_packages(exclude=["*tests*"]),
-    install_requires=required,
-    include_package_data=True,
-    classifiers=(
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Natural Language :: English",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: Implementation",
-        "Programming Language :: Python :: Implementation :: CPython",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-    ),
-    cmdclass={"upload": UploadCommand},
+EXTRAS_REQUIRES["dev"] = (
+    EXTRAS_REQUIRES["tests"] + ["flake8", "black", "check-manifest"]
 )
 
-if sys.version_info.major == 3:
-    setup_args["entry_points"] = {
-        "console_scripts": ["w1thermsensor = w1thermsensor.cli:cli"]
-    }
+#: Holds the contents of the README file
+# with open("README.md", encoding="utf-8") as readme:
+with open("README.md") as readme:
+    __README_CONTENTS__ = readme.read()
 
-setup(**setup_args)
+
+# @functools.lru_cache()
+def read(metafile):
+    """
+    Return the contents of the given meta data file assuming UTF-8 encoding.
+    """
+    with open(str(metafile)) as f:
+        return f.read()
+
+
+def get_meta(meta, metafile):
+    """
+    Extract __*meta*__ from the given metafile.
+    """
+    contents = read(metafile)
+    meta_match = re.search(
+        r"^__{meta}__ = ['\"]([^'\"]*)['\"]".format(meta=meta), contents, re.M
+    )
+    if meta_match:
+        return meta_match.group(1)
+    raise RuntimeError("Unable to find __{meta}__ string.".format(meta=meta))
+
+
+setup(
+    name="w1thermsensor",
+    version=get_meta("version", META_FILE),
+    license=get_meta("license", META_FILE),
+    description=get_meta("description", META_FILE),
+    long_description=__README_CONTENTS__,
+    long_description_content_type="text/markdown",
+    author=get_meta("author", META_FILE),
+    author_email=get_meta("author_email", META_FILE),
+    maintainer=get_meta("author", META_FILE),
+    maintainer_email=get_meta("author_email", META_FILE),
+    platforms=["Linux"],
+    url=get_meta("url", META_FILE),
+    download_url=get_meta("download_url", META_FILE),
+    packages=PACKAGES,
+    include_package_data=True,
+    # python_requires=">=3.5.*",
+    install_requires=INSTALL_REQUIRES,
+    extras_require=EXTRAS_REQUIRES,
+    entry_points={
+        "console_scripts": ["w1thermsensor = w1thermsensor.cli:cli"]
+    },
+    keywords=KEYWORDS,
+    classifiers=CLASSIFIERS,
+)
