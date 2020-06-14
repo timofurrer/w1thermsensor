@@ -66,13 +66,17 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
             )
 
             sensor_file = sensor_dir.join(W1ThermSensor.SLAVE_FILE)
-            sensor_file_content = W1_FILE.format(
-                msb=sensor_msb,
-                lsb=sensor_lsb,
-                temperature=sensor_temperature * 1000.0,
-                config=sensor_config_bit,
-                ready="YES" if sensor_ready else "NO",
-            ) if not sensor_zerovalues else W1_FILE_ZEROVALUES
+            sensor_file_content = (
+                W1_FILE.format(
+                    msb=sensor_msb,
+                    lsb=sensor_lsb,
+                    temperature=sensor_temperature * 1000.0,
+                    config=sensor_config_bit,
+                    ready="YES" if sensor_ready else "NO",
+                )
+                if not sensor_zerovalues
+                else W1_FILE_ZEROVALUES
+            )
             sensor_file.write(sensor_file_content)
 
             sensors_.append(

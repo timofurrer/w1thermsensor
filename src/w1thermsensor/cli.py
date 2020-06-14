@@ -59,8 +59,7 @@ def ls(types, as_json):  # pylint: disable=invalid-name
 
     if as_json:
         data = [
-            {"id": i, "hwid": s.id, "type": s.name}
-            for i, s in enumerate(sensors, 1)
+            {"id": i, "hwid": s.id, "type": s.name} for i, s in enumerate(sensors, 1)
         ]
         click.echo(json.dumps(data, indent=4, sort_keys=True))
     else:
@@ -182,18 +181,13 @@ def get(id_, hwid, type_, unit, resolution, as_json, offset):
             sensor = W1ThermSensor.get_available_sensors()[id_ - 1]
         except IndexError:
             error_msg = (
-                "No sensor with id {0} available. ".format(id_) +
-                "Use the ls command to show all available sensors."
+                "No sensor with id {0} available. ".format(id_)
+                + "Use the ls command to show all available sensors."
             )
             if CLICK_MAJOR_VERSION >= 7:
-                raise click.BadOptionUsage(
-                    "--id",
-                    error_msg
-                )
+                raise click.BadOptionUsage("--id", error_msg)
             else:
-                raise click.BadOptionUsage(
-                    error_msg
-                )
+                raise click.BadOptionUsage(error_msg)
     else:
         sensor = W1ThermSensor(type_, hwid)
 
@@ -248,18 +242,13 @@ def resolution(resolution, id_, hwid, type_):
             sensor = W1ThermSensor.get_available_sensors()[id_ - 1]
         except IndexError:
             error_msg = (
-                "No sensor with id {0} available. ".format(id_) +
-                "Use the ls command to show all available sensors."
+                "No sensor with id {0} available. ".format(id_)
+                + "Use the ls command to show all available sensors."
             )
             if CLICK_MAJOR_VERSION >= 7:
-                raise click.BadOptionUsage(
-                    "--id",
-                    error_msg
-                )
+                raise click.BadOptionUsage("--id", error_msg)
             else:
-                raise click.BadOptionUsage(
-                    error_msg
-                )
+                raise click.BadOptionUsage(error_msg)
     else:
         sensor = W1ThermSensor(type_, hwid)
 

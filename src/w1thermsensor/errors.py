@@ -15,9 +15,7 @@ class KernelModuleLoadError(W1ThermSensorError):
     """Exception when the w1 therm kernel modules could not be loaded properly"""
 
     def __init__(self):
-        super().__init__(
-            "Cannot load w1 therm kernel modules"
-        )
+        super().__init__("Cannot load w1 therm kernel modules")
 
 
 class NoSensorFoundError(W1ThermSensorError):
@@ -51,9 +49,7 @@ class UnsupportedUnitError(W1ThermSensorError):
     """Exception when unsupported unit is given"""
 
     def __init__(self):
-        super().__init__(
-            "Only Degrees C, F and Kelvin are currently supported"
-        )
+        super().__init__("Only Degrees C, F and Kelvin are currently supported")
 
 
 class ResetValueError(W1ThermSensorError):

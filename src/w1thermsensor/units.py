@@ -47,15 +47,12 @@ UNIT_FACTORS = {
     (Unit.DEGREES_C, Unit.DEGREES_C): lambda x: x,
     (Unit.DEGREES_F, Unit.DEGREES_F): lambda x: x,
     (Unit.KELVIN, Unit.KELVIN): lambda x: x,
-
     # Celsius to X
     (Unit.DEGREES_C, Unit.DEGREES_F): lambda x: x * 1.8 + 32.0,
     (Unit.DEGREES_C, Unit.KELVIN): lambda x: x + 273.15,
-
     # Fahrenheit to X
     (Unit.DEGREES_F, Unit.DEGREES_C): lambda x: (x - 32) * (5.0 / 9.0),
     (Unit.DEGREES_F, Unit.KELVIN): lambda x: ((x - 32) * (5.0 / 9.0)) + 273.15,
-
     # Kelvin to X
     (Unit.KELVIN, Unit.DEGREES_C): lambda x: x - 273.15,
     (Unit.KELVIN, Unit.DEGREES_F): lambda x: (x - 273.15) * 1.8 + 32,

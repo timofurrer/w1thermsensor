@@ -62,6 +62,12 @@ class W1ThermSensor:
     BASE_DIRECTORY = Path("/sys/bus/w1/devices")
     SLAVE_FILE = "w1_slave"
 
+    #: Holds the sensor reset value in Degrees Celsius
+    SENSOR_RESET_VALUE = 85.0
+
+    #: Holds the factor to convert the raw sensor value to Degrees Celsius
+    RAW_VALUE_TO_DEGREE_CELSIUS_FACTOR = 1e-3
+
     #: Holds settings for patient retries used to access the sensors
     RETRY_ATTEMPTS = 10
     RETRY_DELAY_SECONDS = 1.0 / RETRY_ATTEMPTS
@@ -83,11 +89,13 @@ class W1ThermSensor:
         else:
             types = [s if isinstance(s, Sensor) else Sensor[s] for s in types]
 
-        is_sensor = lambda s: any(s.name.startswith(hex(x.value)[2:]) for x in types)  # noqa
+        def is_sensor(dir_name):
+            return any(dir_name.startswith(hex(x.value)[2:]) for x in types)
+
         return [
             cls(Sensor.from_id_string(s.name[:2]), s.name[3:])
             for s in cls.BASE_DIRECTORY.iterdir()
-            if is_sensor(s)
+            if is_sensor(s.name)
         ]
 
     def __init__(
@@ -150,13 +158,13 @@ class W1ThermSensor:
             self.id = sensor_id
 
         # store path to sensor
-        self.sensorpath = self.BASE_DIRECTORY / (self.slave_prefix + self.id) / self.SLAVE_FILE
+        self.sensorpath = (
+            self.BASE_DIRECTORY / (self.slave_prefix + self.id) / self.SLAVE_FILE
+        )
 
         if not self.exists():
             raise NoSensorFoundError(
-                "Could not find sensor of type {} with id {}".format(
-                    self.name, self.id
-                )
+                "Could not find sensor of type {} with id {}".format(self.name, self.id)
             )
 
         self.set_offset(offset, offset_unit)
@@ -213,9 +221,7 @@ class W1ThermSensor:
                 data = f.readlines()
         except IOError:
             raise NoSensorFoundError(
-                "Could not find sensor of type {} with id {}".format(
-                    self.name, self.id
-                )
+                "Could not find sensor of type {} with id {}".format(self.name, self.id)
             )
 
         if data[0].strip()[-3:] != "YES" or "00 00 00 00 00 00 00 00 00" in data[0]:
@@ -286,7 +292,7 @@ class W1ThermSensor:
             value /= 16.0
 
             # check if the sensor value is the reset value
-            if value == 85.0:
+            if value == self.SENSOR_RESET_VALUE:
                 raise ResetValueError(self)
 
             factor = Unit.get_conversion_function(Unit.DEGREES_C, unit)
@@ -294,7 +300,10 @@ class W1ThermSensor:
 
         # Fallback to precalculated value for other sensor types
         factor = Unit.get_conversion_function(Unit.DEGREES_C, unit)
-        return factor((self.raw_sensor_temp * 0.001) + self.offset)
+        return factor(
+            (self.raw_sensor_temp * self.RAW_VALUE_TO_DEGREE_CELSIUS_FACTOR)
+            + self.offset
+        )
 
     def get_temperatures(self, units):
         """
@@ -312,7 +321,8 @@ class W1ThermSensor:
         """
         sensor_value = self.get_temperature(Unit.DEGREES_C)
         return [
-            Unit.get_conversion_function(Unit.DEGREES_C, unit)(sensor_value) for unit in units
+            Unit.get_conversion_function(Unit.DEGREES_C, unit)(sensor_value)
+            for unit in units
         ]
 
     def get_resolution(self):

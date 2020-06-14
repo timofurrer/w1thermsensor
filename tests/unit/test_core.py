@@ -20,11 +20,7 @@ from w1thermsensor.units import Unit
     [
         tuple(),
         ({"type": Sensor.DS18B20},),
-        (
-            {"type": Sensor.DS18B20},
-            {"type": Sensor.DS1822},
-            {"type": Sensor.DS18S20},
-        ),
+        ({"type": Sensor.DS18B20}, {"type": Sensor.DS1822}, {"type": Sensor.DS18S20},),
     ],
     indirect=["sensors"],
 )
@@ -78,11 +74,7 @@ def test_get_available_sensors(sensors):
                 {"type": Sensor.DS18S20},
                 {"type": Sensor.DS18B20},
             ),
-            [
-                Sensor.MAX31850K,
-                Sensor.DS18S20,
-                Sensor.DS18B20,
-            ],
+            [Sensor.MAX31850K, Sensor.DS18S20, Sensor.DS18B20,],
         ),
     ],
     indirect=["sensors"],
@@ -96,9 +88,7 @@ def test_get_available_sensors_of_type(sensors, sensor_types):
     assert len(available_sensors) == expected_sensor_amount
 
 
-@pytest.mark.parametrize(
-    "sensors", [({"type": Sensor.DS18B20},)], indirect=["sensors"]
-)
+@pytest.mark.parametrize("sensors", [({"type": Sensor.DS18B20},)], indirect=["sensors"])
 def test_get_available_sensor_of_type_by_string_name(sensors):
     # given & when
     available_sensors = W1ThermSensor.get_available_sensors(["DS18B20"])
@@ -106,9 +96,7 @@ def test_get_available_sensor_of_type_by_string_name(sensors):
     assert len(available_sensors) == 1
 
 
-@pytest.mark.parametrize(
-    "sensors", [({"type": Sensor.DS18B20},)], indirect=["sensors"]
-)
+@pytest.mark.parametrize("sensors", [({"type": Sensor.DS18B20},)], indirect=["sensors"])
 def test_init_first_sensor(sensors):
     """Test that first found sensor is initialized if no sensor specs given"""
     # given
@@ -124,17 +112,8 @@ def test_init_first_sensor(sensors):
 @pytest.mark.parametrize(
     "sensors, sensor_type",
     [
-        (
-            ({"type": Sensor.DS18B20},),
-            Sensor.DS18B20,
-        ),
-        (
-            (
-                {"type": Sensor.DS18B20},
-                {"type": Sensor.DS18S20},
-            ),
-            Sensor.DS18B20,
-        ),
+        (({"type": Sensor.DS18B20},), Sensor.DS18B20,),
+        (({"type": Sensor.DS18B20}, {"type": Sensor.DS18S20},), Sensor.DS18B20,),
     ],
     indirect=["sensors"],
 )
@@ -154,10 +133,7 @@ def test_init_first_sensor_of_type(sensors, sensor_type):
     [
         (({"id": "1", "type": Sensor.DS18B20},), "1"),
         (
-            (
-                {"id": "2", "type": Sensor.DS18S20},
-                {"id": "1", "type": Sensor.DS18B20},
-            ),
+            ({"id": "2", "type": Sensor.DS18S20}, {"id": "1", "type": Sensor.DS18B20},),
             "2",
         ),
     ],
@@ -186,10 +162,7 @@ def test_init_first_sensor_by_id(sensors, sensor_id):
             {"sensor_type": Sensor.DS18S20, "sensor_id": "2"},
         ),
         (
-            (
-                {"type": Sensor.DS18B20, "id": "1"},
-                {"type": Sensor.DS18S20, "id": "2"},
-            ),
+            ({"type": Sensor.DS18B20, "id": "1"}, {"type": Sensor.DS18S20, "id": "2"},),
             {"sensor_type": Sensor.DS18S20, "sensor_id": "2"},
         ),
     ],
@@ -207,21 +180,9 @@ def test_init_sensor_by_type_and_id(sensors, sensor_specs):
 @pytest.mark.parametrize(
     "sensors, unit, expected_temperature",
     [
-        (
-            ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
-            Unit.DEGREES_C,
-            20.0,
-        ),
-        (
-            ({"msb": 0xFF, "lsb": 0xF8, "temperature": -0.5},),
-            Unit.DEGREES_C,
-            -0.5,
-        ),
-        (
-            ({"msb": 0xFC, "lsb": 0x90, "temperature": -55},),
-            Unit.DEGREES_C,
-            -55,
-        ),
+        (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},), Unit.DEGREES_C, 20.0,),
+        (({"msb": 0xFF, "lsb": 0xF8, "temperature": -0.5},), Unit.DEGREES_C, -0.5,),
+        (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), Unit.DEGREES_C, -55,),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "celsius", 25.0625),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "fahrenheit", 77.1125),
         (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), "fahrenheit", -67),
@@ -266,40 +227,75 @@ def test_get_temperature_for_different_units_by_name(
     [
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            "celsius", "celsius", 10, 10, 35.0625
+            "celsius",
+            "celsius",
+            10,
+            10,
+            35.0625,
         ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            "fahrenheit", "celsius", 10, 18, 95.1125
+            "fahrenheit",
+            "celsius",
+            10,
+            18,
+            95.1125,
         ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            "kelvin", "celsius", 10, 10, 308.2125
-        ),
-
-        (
-            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            "celsius", "fahrenheit", 18, 10, 35.0625),
-        (
-            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            "fahrenheit", "fahrenheit", 18, 18, 95.1125
+            "kelvin",
+            "celsius",
+            10,
+            10,
+            308.2125,
         ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            "kelvin", "fahrenheit", 18, 10, 308.2125
-        ),
-
-        (
-            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            "celsius", "kelvin", 10, 10, 35.0625
-        ),
-        (
-            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            "fahrenheit", "kelvin", 10, 18, 95.1125
+            "celsius",
+            "fahrenheit",
+            18,
+            10,
+            35.0625,
         ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            "kelvin", "kelvin", 10, 10, 308.2125
+            "fahrenheit",
+            "fahrenheit",
+            18,
+            18,
+            95.1125,
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "kelvin",
+            "fahrenheit",
+            18,
+            10,
+            308.2125,
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "celsius",
+            "kelvin",
+            10,
+            10,
+            35.0625,
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "fahrenheit",
+            "kelvin",
+            10,
+            18,
+            95.1125,
+        ),
+        (
+            ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
+            "kelvin",
+            "kelvin",
+            10,
+            10,
+            308.2125,
         ),
     ],
     indirect=["sensors"],
@@ -321,11 +317,7 @@ def test_get_temperature_for_different_units_by_name_with_offsets(
 @pytest.mark.parametrize(
     "sensors, units, expected_temperatures",
     [
-        (
-            ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
-            [Unit.DEGREES_C],
-            [20.0],
-        ),
+        (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},), [Unit.DEGREES_C], [20.0],),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
             [Unit.DEGREES_C, Unit.DEGREES_F],
@@ -385,7 +377,7 @@ def test_get_temperature_in_multiple_units(sensors, units, expected_temperatures
     indirect=["sensors"],
 )
 def test_get_temperature_in_multiple_units_with_offsets(
-        sensors, units, offset, expected_temperatures
+    sensors, units, offset, expected_temperatures
 ):
     """Test getting a sensor temperature in multiple units"""
     # given
@@ -425,9 +417,7 @@ def test_no_sensor_found(sensors, monkeypatch):
     """Test exception when no sensor was found"""
     monkeypatch.setattr(time, "sleep", lambda x: True)
 
-    with pytest.raises(
-        NoSensorFoundError, match="Could not find any sensor"
-    ):
+    with pytest.raises(NoSensorFoundError, match="Could not find any sensor"):
         W1ThermSensor()
 
     with pytest.raises(
@@ -507,9 +497,7 @@ def test_str_protocol(sensors):
 
 
 @pytest.mark.parametrize(
-    "sensors",
-    [({"type": Sensor.DS18B20, "id": "1"},)],
-    indirect=["sensors"],
+    "sensors", [({"type": Sensor.DS18B20, "id": "1"},)], indirect=["sensors"],
 )
 def test_sensor_disconnect_after_init(sensors):
     """Test exception when sensor is disconnected after initialization"""
