@@ -5,6 +5,7 @@ This module provides a temperature sensor of type w1 therm.
 import os
 import subprocess
 import time
+from pathlib import Path
 
 from w1thermsensor.errors import (
     KernelModuleLoadError,
@@ -60,12 +61,12 @@ class W1ThermSensor:
 
     #: Holds information about the location of the needed
     #  sensor devices on the system provided by the kernel modules
-    BASE_DIRECTORY = "/sys/bus/w1/devices"
+    BASE_DIRECTORY = Path("/sys/bus/w1/devices")
     SLAVE_FILE = "w1_slave"
 
     #: Holds settings for patient retries used to access the sensors
     RETRY_ATTEMPTS = 10
-    RETRY_DELAY_SECONDS = 1.0 / float(RETRY_ATTEMPTS)
+    RETRY_DELAY_SECONDS = 1.0 / RETRY_ATTEMPTS
 
     @classmethod
     def get_available_sensors(cls, types=None):
@@ -84,10 +85,10 @@ class W1ThermSensor:
         else:
             types = [s if isinstance(s, Sensor) else Sensor[s] for s in types]
 
-        is_sensor = lambda s: any(s.startswith(hex(x.value)[2:]) for x in types)  # noqa
+        is_sensor = lambda s: any(s.name.startswith(hex(x.value)[2:]) for x in types)  # noqa
         return [
-            cls(Sensor.from_id_string(s[:2]), s[3:])
-            for s in os.listdir(cls.BASE_DIRECTORY)
+            cls(Sensor.from_id_string(s.name[:2]), s.name[3:])
+            for s in cls.BASE_DIRECTORY.iterdir()
             if is_sensor(s)
         ]
 
@@ -151,9 +152,7 @@ class W1ThermSensor:
             self.id = sensor_id
 
         # store path to sensor
-        self.sensorpath = os.path.join(
-            self.BASE_DIRECTORY, self.slave_prefix + self.id, self.SLAVE_FILE
-        )
+        self.sensorpath = self.BASE_DIRECTORY / (self.slave_prefix + self.id) / self.SLAVE_FILE
 
         if not self.exists():
             raise NoSensorFoundError(
@@ -198,7 +197,7 @@ class W1ThermSensor:
 
     def exists(self):
         """Returns the sensors slave path"""
-        return os.path.exists(self.sensorpath)
+        return self.sensorpath.exists()
 
     @property
     def raw_sensor_strings(self):
@@ -212,7 +211,7 @@ class W1ThermSensor:
             :raises SensorNotReadyError: if the sensor is not ready yet
         """
         try:
-            with open(self.sensorpath, "r") as f:
+            with self.sensorpath.open("r") as f:
                 data = f.readlines()
         except IOError:
             raise NoSensorFoundError(
@@ -437,14 +436,13 @@ def load_kernel_modules():
 
     :raises KernelModuleLoadError: if the kernel module could not be loaded properly
     """
-    if not os.path.isdir(W1ThermSensor.BASE_DIRECTORY):
+    if not W1ThermSensor.BASE_DIRECTORY.is_dir():
         os.system("modprobe w1-gpio >/dev/null 2>&1")
         os.system("modprobe w1-therm >/dev/null 2>&1")
 
     for _ in range(W1ThermSensor.RETRY_ATTEMPTS):
-        if os.path.isdir(
-            W1ThermSensor.BASE_DIRECTORY
-        ):  # w1 therm modules loaded correctly
+        if W1ThermSensor.BASE_DIRECTORY.is_dir():
+            # w1 therm modules loaded correctly
             break
         time.sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
     else:
