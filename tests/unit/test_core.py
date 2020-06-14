@@ -11,6 +11,7 @@ from w1thermsensor.errors import (
     UnsupportedUnitError,
     W1ThermSensorError
 )
+from w1thermsensor.units import Unit
 
 
 @pytest.mark.parametrize(
@@ -197,17 +198,17 @@ def test_init_sensor_by_type_and_id(sensors, sensor_specs):
     [
         (
             ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
-            W1ThermSensor.DEGREES_C,
+            Unit.DEGREES_C,
             20.0,
         ),
         (
             ({"msb": 0xFF, "lsb": 0xF8, "temperature": -0.5},),
-            W1ThermSensor.DEGREES_C,
+            Unit.DEGREES_C,
             -0.5,
         ),
         (
             ({"msb": 0xFC, "lsb": 0x90, "temperature": -55},),
-            W1ThermSensor.DEGREES_C,
+            Unit.DEGREES_C,
             -55,
         ),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "celsius", 25.0625),
@@ -311,22 +312,22 @@ def test_get_temperature_for_different_units_by_name_with_offsets(
     [
         (
             ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
-            [W1ThermSensor.DEGREES_C],
+            [Unit.DEGREES_C],
             [20.0],
         ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F],
+            [Unit.DEGREES_C, Unit.DEGREES_F],
             [25.0625, 77.1125],
         ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.06251},),
-            [W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN],
+            [Unit.DEGREES_F, Unit.KELVIN],
             [77.1125, 298.2125],
         ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN],
+            [Unit.DEGREES_C, Unit.DEGREES_F, Unit.KELVIN],
             [25.0625, 77.1125, 298.2125],
         ),
     ],
@@ -347,25 +348,25 @@ def test_get_temperature_in_multiple_units(sensors, units, expected_temperatures
     [
         (
             ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
-            [W1ThermSensor.DEGREES_C],
+            [Unit.DEGREES_C],
             -10,
             [10.0],
         ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F],
+            [Unit.DEGREES_C, Unit.DEGREES_F],
             10,
             [35.0625, 95.1125],
         ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.06251},),
-            [W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN],
+            [Unit.DEGREES_F, Unit.KELVIN],
             10,
             [95.1125, 308.2125],
         ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
-            [W1ThermSensor.DEGREES_C, W1ThermSensor.DEGREES_F, W1ThermSensor.KELVIN],
+            [Unit.DEGREES_C, Unit.DEGREES_F, Unit.KELVIN],
             10,
             [35.0625, 95.1125, 308.2125],
         ),

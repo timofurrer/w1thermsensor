@@ -87,15 +87,15 @@ All examples are with the `DS18B20` sensor - It works the same way for the other
 ### Basic usage with one sensor (implicit)
 
 ```python
-from w1thermsensor import W1ThermSensor
+from w1thermsensor import W1ThermSensor, Unit
 
 sensor = W1ThermSensor()
 temperature_in_celsius = sensor.get_temperature()
-temperature_in_fahrenheit = sensor.get_temperature(W1ThermSensor.DEGREES_F)
+temperature_in_fahrenheit = sensor.get_temperature(Unit.DEGREES_F)
 temperature_in_all_units = sensor.get_temperatures([
-    W1ThermSensor.DEGREES_C,
-    W1ThermSensor.DEGREES_F,
-    W1ThermSensor.KELVIN])
+    Unit.DEGREES_C,
+    Unit.DEGREES_F,
+    Unit.KELVIN])
 ```
 
 The need kernel modules will be automatically loaded in the constructor of the `W1ThermSensor` class. <br>

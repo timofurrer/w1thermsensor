@@ -7,7 +7,7 @@ from itertools import count
 
 import click
 
-from .core import W1ThermSensor
+from w1thermsensor.core import Unit, W1ThermSensor
 
 #: major click version to compensate API changes
 CLICK_MAJOR_VERSION = int(click.__version__.split(".")[0])
@@ -101,7 +101,7 @@ def ls(types, as_json):  # pylint: disable=invalid-name
     "-u",
     "--unit",
     default="celsius",
-    type=click.Choice(W1ThermSensor.UNIT_FACTOR_NAMES),
+    type=click.Choice([u.value for u in Unit]),
     help="The unit of the temperature. Defaults to Celsius",
 )
 @click.option(
@@ -161,7 +161,7 @@ def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
     "-u",
     "--unit",
     default="celsius",
-    type=click.Choice(W1ThermSensor.UNIT_FACTOR_NAMES),
+    type=click.Choice([u.value for u in Unit]),
     help="The unit of the temperature. Defaults to Celsius",
 )
 @click.option(
