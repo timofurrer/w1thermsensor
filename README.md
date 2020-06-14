@@ -15,6 +15,8 @@
 
 **Raspberry Pi:** this package is available in Raspbian as `python-w1thermsensor` and `python3-w1thermsensor`.
 
+**Python 2 drop**: all w1thermsensor releases from 2.0 are Python 3.5+
+
 ## Supported devices
 
 The following w1 therm sensor devices are supported:
@@ -70,15 +72,7 @@ If you are using the `w1thermsensor` module on a Rasperry Pi running Raspbian yo
 sudo apt-get install python3-w1thermsensor
 ```
 
-Or if you are still using Python 2:
-
-```bash
-sudo apt-get install python-w1thermsensor
-```
-
 **Note:** For older versions of this package you might get the following error: `ImportError: No module named 'pkg_resources'` which indicates that you need to install `python-setuptools` or `python3-setuptools` respectively.
-
-**Note 2:** The Python 2 package does **not** contain the CLI tool.
 
 ### Manually build and install the debian package
 
