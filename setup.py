@@ -33,7 +33,7 @@ EXTRAS_REQUIRES = {
 }
 
 EXTRAS_REQUIRES["dev"] = (
-    EXTRAS_REQUIRES["tests"] + ["flake8", "black", "check-manifest"]
+    EXTRAS_REQUIRES["tests"] + ["flake8", "black", "check-manifest", "towncrier"]
 )
 
 #: Holds the contents of the README file
