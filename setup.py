@@ -25,11 +25,11 @@ CLASSIFIERS = [
 
 #: Holds the runtime requirements for the end user
 INSTALL_REQUIRES = [
-    "click==6.6",
+    "click",
 ]
 #: Holds runtime requirements and development requirements
 EXTRAS_REQUIRES = {
-    "tests": ["coverage==4.4.1", "pytest==3.1.1", "pytest-mock==1.6.0"],
+    "tests": ["coverage>=5", "pytest>5", "pytest-mock"],
 }
 
 EXTRAS_REQUIRES["dev"] = (
