@@ -87,15 +87,15 @@ All examples are with the `DS18B20` sensor - It works the same way for the other
 ### Basic usage with one sensor (implicit)
 
 ```python
-from w1thermsensor import W1ThermSensor
+from w1thermsensor import W1ThermSensor, Unit
 
 sensor = W1ThermSensor()
 temperature_in_celsius = sensor.get_temperature()
-temperature_in_fahrenheit = sensor.get_temperature(W1ThermSensor.DEGREES_F)
+temperature_in_fahrenheit = sensor.get_temperature(Unit.DEGREES_F)
 temperature_in_all_units = sensor.get_temperatures([
-    W1ThermSensor.DEGREES_C,
-    W1ThermSensor.DEGREES_F,
-    W1ThermSensor.KELVIN])
+    Unit.DEGREES_C,
+    Unit.DEGREES_F,
+    Unit.KELVIN])
 ```
 
 The need kernel modules will be automatically loaded in the constructor of the `W1ThermSensor` class. <br>
@@ -108,9 +108,9 @@ If something went wrong an exception is raised.
 The DS18B20 sensor with the ID `00000588806a` will be taken.
 
 ```python
-from w1thermsensor import W1ThermSensor
+from w1thermsensor import W1ThermSensor, Sensor
 
-sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
+sensor = W1ThermSensor(Sensor.DS18B20, "00000588806a")
 temperature_in_celsius = sensor.get_temperature()
 ```
 
@@ -128,9 +128,9 @@ for sensor in W1ThermSensor.get_available_sensors():
 Only sensors of a specific therm sensor type:
 
 ```python
-from w1thermsensor import W1ThermSensor
+from w1thermsensor import W1ThermSensor, Sensor
 
-for sensor in W1ThermSensor.get_available_sensors([W1ThermSensor.THERM_SENSOR_DS18B20]):
+for sensor in W1ThermSensor.get_available_sensors([Sensor.DS18B20]):
     print("Sensor %s has temperature %.2f" % (sensor.id, sensor.get_temperature()))
 ```
 
@@ -140,7 +140,7 @@ Some w1 therm sensors support changing the resolution for the temperature reads.
 `w1thermsensor` enables to do so with the `W1ThermSensor.set_resolution()` method:
 
 ```python
-sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
+sensor = W1ThermSensor(Sensor.DS18B20, "00000588806a")
 sensor.set_resolution(9)
 ```
 
@@ -153,7 +153,7 @@ resolution is stored into the EEPROM. Since the EEPROM has a limited
 amount of writes (>50k), this command should be used wisely.
 
 ```python
-sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, "00000588806a")
+sensor = W1ThermSensor(Sensor.DS18B20, "00000588806a")
 sensor.set_resolution(9, persist=True)
 ```
 

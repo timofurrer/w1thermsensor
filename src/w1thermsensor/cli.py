@@ -7,7 +7,7 @@ from itertools import count
 
 import click
 
-from .core import W1ThermSensor
+from w1thermsensor.core import Sensor, Unit, W1ThermSensor
 
 #: major click version to compensate API changes
 CLICK_MAJOR_VERSION = int(click.__version__.split(".")[0])
@@ -15,23 +15,13 @@ CLICK_MAJOR_VERSION = int(click.__version__.split(".")[0])
 
 def resolve_type_name(ctx, param, value):  # pylint: disable=unused-argument
     """Resolve CLI option type name"""
-
-    def _resolve(value):
-        """Resolve single type name"""
-        value = [
-            type_id
-            for type_id, type_name in W1ThermSensor.TYPE_NAMES.items()
-            if type_name == value
-        ][0]
-        return value
-
     if not value:
         return value
 
     if isinstance(value, tuple):
-        return [_resolve(v) for v in value]
+        return [Sensor[v] for v in value]
     else:
-        return _resolve(value)
+        return Sensor[value]
 
 
 @click.group()
@@ -56,7 +46,7 @@ def cli():
     "--type",
     "types",
     multiple=True,
-    type=click.Choice(W1ThermSensor.TYPE_NAMES.values()),
+    type=click.Choice([s.name for s in Sensor]),
     callback=resolve_type_name,
     help="Show only sensor of this type",
 )
@@ -69,7 +59,7 @@ def ls(types, as_json):  # pylint: disable=invalid-name
 
     if as_json:
         data = [
-            {"id": i, "hwid": s.id, "type": s.type_name}
+            {"id": i, "hwid": s.id, "type": s.name}
             for i, s in enumerate(sensors, 1)
         ]
         click.echo(json.dumps(data, indent=4, sort_keys=True))
@@ -82,7 +72,7 @@ def ls(types, as_json):  # pylint: disable=invalid-name
                 "  {0}. HWID: {1} Type: {2}".format(
                     click.style(str(i), bold=True),
                     click.style(sensor.id, bold=True),
-                    click.style(sensor.type_name, bold=True),
+                    click.style(sensor.name, bold=True),
                 )
             )
 
@@ -93,7 +83,7 @@ def ls(types, as_json):  # pylint: disable=invalid-name
     "--type",
     "types",
     multiple=True,
-    type=click.Choice(W1ThermSensor.TYPE_NAMES.values()),
+    type=click.Choice([s.name for s in Sensor]),
     callback=resolve_type_name,
     help="Show only sensor of this type",
 )
@@ -101,7 +91,7 @@ def ls(types, as_json):  # pylint: disable=invalid-name
     "-u",
     "--unit",
     default="celsius",
-    type=click.Choice(W1ThermSensor.UNIT_FACTOR_NAMES),
+    type=click.Choice([u.value for u in Unit]),
     help="The unit of the temperature. Defaults to Celsius",
 )
 @click.option(
@@ -125,7 +115,7 @@ def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
 
     if as_json:
         data = [
-            {"id": i, "hwid": s.id, "type": s.type_name, "temperature": t, "unit": unit}
+            {"id": i, "hwid": s.id, "type": s.name, "temperature": t, "unit": unit}
             for i, s, t in zip(count(start=1), sensors, temperatures)
         ]
         click.echo(json.dumps(data, indent=4, sort_keys=True))
@@ -153,7 +143,7 @@ def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
     "-t",
     "--type",
     "type_",
-    type=click.Choice(W1ThermSensor.TYPE_NAMES.values()),
+    type=click.Choice([s.name for s in Sensor]),
     callback=resolve_type_name,
     help="The type of the sensor",
 )
@@ -161,7 +151,7 @@ def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
     "-u",
     "--unit",
     default="celsius",
-    type=click.Choice(W1ThermSensor.UNIT_FACTOR_NAMES),
+    type=click.Choice([u.value for u in Unit]),
     help="The unit of the temperature. Defaults to Celsius",
 )
 @click.option(
@@ -219,7 +209,7 @@ def get(id_, hwid, type_, unit, resolution, as_json, offset):
         data = {
             "hwid": sensor.id,
             "offset": offset,
-            "type": sensor.type_name,
+            "type": sensor.name,
             "temperature": temperature,
             "unit": unit,
         }
@@ -242,7 +232,7 @@ def get(id_, hwid, type_, unit, resolution, as_json, offset):
     "-t",
     "--type",
     "type_",
-    type=click.Choice(W1ThermSensor.TYPE_NAMES.values()),
+    type=click.Choice([s.name for s in Sensor]),
     callback=resolve_type_name,
     help="The type of the sensor",
 )

@@ -6,7 +6,7 @@ import random
 
 import pytest
 
-from w1thermsensor import W1ThermSensor
+from w1thermsensor import Sensor, W1ThermSensor
 
 #: Holds sample contents for a ready and not ready sensor
 W1_FILE = """{lsb:x} {msb:x} 4b 46 {config:x} ff 02 10 56 : crc=56 {ready}
@@ -50,7 +50,7 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
     sensors_ = []
     if hasattr(request, "param"):
         for sensor_conf in request.param:
-            sensor_type = sensor_conf.get("type", W1ThermSensor.THERM_SENSOR_DS18B20)
+            sensor_type = sensor_conf.get("type", Sensor.DS18B20)
             sensor_id = sensor_conf.get("id") or get_random_sensor_id()
             sensor_temperature = sensor_conf.get("temperature", 20)
             sensor_counts = int(sensor_temperature * 16.0)

@@ -11,10 +11,12 @@ __url__ = "http://github.com/timofurrer/w1thermsensor"
 __download_url__ = "http://github.com/timofurrer/w1thermsensor"
 
 
-from .core import W1ThermSensor  # noqa
-from .errors import (  # noqa
+from w1thermsensor.core import W1ThermSensor  # noqa
+from w1thermsensor.errors import (  # noqa
     NoSensorFoundError,
     ResetValueError,
     SensorNotReadyError,
     UnsupportedUnitError
 )
+from w1thermsensor.sensors import Sensor  # noqa
+from w1thermsensor.units import Unit  # noqa
