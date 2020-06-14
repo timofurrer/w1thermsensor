@@ -3,13 +3,14 @@ import os
 import pytest
 
 from w1thermsensor.core import W1ThermSensor, load_kernel_modules
-from w1thermsensor.errors import W1ThermSensorError, KernelModuleLoadError
 from w1thermsensor.errors import (
+    KernelModuleLoadError,
     NoSensorFoundError,
+    ResetValueError,
     SensorNotReadyError,
     UnsupportedUnitError,
+    W1ThermSensorError
 )
-from w1thermsensor.errors import ResetValueError
 
 
 @pytest.mark.parametrize(

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 pytest fixtures and helpers
 """

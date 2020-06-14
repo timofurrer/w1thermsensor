@@ -9,7 +9,6 @@ import click
 
 from .core import W1ThermSensor
 
-
 #: major click version to compensate API changes
 CLICK_MAJOR_VERSION = int(click.__version__.split(".")[0])
 

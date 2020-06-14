@@ -20,8 +20,8 @@
 #     ]
 # }
 
-from w1thermsensor import W1ThermSensor
 import boto3
+from w1thermsensor import W1ThermSensor
 
 # Modify these values for your setup
 namespace = "Climate Logging"

@@ -1,10 +1,7 @@
-# -*- coding: utf-8 -*-
-
-import json
 import itertools
+import json
 
 import pytest
-
 from click.testing import CliRunner
 
 from w1thermsensor.cli import cli

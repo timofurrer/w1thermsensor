@@ -3,12 +3,18 @@ This module provides a temperature sensor of type w1 therm.
 """
 
 import os
-import time
 import subprocess
+import time
 import warnings
 
-from .errors import W1ThermSensorError, NoSensorFoundError, SensorNotReadyError
-from .errors import KernelModuleLoadError, UnsupportedUnitError, ResetValueError
+from .errors import (
+    KernelModuleLoadError,
+    NoSensorFoundError,
+    ResetValueError,
+    SensorNotReadyError,
+    UnsupportedUnitError,
+    W1ThermSensorError
+)
 
 
 class W1ThermSensor:

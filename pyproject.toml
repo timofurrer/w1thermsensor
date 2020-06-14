@@ -9,3 +9,9 @@ filename = "CHANGELOG.rst"
 directory = "changelog/"
 title_format = "w1thermsensor {version} ({project_date})"
 template = "changelog/template.rst"
+
+[tool.isort]
+known_first_party = "w1thermsensor"
+known_third_party = "click,pytest"
+multi_line_output = 3
+line_length = 100
