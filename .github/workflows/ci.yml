@@ -54,6 +54,7 @@ jobs:
           name: codecov-umbrella
 
       - name: Publish code coverage report to Code Climate
+        if: startsWith(matrix.os, 'ubuntu-')
         uses: paambaati/codeclimate-action@v2.6.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
