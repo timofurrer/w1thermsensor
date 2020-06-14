@@ -39,6 +39,20 @@ jobs:
           coverage run -p -m pytest
         env:
           W1THERMSENSOR_NO_KERNEL_MODULE: 1
+      - name: Report code coverage
+        run: |
+          coverage combine
+          coverage report
+          coverage xml
+      - name: Upload coverage to Codecov
+        # codecov only runs on Linux
+        if: startsWith(matrix.os, 'ubuntu-')
+        uses: codecov/codecov-action@v1.0.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
 
   debian-stretch-config:
     runs-on: ${{ matrix.os }}
@@ -97,20 +111,6 @@ jobs:
           coverage run -p -m pytest
         env:
           W1THERMSENSOR_NO_KERNEL_MODULE: 1
-      - name: Report code coverage
-        run: |
-          coverage combine
-          coverage report
-          coverage xml
-      - name: Upload coverage to Codecov
-        # codecov only runs on Linux
-        if: startsWith(matrix.os, 'ubuntu-')
-        uses: codecov/codecov-action@v1.0.0
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
 
   #docs:
     #runs-on: ubuntu-latest
