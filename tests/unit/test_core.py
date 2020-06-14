@@ -516,7 +516,7 @@ def test_sensor_disconnect_after_init(sensors):
     expected_error_msg = "Could not find sensor of type DS18B20 with id 1"
 
     # disconnect sensor
-    os.remove(sensor.sensorpath)
+    os.remove(str(sensor.sensorpath))  # cast to str explicitly for Python 3.5
 
     # when & then
     with pytest.raises(NoSensorFoundError, match=expected_error_msg):

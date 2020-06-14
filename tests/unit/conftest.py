@@ -3,6 +3,7 @@ pytest fixtures and helpers
 """
 
 import random
+from pathlib import Path
 
 import pytest
 
@@ -35,7 +36,7 @@ def kernel_module_dir(tmpdir):
     original_base_dir = W1ThermSensor.BASE_DIRECTORY
     # create temporary base dir
     devices_path = tmpdir.mkdir("devices")
-    W1ThermSensor.BASE_DIRECTORY = str(devices_path)
+    W1ThermSensor.BASE_DIRECTORY = Path(str(devices_path))
     yield devices_path
     # restore original base dir
     W1ThermSensor.BASE_DIRECTORY = original_base_dir
