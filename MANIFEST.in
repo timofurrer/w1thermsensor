@@ -3,3 +3,20 @@ include *.md
 include *.rst
 include *.txt
 recursive-include tests *.py
+include *.yml
+include .coveragerc
+include Dockerfile
+include Makefile
+include pylintrc
+include tox.ini
+recursive-include docs *.1
+recursive-include examples *.py
+recursive-include tests *.sh
+include debian/changelog
+include debian/compat
+include debian/control
+include debian/copyright
+include debian/rules
+include debian/source/format
+recursive-include debian *.conf
+recursive-include debian *.manpages
