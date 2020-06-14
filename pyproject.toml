@@ -1,6 +1,6 @@
 [tool.black]
 target_version = ["py37"]
-include = "(setup.py|w1thermsensor|tests|examples)"
+include = "(setup.py|src|tests|examples)"
 
 [tool.towncrier]
 package = "w1thermsensor"

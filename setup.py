@@ -5,8 +5,8 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 #: Holds a list of packages to install with the binary distribution
-PACKAGES = find_packages(where=".")
-META_FILE = Path(".").absolute() / "w1thermsensor" / "__init__.py"
+PACKAGES = find_packages(where="src")
+META_FILE = Path("src").absolute() / "w1thermsensor" / "__init__.py"
 KEYWORDS = ["w1", "w1-therm", "therm", "sensor", "raspberry", "raspberry pi", "gpio", "ds"]
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
@@ -78,8 +78,9 @@ setup(
     url=get_meta("url", META_FILE),
     download_url=get_meta("download_url", META_FILE),
     packages=PACKAGES,
+    package_dir={"": "src"},
     include_package_data=True,
-    # python_requires=">=3.5.*",
+    python_requires=">=3.5.*",
     install_requires=INSTALL_REQUIRES,
     extras_require=EXTRAS_REQUIRES,
     entry_points={

@@ -5,7 +5,7 @@ source =
 
 [paths]
 source =
-   w1thermsensor
+   src
    .tox/*/site-packages
 
 [report]
