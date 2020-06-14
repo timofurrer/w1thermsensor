@@ -13,7 +13,6 @@ env
 # distutils with PIP
 build
 dist
-README.rst
 w1thermsensor.egg-info
 
 # coverage data

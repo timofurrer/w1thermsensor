@@ -9,6 +9,8 @@ include Dockerfile
 include Makefile
 include pylintrc
 include tox.ini
+include *.toml
+recursive-include changelog *.rst
 recursive-include docs *.1
 recursive-include examples *.py
 recursive-include tests *.sh
