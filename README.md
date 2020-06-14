@@ -1,11 +1,17 @@
 # W1ThermSensor
+
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timofurrer/w1thermsensor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 > Get the temperature from your w1 therm sensor in a single line of code!<br>
 > It's designed to be used with the Rasperry Pi hardware but also works on a Beagle Bone and others.
 
 ***
 
-[![Build Status](https://travis-ci.com/timofurrer/w1thermsensor.svg?branch=master)](https://travis-ci.com/timofurrer/w1thermsensor) [![codecov.io](http://codecov.io/github/timofurrer/w1thermsensor/coverage.svg?branch=master)](http://codecov.io/github/timofurrer/w1thermsensor?branch=master) [![Code Climate](https://codeclimate.com/github/timofurrer/w1thermsensor/badges/gpa.svg)](https://codeclimate.com/github/timofurrer/w1thermsensor)  [![Code Health](https://landscape.io/github/timofurrer/w1thermsensor/master/landscape.svg?style=flat)](https://landscape.io/github/timofurrer/w1thermsensor/master) [![PyPI version](https://badge.fury.io/py/w1thermsensor.svg)](https://badge.fury.io/py/w1thermsensor) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+![CI](https://github.com/timofurrer/w1thermsensor/workflows/CI/badge.svg)
+[![codecov.io](http://codecov.io/github/timofurrer/w1thermsensor/coverage.svg?branch=master)](http://codecov.io/github/timofurrer/w1thermsensor?branch=master)
+[![Code Climate](https://codeclimate.com/github/timofurrer/w1thermsensor/badges/gpa.svg)](https://codeclimate.com/github/timofurrer/w1thermsensor)
+[![Code Health](https://landscape.io/github/timofurrer/w1thermsensor/master/landscape.svg?style=flat)](https://landscape.io/github/timofurrer/w1thermsensor/master)
+[![PyPI version](https://badge.fury.io/py/w1thermsensor.svg)](https://badge.fury.io/py/w1thermsensor)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 **Raspberry Pi:** this package is available in Raspbian as `python-w1thermsensor` and `python3-w1thermsensor`.
 
