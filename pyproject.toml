@@ -1,0 +1,11 @@
+[tool.black]
+target_version = ["py37"]
+include = "(setup.py|w1thermsensor|tests|examples)"
+
+[tool.towncrier]
+package = "w1thermsensor"
+package_dir = "w1thermsensor"
+filename = "CHANGELOG.rst"
+directory = "changelog/"
+title_format = "w1thermsensor {version} ({project_date})"
+template = "changelog/template.rst"
