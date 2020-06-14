@@ -2,13 +2,11 @@
 This module provides a temperature sensor of type w1 therm.
 """
 
-import os
 import subprocess
 import time
 from pathlib import Path
 
 from w1thermsensor.errors import (
-    KernelModuleLoadError,
     NoSensorFoundError,
     ResetValueError,
     SensorNotReadyError,
@@ -425,31 +423,3 @@ class W1ThermSensor:
         # (such as 32F, when converting from C to F).
         factor = Unit.get_conversion_function(Unit.DEGREES_C, unit)
         return factor(self.offset) - factor(0)
-
-
-def load_kernel_modules():
-    """
-    Load kernel modules needed by the temperature sensor
-    if they are not already loaded.
-    If the base directory then does not exist an exception is raised an the kernel module loading
-    should be treated as failed.
-
-    :raises KernelModuleLoadError: if the kernel module could not be loaded properly
-    """
-    if not W1ThermSensor.BASE_DIRECTORY.is_dir():
-        os.system("modprobe w1-gpio >/dev/null 2>&1")
-        os.system("modprobe w1-therm >/dev/null 2>&1")
-
-    for _ in range(W1ThermSensor.RETRY_ATTEMPTS):
-        if W1ThermSensor.BASE_DIRECTORY.is_dir():
-            # w1 therm modules loaded correctly
-            break
-        time.sleep(W1ThermSensor.RETRY_DELAY_SECONDS)
-    else:
-        raise KernelModuleLoadError()
-
-
-# Load kernel modules automatically upon import.
-# Set the environment variable W1THERMSENSOR_NO_KERNEL_MODULE=1
-if os.environ.get("W1THERMSENSOR_NO_KERNEL_MODULE", "0") != "1":
-    load_kernel_modules()

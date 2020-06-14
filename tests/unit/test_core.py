@@ -1,10 +1,10 @@
 import os
+import time
 
 import pytest
 
-from w1thermsensor.core import W1ThermSensor, load_kernel_modules
+from w1thermsensor.core import W1ThermSensor
 from w1thermsensor.errors import (
-    KernelModuleLoadError,
     NoSensorFoundError,
     ResetValueError,
     SensorNotReadyError,
@@ -421,8 +421,10 @@ def test_sensor_type_name(sensors, expected_sensor_name):
 
 
 @pytest.mark.parametrize("sensors", [tuple()], indirect=["sensors"])
-def test_no_sensor_found(sensors):
+def test_no_sensor_found(sensors, monkeypatch):
     """Test exception when no sensor was found"""
+    monkeypatch.setattr(time, "sleep", lambda x: True)
+
     with pytest.raises(
         NoSensorFoundError, match="Could not find any sensor"
     ):
@@ -667,18 +669,6 @@ def test_get_resolution(sensors, expected_resolution):
     resolution = sensor.get_resolution()
     # then
     assert resolution == pytest.approx(expected_resolution)
-
-
-def test_kernel_module_load_error(monkeypatch):
-    """Test exception if kernel modules cannot be loaded"""
-    # given
-    monkeypatch.setattr(os, "system", lambda x: True)
-    monkeypatch.setattr(os.path, "isdir", lambda x: False)
-    expected_error_msg = "Cannot load w1 therm kernel modules"
-
-    # when & then
-    with pytest.raises(KernelModuleLoadError, match=expected_error_msg):
-        load_kernel_modules()
 
 
 @pytest.mark.parametrize(
