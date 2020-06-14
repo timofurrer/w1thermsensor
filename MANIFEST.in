@@ -11,6 +11,10 @@ include pylintrc
 include tox.ini
 include *.toml
 recursive-include changelog *.rst
+recursive-include changelog *.removal
+recursive-include changelog *.feature
+recursive-include changelog *.doc
+recursive-include changelog *.bugfix
 recursive-include docs *.1
 recursive-include examples *.py
 recursive-include tests *.sh
