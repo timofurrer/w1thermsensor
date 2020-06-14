@@ -18,4 +18,5 @@ from w1thermsensor.errors import (  # noqa
     SensorNotReadyError,
     UnsupportedUnitError
 )
+from w1thermsensor.sensors import Sensor  # noqa
 from w1thermsensor.units import Unit  # noqa

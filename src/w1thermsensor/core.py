@@ -13,6 +13,7 @@ from w1thermsensor.errors import (
     SensorNotReadyError,
     W1ThermSensorError
 )
+from w1thermsensor.sensors import Sensor
 from w1thermsensor.units import Unit
 
 
@@ -21,12 +22,34 @@ class W1ThermSensor:
     Represents a w1 therm sensor connected to the device accessed by
     the Linux w1 therm sensor kernel modules.
 
+
+    Examples:
+        List all sensors
+
+        >>> W1ThermSensor.get_available_sensors()
+
+        Initialize first available sensor
+
+        >>> sensor = W1ThermSensor()
+
+        Initialize sensor of specific type
+
+        >>> sensor = W1ThermSensor(Sensor.DS18B20)
+
+        Get sensor temperature
+
+        >>> sensor.get_temperature()
+
+        Get temperature in a specific unit
+
+        >>> sensor.get_temperature(Unit.DEGREES_F)
+
     Supported sensors are:
         * DS18S20
         * DS1822
         * DS18B20
-        * DS1825
         * DS28EA00
+        * DS1825
         * MAX31850K
 
     Supported temperature units are:
@@ -34,35 +57,6 @@ class W1ThermSensor:
         * Celsius
         * Fahrenheit
     """
-
-    #: Holds information about supported w1therm sensors
-    THERM_SENSOR_DS18S20 = 0x10
-    THERM_SENSOR_DS1822 = 0x22
-    THERM_SENSOR_DS18B20 = 0x28
-    THERM_SENSOR_DS1825 = 0x3B
-    THERM_SENSOR_DS28EA00 = 0x42
-    THERM_SENSOR_MAX31850K = 0x3B
-    TYPE_NAMES = {
-        THERM_SENSOR_DS18S20: "DS18S20",
-        THERM_SENSOR_DS1822: "DS1822",
-        THERM_SENSOR_DS18B20: "DS18B20",
-        THERM_SENSOR_DS1825: "DS1825",
-        THERM_SENSOR_DS28EA00: "DS28EA00",
-        THERM_SENSOR_MAX31850K: "MAX31850K",
-    }
-    TYPES_12BIT_STANDARD = [
-        THERM_SENSOR_DS1822,
-        THERM_SENSOR_DS18B20,
-        THERM_SENSOR_DS1825,
-        THERM_SENSOR_DS28EA00,
-    ]
-    RESOLVE_TYPE_STR = {
-        "10": THERM_SENSOR_DS18S20,
-        "22": THERM_SENSOR_DS1822,
-        "28": THERM_SENSOR_DS18B20,
-        "42": THERM_SENSOR_DS28EA00,
-        "3b": THERM_SENSOR_MAX31850K,
-    }
 
     #: Holds information about the location of the needed
     #  sensor devices on the system provided by the kernel modules
@@ -86,10 +80,13 @@ class W1ThermSensor:
 
         """
         if not types:
-            types = cls.TYPE_NAMES.keys()
-        is_sensor = lambda s: any(s.startswith(hex(x)[2:]) for x in types)  # noqa
+            types = list(Sensor)
+        else:
+            types = [s if isinstance(s, Sensor) else Sensor[s] for s in types]
+
+        is_sensor = lambda s: any(s.startswith(hex(x.value)[2:]) for x in types)  # noqa
         return [
-            cls(cls.RESOLVE_TYPE_STR[s[:2]], s[3:])
+            cls(Sensor.from_id_string(s[:2]), s[3:])
             for s in os.listdir(cls.BASE_DIRECTORY)
             if is_sensor(s)
         ]
@@ -128,11 +125,15 @@ class W1ThermSensor:
         elif not sensor_id:
             s = self.get_available_sensors([sensor_type])
             if not s:
-                sensor_type_name = self.TYPE_NAMES.get(sensor_type, hex(sensor_type))
+                try:
+                    sensor_type_name = Sensor(sensor_type)
+                except ValueError:  # no known sensor, create anyway for error message
+                    sensor_type = hex(sensor_type)
                 error_msg = "Could not find any sensor of type {}".format(
                     sensor_type_name
                 )
                 raise NoSensorFoundError(error_msg)
+
             self.type = sensor_type
             self.id = s[0].id
         elif not sensor_type:  # get sensor by id
@@ -157,7 +158,7 @@ class W1ThermSensor:
         if not self.exists():
             raise NoSensorFoundError(
                 "Could not find sensor of type {} with id {}".format(
-                    self.type_name, self.id
+                    self.name, self.id
                 )
             )
 
@@ -171,7 +172,7 @@ class W1ThermSensor:
             :rtype: string
         """
         return "{}(sensor_type={}, sensor_id='{}')".format(
-            self.__class__.__name__, self.type, self.id
+            self.__class__.__name__, str(self.type), self.id
         )
 
     def __str__(self):
@@ -182,18 +183,18 @@ class W1ThermSensor:
             :rtype: string
         """
         return "{0}(name='{1}', type={2}(0x{2:x}), id='{3}')".format(
-            self.__class__.__name__, self.type_name, self.type, self.id
+            self.__class__.__name__, self.type.name, self.type.value, self.id
         )
 
     @property
-    def type_name(self):
+    def name(self):
         """Returns the type name of this temperature sensor"""
-        return self.TYPE_NAMES.get(self.type, "Unknown")
+        return self.type.name
 
     @property
     def slave_prefix(self):
         """Returns the slave prefix for this temperature sensor"""
-        return "%s-" % hex(self.type)[2:]
+        return "%s-" % hex(self.type.value)[2:]
 
     def exists(self):
         """Returns the sensors slave path"""
@@ -216,7 +217,7 @@ class W1ThermSensor:
         except IOError:
             raise NoSensorFoundError(
                 "Could not find sensor of type {} with id {}".format(
-                    self.type_name, self.id
+                    self.name, self.id
                 )
             )
 
@@ -281,7 +282,7 @@ class W1ThermSensor:
             :raises SensorNotReadyError: if the sensor is not ready yet
             :raises ResetValueError: if the sensor has still the initial value and no measurment
         """
-        if self.type in self.TYPES_12BIT_STANDARD:
+        if self.type.comply_12bit_standard():
             value = self.raw_sensor_count
             # the int part is 8 bit wide, 4 bit are left on 12 bit
             # so divide with 2^4 = 16 to get the celsius fractions

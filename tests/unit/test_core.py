@@ -11,6 +11,7 @@ from w1thermsensor.errors import (
     UnsupportedUnitError,
     W1ThermSensorError
 )
+from w1thermsensor.sensors import Sensor
 from w1thermsensor.units import Unit
 
 
@@ -18,11 +19,11 @@ from w1thermsensor.units import Unit
     "sensors",
     [
         tuple(),
-        ({"type": W1ThermSensor.THERM_SENSOR_DS18B20},),
+        ({"type": Sensor.DS18B20},),
         (
-            {"type": W1ThermSensor.THERM_SENSOR_DS18B20},
-            {"type": W1ThermSensor.THERM_SENSOR_DS1822},
-            {"type": W1ThermSensor.THERM_SENSOR_DS18S20},
+            {"type": Sensor.DS18B20},
+            {"type": Sensor.DS1822},
+            {"type": Sensor.DS18S20},
         ),
     ],
     indirect=["sensors"],
@@ -41,46 +42,46 @@ def test_get_available_sensors(sensors):
     [
         (
             (
-                {"type": W1ThermSensor.THERM_SENSOR_DS18S20},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18S20},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18B20},
+                {"type": Sensor.DS18S20},
+                {"type": Sensor.DS18S20},
+                {"type": Sensor.DS18B20},
             ),
-            [W1ThermSensor.THERM_SENSOR_DS18S20],
+            [Sensor.DS18S20],
         ),
         (
             (
-                {"type": W1ThermSensor.THERM_SENSOR_MAX31850K},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18S20},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18B20},
+                {"type": Sensor.MAX31850K},
+                {"type": Sensor.DS18S20},
+                {"type": Sensor.DS18B20},
             ),
-            [W1ThermSensor.THERM_SENSOR_DS28EA00],
+            [Sensor.DS28EA00],
         ),
         (
             (
-                {"type": W1ThermSensor.THERM_SENSOR_MAX31850K},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18S20},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18B20},
+                {"type": Sensor.MAX31850K},
+                {"type": Sensor.DS18S20},
+                {"type": Sensor.DS18B20},
             ),
-            [W1ThermSensor.THERM_SENSOR_MAX31850K],
+            [Sensor.MAX31850K],
         ),
         (
             (
-                {"type": W1ThermSensor.THERM_SENSOR_MAX31850K},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18S20},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18B20},
+                {"type": Sensor.MAX31850K},
+                {"type": Sensor.DS18S20},
+                {"type": Sensor.DS18B20},
             ),
-            [W1ThermSensor.THERM_SENSOR_MAX31850K, W1ThermSensor.THERM_SENSOR_DS18S20],
+            [Sensor.MAX31850K, Sensor.DS18S20],
         ),
         (
             (
-                {"type": W1ThermSensor.THERM_SENSOR_MAX31850K},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18S20},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18B20},
+                {"type": Sensor.MAX31850K},
+                {"type": Sensor.DS18S20},
+                {"type": Sensor.DS18B20},
             ),
             [
-                W1ThermSensor.THERM_SENSOR_MAX31850K,
-                W1ThermSensor.THERM_SENSOR_DS18S20,
-                W1ThermSensor.THERM_SENSOR_DS18B20,
+                Sensor.MAX31850K,
+                Sensor.DS18S20,
+                Sensor.DS18B20,
             ],
         ),
     ],
@@ -96,7 +97,17 @@ def test_get_available_sensors_of_type(sensors, sensor_types):
 
 
 @pytest.mark.parametrize(
-    "sensors", [({"type": W1ThermSensor.THERM_SENSOR_DS18B20},)], indirect=["sensors"]
+    "sensors", [({"type": Sensor.DS18B20},)], indirect=["sensors"]
+)
+def test_get_available_sensor_of_type_by_string_name(sensors):
+    # given & when
+    available_sensors = W1ThermSensor.get_available_sensors(["DS18B20"])
+    # then
+    assert len(available_sensors) == 1
+
+
+@pytest.mark.parametrize(
+    "sensors", [({"type": Sensor.DS18B20},)], indirect=["sensors"]
 )
 def test_init_first_sensor(sensors):
     """Test that first found sensor is initialized if no sensor specs given"""
@@ -114,15 +125,15 @@ def test_init_first_sensor(sensors):
     "sensors, sensor_type",
     [
         (
-            ({"type": W1ThermSensor.THERM_SENSOR_DS18B20},),
-            W1ThermSensor.THERM_SENSOR_DS18B20,
+            ({"type": Sensor.DS18B20},),
+            Sensor.DS18B20,
         ),
         (
             (
-                {"type": W1ThermSensor.THERM_SENSOR_DS18B20},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18S20},
+                {"type": Sensor.DS18B20},
+                {"type": Sensor.DS18S20},
             ),
-            W1ThermSensor.THERM_SENSOR_DS18B20,
+            Sensor.DS18B20,
         ),
     ],
     indirect=["sensors"],
@@ -141,11 +152,11 @@ def test_init_first_sensor_of_type(sensors, sensor_type):
 @pytest.mark.parametrize(
     "sensors, sensor_id",
     [
-        (({"id": "1", "type": W1ThermSensor.THERM_SENSOR_DS18B20},), "1"),
+        (({"id": "1", "type": Sensor.DS18B20},), "1"),
         (
             (
-                {"id": "2", "type": W1ThermSensor.THERM_SENSOR_DS18S20},
-                {"id": "1", "type": W1ThermSensor.THERM_SENSOR_DS18B20},
+                {"id": "2", "type": Sensor.DS18S20},
+                {"id": "1", "type": Sensor.DS18B20},
             ),
             "2",
         ),
@@ -167,19 +178,19 @@ def test_init_first_sensor_by_id(sensors, sensor_id):
     "sensors, sensor_specs",
     [
         (
-            ({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},),
-            {"sensor_type": W1ThermSensor.THERM_SENSOR_DS18B20, "sensor_id": "1"},
+            ({"type": Sensor.DS18B20, "id": "1"},),
+            {"sensor_type": Sensor.DS18B20, "sensor_id": "1"},
         ),
         (
-            ({"type": W1ThermSensor.THERM_SENSOR_DS18S20, "id": "2"},),
-            {"sensor_type": W1ThermSensor.THERM_SENSOR_DS18S20, "sensor_id": "2"},
+            ({"type": Sensor.DS18S20, "id": "2"},),
+            {"sensor_type": Sensor.DS18S20, "sensor_id": "2"},
         ),
         (
             (
-                {"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},
-                {"type": W1ThermSensor.THERM_SENSOR_DS18S20, "id": "2"},
+                {"type": Sensor.DS18B20, "id": "1"},
+                {"type": Sensor.DS18S20, "id": "2"},
             ),
-            {"sensor_type": W1ThermSensor.THERM_SENSOR_DS18S20, "sensor_id": "2"},
+            {"sensor_type": Sensor.DS18S20, "sensor_id": "2"},
         ),
     ],
     indirect=["sensors"],
@@ -298,7 +309,7 @@ def test_get_temperature_for_different_units_by_name_with_offsets(
 ):
     """Test getting offset sensor values for different units"""
     # given
-    sensor = W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS18B20, 0, offset, offset_unit)
+    sensor = W1ThermSensor(Sensor.DS18B20, 0, offset, offset_unit)
     # when
     temperature = sensor.get_temperature(result_unit)
     gotten_offset = sensor.get_offset(result_unit)
@@ -389,13 +400,13 @@ def test_get_temperature_in_multiple_units_with_offsets(
 @pytest.mark.parametrize(
     "sensors, expected_sensor_name",
     [
-        (({"type": W1ThermSensor.THERM_SENSOR_DS1822},), "DS1822"),
-        # The DS1825 sensor is the same as MAX31850K
-        (({"type": W1ThermSensor.THERM_SENSOR_DS1825},), "MAX31850K"),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18S20},), "DS18S20"),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20},), "DS18B20"),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS28EA00},), "DS28EA00"),
-        (({"type": W1ThermSensor.THERM_SENSOR_MAX31850K},), "MAX31850K"),
+        (({"type": Sensor.DS1822},), "DS1822"),
+        (({"type": Sensor.DS1825},), "DS1825"),
+        (({"type": Sensor.DS18S20},), "DS18S20"),
+        (({"type": Sensor.DS18B20},), "DS18B20"),
+        (({"type": Sensor.DS28EA00},), "DS28EA00"),
+        # The MAX31850K sensor is the same as DS1825
+        (({"type": Sensor.MAX31850K},), "DS1825"),
     ],
     indirect=["sensors"],
 )
@@ -404,7 +415,7 @@ def test_sensor_type_name(sensors, expected_sensor_name):
     # given
     sensor = W1ThermSensor()
     # when
-    sensor_name = sensor.type_name
+    sensor_name = sensor.name
     # then
     assert sensor_name == expected_sensor_name
 
@@ -420,7 +431,7 @@ def test_no_sensor_found(sensors):
     with pytest.raises(
         NoSensorFoundError, match="Could not find sensor of type DS1822 with id 1"
     ):
-        W1ThermSensor(W1ThermSensor.THERM_SENSOR_DS1822, "1")
+        W1ThermSensor(Sensor.DS1822, "1")
 
 
 @pytest.mark.parametrize("sensors", [({"ready": False},)], indirect=["sensors"])
@@ -460,7 +471,7 @@ def test_unsupported_unit_error(sensors):
     "sensors",
     [
         # just a sensor
-        ({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},)
+        ({"type": Sensor.DS18B20, "id": "1"},)
     ],
     indirect=["sensors"],
 )
@@ -479,7 +490,7 @@ def test_repr_protocol(sensors):
     "sensors",
     [
         # just a sensor
-        ({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},)
+        ({"type": Sensor.DS18B20, "id": "1"},)
     ],
     indirect=["sensors"],
 )
@@ -495,7 +506,7 @@ def test_str_protocol(sensors):
 
 @pytest.mark.parametrize(
     "sensors",
-    [({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},)],
+    [({"type": Sensor.DS18B20, "id": "1"},)],
     indirect=["sensors"],
 )
 def test_sensor_disconnect_after_init(sensors):
@@ -515,10 +526,10 @@ def test_sensor_disconnect_after_init(sensors):
 @pytest.mark.parametrize(
     "sensors, resolution",
     [
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 9),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 10),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 11),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 12),
+        (({"type": Sensor.DS18B20, "id": "1"},), 9),
+        (({"type": Sensor.DS18B20, "id": "1"},), 10),
+        (({"type": Sensor.DS18B20, "id": "1"},), 11),
+        (({"type": Sensor.DS18B20, "id": "1"},), 12),
     ],
     indirect=["sensors"],
 )
@@ -540,10 +551,10 @@ def test_setting_sensor_resolution(sensors, resolution, mocker):
 @pytest.mark.parametrize(
     "sensors, resolution",
     [
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 9),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 10),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 11),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 12),
+        (({"type": Sensor.DS18B20, "id": "1"},), 9),
+        (({"type": Sensor.DS18B20, "id": "1"},), 10),
+        (({"type": Sensor.DS18B20, "id": "1"},), 11),
+        (({"type": Sensor.DS18B20, "id": "1"},), 12),
     ],
     indirect=["sensors"],
 )
@@ -567,10 +578,10 @@ def test_setting_and_persisting_sensor_resolution(sensors, resolution, mocker):
 @pytest.mark.parametrize(
     "sensors, resolution",
     [
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 9),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 10),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 11),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 12),
+        (({"type": Sensor.DS18B20, "id": "1"},), 9),
+        (({"type": Sensor.DS18B20, "id": "1"},), 10),
+        (({"type": Sensor.DS18B20, "id": "1"},), 11),
+        (({"type": Sensor.DS18B20, "id": "1"},), 12),
     ],
     indirect=["sensors"],
 )
@@ -595,10 +606,10 @@ def test_setting_sensor_resolution_failure(sensors, resolution, mocker):
 @pytest.mark.parametrize(
     "sensors, resolution",
     [
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 9),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 10),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 11),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 12),
+        (({"type": Sensor.DS18B20, "id": "1"},), 9),
+        (({"type": Sensor.DS18B20, "id": "1"},), 10),
+        (({"type": Sensor.DS18B20, "id": "1"},), 11),
+        (({"type": Sensor.DS18B20, "id": "1"},), 12),
     ],
     indirect=["sensors"],
 )
@@ -620,8 +631,8 @@ def test_setting_and_persisting_sensor_resolution_failure(sensors, resolution, m
 @pytest.mark.parametrize(
     "sensors, resolution",
     [
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 8),
-        (({"type": W1ThermSensor.THERM_SENSOR_DS18B20, "id": "1"},), 13),
+        (({"type": Sensor.DS18B20, "id": "1"},), 8),
+        (({"type": Sensor.DS18B20, "id": "1"},), 13),
     ],
     indirect=["sensors"],
 )
