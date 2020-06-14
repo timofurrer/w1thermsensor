@@ -5,7 +5,6 @@ This module provides a temperature sensor of type w1 therm.
 import os
 import subprocess
 import time
-import warnings
 
 from .errors import (
     KernelModuleLoadError,
@@ -429,40 +428,6 @@ class W1ThermSensor:
                 )
 
         return True
-
-    def get_precision(self):
-        """Deprecated method to get the current sensor resolution.
-
-        Use ``W1ThermSensor.get_resolution`` instead.
-        """
-        warnings.simplefilter("always", DeprecationWarning)
-        warnings.warn(
-            (
-                "The W1ThermSensor.get_precision() is deprecated and "
-                "should be replaced by W1ThermSensor.get_resolution()."
-            ),
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
-        warnings.simplefilter("default", DeprecationWarning)
-        return self.get_resolution()
-
-    def set_precision(self, precision, persist=False):
-        """Deprecated method to set the sensor resolution.
-
-        Use ``W1ThermSensor.set_resolution`` instead.
-        """
-        warnings.simplefilter("always", DeprecationWarning)
-        warnings.warn(
-            (
-                "The W1ThermSensor.set_precision() is deprecated and "
-                "should be replaced by W1ThermSensor.set_resolution()."
-            ),
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
-        warnings.simplefilter("default", DeprecationWarning)
-        return self.set_precision(precision, persist=persist)
 
     def set_offset(self, offset, unit=DEGREES_C):
         """

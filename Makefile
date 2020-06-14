@@ -1,9 +1,11 @@
 .PHONY: tests deb
 
+W1THERMSENSOR_NO_KERNEL_MODULE=1
+
 tests:
 	@tox
 
-tests-all: tests docker-deb
+tests-all: docker-deb
 
 deb:
 	debuild -us -uc
@@ -22,17 +24,5 @@ deploy-docker-hub:
 	docker build . -t timofurrer/w1thermsensor
 	docker push timofurrer/w1thermsensor:latest
 
-lint:
-	pylint w1thermsensor
-
-install:
-	pip install .
-
-readme:
-	pandoc README.md --from markdown --to rst -o README.rst
-
-publish: readme
-	python setup.py sdist register upload
-
 manpages:
-	python setup.py --command-packages=click_man.commands man_pages --target docs/
+	python3 setup.py --command-packages=click_man.commands man_pages --target docs/
