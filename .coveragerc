@@ -2,6 +2,7 @@
 branch = True
 source =
     w1thermsensor
+relative_files = True
 
 [paths]
 source =
