@@ -29,7 +29,7 @@ INSTALL_REQUIRES = [
 ]
 #: Holds runtime requirements and development requirements
 EXTRAS_REQUIRES = {
-    "tests": ["coverage>=5", "pytest>5", "pytest-mock"],
+    "tests": ["coverage[toml]>=5.0.2", "pytest>5", "pytest-mock"],
 }
 
 EXTRAS_REQUIRES["dev"] = (
