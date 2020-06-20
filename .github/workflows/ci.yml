@@ -43,19 +43,10 @@ jobs:
         run: |
           coverage combine
           coverage report
-      - name: Upload coverage to Codecov
-        # codecov only runs on Linux
-        if: startsWith(matrix.os, 'ubuntu-')
-        uses: codecov/codecov-action@v1.0.0
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
 
       - name: Publish code coverage report to Code Climate
-        if: startsWith(matrix.os, 'ubuntu-')
-        uses: paambaati/codeclimate-action@v2.6.0
+        if: always()
+        uses: paambaati/codeclimate-action@v2.5.3
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
