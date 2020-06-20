@@ -251,10 +251,10 @@ class W1ThermSensor:
         """
 
         # two complement bytes, MSB comes after LSB!
-        bytes = self.raw_sensor_strings[1].split()
+        sensor_bytes = self.raw_sensor_strings[1].split()
 
         # Convert from 16 bit hex string into int
-        int16 = int(bytes[1] + bytes[0], 16)
+        int16 = int(sensor_bytes[1] + sensor_bytes[0], 16)
 
         # check first signing bit
         if int16 >> 15 == 0:
@@ -291,6 +291,8 @@ class W1ThermSensor:
             :raises SensorNotReadyError: if the sensor is not ready yet
             :raises ResetValueError: if the sensor has still the initial value and no measurment
         """
+        factor = Unit.get_conversion_function(Unit.DEGREES_C, unit)
+
         if self.type.comply_12bit_standard():
             value = self.raw_sensor_count
             # the int part is 8 bit wide, 4 bit are left on 12 bit
@@ -301,11 +303,9 @@ class W1ThermSensor:
             if value == self.SENSOR_RESET_VALUE:
                 raise ResetValueError(self)
 
-            factor = Unit.get_conversion_function(Unit.DEGREES_C, unit)
             return factor(value + self.offset)
 
         # Fallback to precalculated value for other sensor types
-        factor = Unit.get_conversion_function(Unit.DEGREES_C, unit)
         return factor(
             (self.raw_sensor_temp * self.RAW_VALUE_TO_DEGREE_CELSIUS_FACTOR)
             + self.offset
