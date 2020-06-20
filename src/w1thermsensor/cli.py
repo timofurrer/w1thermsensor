@@ -190,9 +190,9 @@ def get(id_, hwid, type_, unit, resolution, as_json, offset):
                 "No sensor with id {0} available. ".format(id_)
                 + "Use the ls command to show all available sensors."
             )
-            if CLICK_MAJOR_VERSION >= 7:
+            if CLICK_MAJOR_VERSION >= 7:  # pragma: no cover
                 raise click.BadOptionUsage("--id", error_msg)
-            else:
+            else:  # pragma: no cover
                 raise click.BadOptionUsage(error_msg)
     else:
         sensor = W1ThermSensor(type_, hwid)
@@ -251,9 +251,9 @@ def resolution(resolution, id_, hwid, type_):
                 "No sensor with id {0} available. ".format(id_)
                 + "Use the ls command to show all available sensors."
             )
-            if CLICK_MAJOR_VERSION >= 7:
+            if CLICK_MAJOR_VERSION >= 7:  # pragma: no cover
                 raise click.BadOptionUsage("--id", error_msg)
-            else:
+            else:  # pragma: no cover
                 raise click.BadOptionUsage(error_msg)
     else:
         sensor = W1ThermSensor(type_, hwid)

@@ -28,7 +28,8 @@ INSTALL_REQUIRES = ["click"]
 #: Holds runtime requirements and development requirements
 EXTRAS_REQUIRES = {}
 
-EXTRAS_REQUIRES["tests"] = ["coverage[toml]>=5.0.2", "pytest>5", "pytest-mock"]
+EXTRAS_REQUIRES["async"] = ["aiofiles"]
+EXTRAS_REQUIRES["tests"] = EXTRAS_REQUIRES["async"] + ["coverage[toml]>=5.0.2", "pytest>5", "pytest-mock", "pytest-asyncio"]
 EXTRAS_REQUIRES["dev"] = (
     EXTRAS_REQUIRES["tests"] + ["flake8", "black", "check-manifest", "towncrier"]
 )
