@@ -8,7 +8,7 @@ A Python package and CLI tool to work with w1 temperature sensors.
 :license: MIT, see LICENSE for more details.
 """
 
-from .cli import cli
+from .cli import cli  # pragma: no cover
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     cli()

@@ -138,6 +138,30 @@ def test_init_first_sensor_of_type(sensors, sensor_type):
     assert sensor.type == sensor_type
 
 
+@pytest.mark.parametrize("sensors", [({"type": Sensor.DS1822},)], indirect=["sensors"])
+def test_init_first_sensor_of_type_if_not_existent(sensors):
+    # then
+    with pytest.raises(NoSensorFoundError, match="Could not find any sensor of type DS18B20"):
+        # when
+        W1ThermSensor(Sensor.DS18B20)
+
+
+@pytest.mark.parametrize("sensors", [({"type": Sensor.DS1822},)], indirect=["sensors"])
+def test_init_first_sensor_of_type_if_sensor_type_not_existent(sensors):
+    # then
+    with pytest.raises(NoSensorFoundError, match="Could not find any sensor of type NON_EXISTENT"):
+        # when
+        W1ThermSensor("NON_EXISTENT")
+
+
+@pytest.mark.parametrize("sensors", [({"type": Sensor.DS1822, "id": "1"},)], indirect=["sensors"])
+def test_init_first_sensor_of_id_if_not_existent(sensors):
+    # then
+    with pytest.raises(NoSensorFoundError, match="Could not find sensor with id 2"):
+        # when
+        W1ThermSensor(sensor_id=2)
+
+
 @pytest.mark.parametrize(
     "sensors, sensor_id",
     [
@@ -520,7 +544,7 @@ def test_sensor_disconnect_after_init(sensors):
 
     # when & then
     with pytest.raises(NoSensorFoundError, match=expected_error_msg):
-        sensor.raw_sensor_temp
+        sensor.get_raw_sensor_strings()
 
 
 @pytest.mark.parametrize(

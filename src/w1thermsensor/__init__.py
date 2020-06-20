@@ -18,6 +18,7 @@ __download_url__ = "http://github.com/timofurrer/w1thermsensor"
 
 import os
 
+from w1thermsensor.async_core import AsyncW1ThermSensor  # noqa
 from w1thermsensor.core import W1ThermSensor  # noqa
 from w1thermsensor.errors import (  # noqa
     KernelModuleLoadError,
@@ -33,5 +34,5 @@ from w1thermsensor.units import Unit  # noqa
 
 # Load kernel modules automatically upon import.
 # Set the environment variable W1THERMSENSOR_NO_KERNEL_MODULE=1
-if os.environ.get("W1THERMSENSOR_NO_KERNEL_MODULE", "0") != "1":
+if os.environ.get("W1THERMSENSOR_NO_KERNEL_MODULE", "0") != "1":  # pragma: no cover
     load_kernel_modules()

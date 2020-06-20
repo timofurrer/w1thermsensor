@@ -61,9 +61,8 @@ class UnsupportedUnitError(W1ThermSensorError):
 class ResetValueError(W1ThermSensorError):
     """Exception when the reset value is yield from the hardware"""
 
-    def __init__(self, sensor):
+    def __init__(self, sensor_id):
         super().__init__(
             "Sensor {} yields the reset value of 85 degree millicelsius. "
-            "Please check the hardware.".format(sensor.id)
+            "Please check the hardware.".format(sensor_id)
         )
-        self.sensor = sensor

@@ -62,6 +62,10 @@ This possibility is supported on all distributions:
 
 *Note: maybe root privileges are required*
 
+Use the `async` extra to add support for asyncio and `AsyncW1ThermSensor`:
+
+    pip install w1thermsensor[async]
+
 ### On Raspbian using `apt-get`
 
 If you are using the `w1thermsensor` module on a Rasperry Pi running Raspbian you can install it from the official repository:
@@ -177,6 +181,31 @@ W1THERMSENSOR_NO_KERNEL_MODULE=1 python my_awesome_thermsensor_script.py
 Every other values assigned to `W1THERMSENSOR_NO_KERNEL_MODULE` will case `w1thermsensor` to load the kernel modules.
 
 *Note: the examples above also apply for the CLI tool usage. See below.*
+
+### Async Interface
+
+The `w1thermsensor` package implements an async interface `AsyncW1ThermSensor` for asyncio.
+
+The following methods are supported:
+
+* `get_temperature()`
+* `get_temperatures()`
+* `get_resolution()`
+
+For example:
+
+```python
+from w1thermsensor import AsyncW1ThermSensor, Unit
+
+sensor = AsyncW1ThermSensor()
+temperature_in_celsius = await sensor.get_temperature()
+temperature_in_fahrenheit = await sensor.get_temperature(Unit.DEGREES_F)
+temperature_in_all_units = await sensor.get_temperatures([
+    Unit.DEGREES_C,
+    Unit.DEGREES_F,
+    Unit.KELVIN])
+```
+
 
 ## Usage as CLI tool
 
