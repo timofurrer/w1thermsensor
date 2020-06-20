@@ -211,8 +211,7 @@ class W1ThermSensor:
         """Returns the sensors slave path"""
         return self.sensorpath.exists()
 
-    @property
-    def raw_sensor_strings(self):
+    def get_raw_sensor_strings(self):
         """
             Reads the raw strings from the kernel module sysfs interface
 
@@ -235,6 +234,9 @@ class W1ThermSensor:
 
         return data
 
+    def get_raw_sensor_temperature_line(self):
+        return self.get_raw_sensor_strings()[1]
+
     @property
     def raw_sensor_count(self):
         """
@@ -251,7 +253,7 @@ class W1ThermSensor:
         """
 
         # two complement bytes, MSB comes after LSB!
-        sensor_bytes = self.raw_sensor_strings[1].split()
+        sensor_bytes = self.get_raw_sensor_temperature_line().split()
 
         # Convert from 16 bit hex string into int
         int16 = int(sensor_bytes[1] + sensor_bytes[0], 16)
@@ -275,7 +277,7 @@ class W1ThermSensor:
         """
 
         # return the value in millicelsius
-        return float(self.raw_sensor_strings[1].split("=")[1])
+        return float(self.get_raw_sensor_temperature_line().split("=")[1])
 
     def get_temperature(self, unit=Unit.DEGREES_C):
         """
@@ -338,7 +340,7 @@ class W1ThermSensor:
             :returns: sensor resolution from 9-12 bits
             :rtype: int
         """
-        config_str = self.raw_sensor_strings[1].split()[
+        config_str = self.get_raw_sensor_temperature_line().split()[
             4
         ]  # Byte 5 is the config register
         bit_base = (
