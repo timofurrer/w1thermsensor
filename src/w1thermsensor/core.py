@@ -126,42 +126,14 @@ class W1ThermSensor:
             :raises NoSensorFoundError: if the sensor with the given type and/or id
                                         does not exist or is not connected
         """
-        if not sensor_type and not sensor_id:  # take first found sensor
-            for _ in range(self.RETRY_ATTEMPTS):
-                s = self.get_available_sensors()
-                if s:
-                    self.type, self.id = s[0].type, s[0].id
-                    break
-                time.sleep(self.RETRY_DELAY_SECONDS)
-            else:
-                raise NoSensorFoundError("Could not find any sensor")
+        if not sensor_type and not sensor_id:
+            self._init_with_first_sensor()
         elif not sensor_id:
-            s = self.get_available_sensors([sensor_type])
-            if not s:
-                try:
-                    sensor_type_name = Sensor(sensor_type)
-                except ValueError:  # no known sensor, create anyway for error message
-                    sensor_type = hex(sensor_type)
-                error_msg = "Could not find any sensor of type {}".format(
-                    sensor_type_name
-                )
-                raise NoSensorFoundError(error_msg)
-
-            self.type = sensor_type
-            self.id = s[0].id
-        elif not sensor_type:  # get sensor by id
-            sensor = next(
-                (s for s in self.get_available_sensors() if s.id == sensor_id), None
-            )
-            if not sensor:
-                raise NoSensorFoundError(
-                    "Could not find sensor with id {}".format(sensor_id)
-                )
-            self.type = sensor.type
-            self.id = sensor.id
+            self._init_with_first_sensor_by_type(sensor_type)
+        elif not sensor_type:
+            self._init_with_first_sensor_by_id(sensor_id)
         else:
-            self.type = sensor_type
-            self.id = sensor_id
+            self._init_with_type_and_id(sensor_type, sensor_id)
 
         # store path to sensor
         self.sensorpath = (
@@ -174,6 +146,45 @@ class W1ThermSensor:
             )
 
         self.set_offset(offset, offset_unit)
+
+    def _init_with_first_sensor(self):
+        for _ in range(self.RETRY_ATTEMPTS):
+            s = self.get_available_sensors()
+            if s:
+                self._init_with_type_and_id(s[0].type, s[0].id)
+                break
+            time.sleep(self.RETRY_DELAY_SECONDS)
+        else:
+            raise NoSensorFoundError("Could not find any sensor")
+
+    def _init_with_first_sensor_by_type(self, sensor_type):
+        s = self.get_available_sensors([sensor_type])
+        if not s:
+            try:
+                sensor_type_name = Sensor(sensor_type)
+            except ValueError:  # no known sensor, create anyway for error message
+                sensor_type = hex(sensor_type)
+            error_msg = "Could not find any sensor of type {}".format(
+                sensor_type_name
+            )
+            raise NoSensorFoundError(error_msg)
+
+        self._init_with_type_and_id(sensor_type, s[0].id)
+
+    def _init_with_first_sensor_by_id(self, sensor_id):
+        sensor = next(
+            (s for s in self.get_available_sensors() if s.id == sensor_id), None
+        )
+        if not sensor:
+            raise NoSensorFoundError(
+                "Could not find sensor with id {}".format(sensor_id)
+            )
+
+        self._init_with_type_and_id(sensor.type, sensor.id)
+
+    def _init_with_type_and_id(self, sensor_type, sensor_id):
+        self.type = sensor_type
+        self.id = sensor_id
 
     def __repr__(self):
         """
