@@ -4,9 +4,6 @@ include *.rst
 include *.txt
 recursive-include tests *.py
 include *.yml
-include .coveragerc
-include Dockerfile
-include Makefile
 include pylintrc
 include tox.ini
 include *.toml
