@@ -28,7 +28,7 @@ jobs:
       - name: Lint with flake8
         run: |
           python -m pip install flake8
-          flake8 --show-source src/ tests/ examples/
+          python -m flake8 --show-source src/ tests/ examples/
       - name: Check Manifest
         run: |
           pip install check-manifest
@@ -36,31 +36,20 @@ jobs:
       - name: Unit Test with pytest
         run: |
           python -m pip install .
-          coverage run -p -m pytest
+          python -m coverage run -p -m pytest
         env:
           W1THERMSENSOR_NO_KERNEL_MODULE: 1
       - name: Report code coverage
+        if: always()
         run: |
-          coverage combine
-          coverage report
-      - name: Upload coverage to Codecov
-        # codecov only runs on Linux
-        if: startsWith(matrix.os, 'ubuntu-')
-        uses: codecov/codecov-action@v1.0.0
+          python -m coverage combine
+          python -m coverage report
+          python -m coverage xml
+      - name: "Upload coverage to Codecov"
+        if: always()
+        uses: "codecov/codecov-action@v1"
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-
-      - name: Publish code coverage report to Code Climate
-        if: startsWith(matrix.os, 'ubuntu-')
-        uses: paambaati/codeclimate-action@v2.6.0
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        with:
-          coverageCommand: coverage xml
-          debug: true
+          fail_ci_if_error: true
 
   debian-stretch-config:
     runs-on: ${{ matrix.os }}
@@ -87,7 +76,7 @@ jobs:
       - name: Unit Test with pytest
         run: |
           python -m pip install .
-          coverage run -p -m pytest
+          python -m coverage run -p -m pytest
         env:
           W1THERMSENSOR_NO_KERNEL_MODULE: 1
 
@@ -116,7 +105,7 @@ jobs:
       - name: Unit Test with pytest
         run: |
           python -m pip install .
-          coverage run -p -m pytest
+          python -m coverage run -p -m pytest
         env:
           W1THERMSENSOR_NO_KERNEL_MODULE: 1
 

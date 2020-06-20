@@ -15,3 +15,14 @@ known_first_party = "w1thermsensor"
 known_third_party = "click,pytest"
 multi_line_output = 3
 line_length = 100
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ["w1thermsensor"]
+
+[tool.coverage.paths]
+source = ["src", ".tox/*/site-packages"]
+
+[tool.coverage.report]
+show_missing = true
