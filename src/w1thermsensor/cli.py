@@ -59,27 +59,49 @@ def cli():
 @click.option(
     "-j", "--json", "as_json", flag_value=True, help="Output result in JSON format"
 )
-def ls(types, as_json):  # pylint: disable=invalid-name
+@click.option(
+    "-p",
+    "--resolution",
+    "resolution",
+    is_flag=True,
+    help="also display resolution for each sensor",
+)
+def ls(types, as_json, resolution):  # pylint: disable=invalid-name
     """List all available sensors"""
     sensors = W1ThermSensor.get_available_sensors(types)
 
     if as_json:
-        data = [
-            {"id": i, "hwid": s.id, "type": s.name} for i, s in enumerate(sensors, 1)
-        ]
+        if resolution:
+            data = [
+                {"id": i, "hwid": s.id, "type": s.name, "resolution":s.get_resolution()} for i, s in enumerate(sensors, 1)
+            ]
+        else:
+            data = [
+                {"id": i, "hwid": s.id, "type": s.name} for i, s in enumerate(sensors, 1)
+            ]
         click.echo(json.dumps(data, indent=4, sort_keys=True))
     else:
         click.echo(
             "Found {0} sensors:".format(click.style(str(len(sensors)), bold=True))
         )
         for i, sensor in enumerate(sensors, 1):
-            click.echo(
-                "  {0}. HWID: {1} Type: {2}".format(
-                    click.style(str(i), bold=True),
-                    click.style(sensor.id, bold=True),
-                    click.style(sensor.name, bold=True),
+            if resolution:
+                click.echo(
+                    "  {0}. HWID: {1} Type: {2} Resolution: {3}".format(
+                        click.style(str(i), bold=True),
+                        click.style(sensor.id, bold=True),
+                        click.style(sensor.name, bold=True),
+                        click.style(str(sensor.get_resolution()), bold=True),
+                    )
                 )
-            )
+            else:
+                click.echo(
+                    "  {0}. HWID: {1} Type: {2}".format(
+                        click.style(str(i), bold=True),
+                        click.style(sensor.id, bold=True),
+                        click.style(sensor.name, bold=True),
+                    )
+                )
 
 
 @cli.command()
