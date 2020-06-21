@@ -20,7 +20,7 @@ class Sensor(IntEnum):
     DS1825 = 0x3B
     MAX31850K = 0x3B
 
-    def comply_12bit_standard(self):
+    def comply_12bit_standard(self) -> bool:
         return self in {
             Sensor.DS1822,
             Sensor.DS18B20,
@@ -29,5 +29,5 @@ class Sensor(IntEnum):
         }
 
     @classmethod
-    def from_id_string(cls, id_string):
+    def from_id_string(cls, id_string: str) -> "Sensor":
         return Sensor(int(id_string, 16))

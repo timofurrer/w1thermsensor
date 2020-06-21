@@ -11,6 +11,7 @@ A Python package and CLI tool to work with w1 temperature sensors.
 import subprocess
 import time
 from pathlib import Path
+from typing import Iterable, List, Optional, Union
 
 from w1thermsensor.errors import (
     NoSensorFoundError,
@@ -79,7 +80,9 @@ class W1ThermSensor:
     RETRY_DELAY_SECONDS = 1.0 / RETRY_ATTEMPTS
 
     @classmethod
-    def get_available_sensors(cls, types=None):
+    def get_available_sensors(
+        cls, types: Optional[Iterable[Union[Sensor, str]]] = None
+    ) -> List["W1ThermSensor"]:
         """Return all available sensors.
 
         :param list types: the type of the sensor to look for.
@@ -106,8 +109,12 @@ class W1ThermSensor:
         ]
 
     def __init__(
-        self, sensor_type=None, sensor_id=None, offset=0.0, offset_unit=Unit.DEGREES_C
-    ):
+        self,
+        sensor_type: Optional[Sensor] = None,
+        sensor_id: Optional[str] = None,
+        offset: float = 0.0,
+        offset_unit: Unit = Unit.DEGREES_C,
+    ) -> None:
         """Initializes a W1ThermSensor.
 
         If the W1ThermSensor base directory is not found it will automatically load
@@ -129,12 +136,12 @@ class W1ThermSensor:
         """
         if not sensor_type and not sensor_id:
             self._init_with_first_sensor()
-        elif not sensor_id:
+        elif not sensor_id and sensor_type:
             self._init_with_first_sensor_by_type(sensor_type)
-        elif not sensor_type:
+        elif not sensor_type and sensor_id:
             self._init_with_first_sensor_by_id(sensor_id)
         else:
-            self._init_with_type_and_id(sensor_type, sensor_id)
+            self._init_with_type_and_id(sensor_type, sensor_id)  # type: ignore
 
         # store path to sensor
         self.sensorpath = (
@@ -158,19 +165,16 @@ class W1ThermSensor:
         else:
             raise NoSensorFoundError("Could not find any sensor")
 
-    def _init_with_first_sensor_by_type(self, sensor_type):
+    def _init_with_first_sensor_by_type(self, sensor_type: Sensor) -> None:
         s = self.get_available_sensors([sensor_type])
         if not s:
-            try:
-                sensor_type_name = Sensor(sensor_type).name
-            except (ValueError, KeyError):  # no known sensor, create anyway for error message
-                sensor_type_name = sensor_type
-            error_msg = "Could not find any sensor of type {}".format(sensor_type_name)
-            raise NoSensorFoundError(error_msg)
+            raise NoSensorFoundError(
+                "Could not find any sensor of type {}".format(sensor_type.name)
+            )
 
         self._init_with_type_and_id(sensor_type, s[0].id)
 
-    def _init_with_first_sensor_by_id(self, sensor_id):
+    def _init_with_first_sensor_by_id(self, sensor_id: str) -> None:
         sensor = next(  # pragma: no cover
             (s for s in self.get_available_sensors() if s.id == sensor_id), None
         )
@@ -181,11 +185,11 @@ class W1ThermSensor:
 
         self._init_with_type_and_id(sensor.type, sensor.id)
 
-    def _init_with_type_and_id(self, sensor_type, sensor_id):
+    def _init_with_type_and_id(self, sensor_type: Sensor, sensor_id: str) -> None:
         self.type = sensor_type
         self.id = sensor_id
 
-    def __repr__(self):  # pragma: no cover
+    def __repr__(self) -> str:  # pragma: no cover
         """Returns a string that eval can turn back into this object
 
         :returns: representation of this instance
@@ -195,7 +199,7 @@ class W1ThermSensor:
             self.__class__.__name__, str(self.type), self.id
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns a pretty string respresentation
 
         :returns: representation of this instance
@@ -206,20 +210,20 @@ class W1ThermSensor:
         )
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Returns the type name of this temperature sensor"""
         return self.type.name
 
     @property
-    def slave_prefix(self):
+    def slave_prefix(self) -> str:
         """Returns the slave prefix for this temperature sensor"""
         return "%s-" % hex(self.type.value)[2:]
 
-    def exists(self):
+    def exists(self) -> bool:
         """Returns the sensors slave path"""
         return self.sensorpath.exists()
 
-    def get_raw_sensor_strings(self):
+    def get_raw_sensor_strings(self) -> List[str]:
         """Reads the raw strings from the kernel module sysfs interface
 
         :returns: raw strings containing all bytes from the sensor memory
@@ -241,7 +245,7 @@ class W1ThermSensor:
 
         return data
 
-    def get_temperature(self, unit=Unit.DEGREES_C):
+    def get_temperature(self, unit: Unit = Unit.DEGREES_C) -> float:
         """Returns the temperature in the specified unit
 
         :param int unit: the unit of the temperature requested
@@ -265,7 +269,7 @@ class W1ThermSensor:
             self.SENSOR_RESET_VALUE,
         )
 
-    def get_temperatures(self, units):
+    def get_temperatures(self, units: Iterable[Unit]) -> List[float]:
         """Returns the temperatures in the specified units
 
         :param list units: the units for the sensor temperature
@@ -284,7 +288,7 @@ class W1ThermSensor:
             for unit in units
         ]
 
-    def get_resolution(self):
+    def get_resolution(self) -> int:
         """Get the current resolution from the sensor.
 
         :returns: sensor resolution from 9-12 bits
@@ -293,7 +297,7 @@ class W1ThermSensor:
         raw_temperature_line = self.get_raw_sensor_strings()[1]
         return evaluate_resolution(raw_temperature_line)
 
-    def set_resolution(self, resolution, persist=False):
+    def set_resolution(self, resolution: int, persist: bool = False) -> bool:
         """Set the resolution of the sensor for the next readings.
 
         If the ``persist`` argument is set to ``False`` this value
@@ -343,7 +347,7 @@ class W1ThermSensor:
 
         return True
 
-    def set_offset(self, offset, unit=Unit.DEGREES_C):
+    def set_offset(self, offset: float, unit: Unit = Unit.DEGREES_C) -> None:
         """Set an offset to be applied to each temperature reading.
 
         This is used to tune sensors which report values
@@ -368,15 +372,13 @@ class W1ThermSensor:
         factor = Unit.get_conversion_function(unit, Unit.DEGREES_C)
         self.offset = factor(offset) - factor(0)
 
-    def get_offset(self, unit=Unit.DEGREES_C):
-        """
-            Get the offset set for this sensor. If no offset has been set, 0.0
-            is returned.
+    def get_offset(self, unit: Unit = Unit.DEGREES_C) -> float:
+        """Get the offset set for this sensor. If no offset has been set, 0.0 is returned.
 
-            :param: int unit: The unit to return the temperature offset in
+        :param: int unit: The unit to return the temperature offset in
 
-            :returns: The offset set for this temperature sensor
-            :rtype: float
+        :returns: The offset set for this temperature sensor
+        :rtype: float
         """
 
         # We need to subtract `factor(0)` from the result, in order to
@@ -387,17 +389,17 @@ class W1ThermSensor:
 
 
 def evaluate_temperature(
-    raw_temperature_line,
-    raw_temperature_to_degree_celsius_factor,
-    target_temperature_unit,
-    sensor_type,
-    sensor_id,
-    sensor_offset,
-    sensor_reset_value,
-):
+    raw_temperature_line: str,
+    raw_temperature_to_degree_celsius_factor: float,
+    target_temperature_unit: Unit,
+    sensor_type: Sensor,
+    sensor_id: str,
+    sensor_offset: float,
+    sensor_reset_value: float,
+) -> float:
     factor = Unit.get_conversion_function(Unit.DEGREES_C, target_temperature_unit)
     if sensor_type.comply_12bit_standard():
-        value = convert_raw_temperature_to_sensor_count(raw_temperature_line)
+        value = float(convert_raw_temperature_to_sensor_count(raw_temperature_line))
         # the int part is 8 bit wide, 4 bit are left on 12 bit
         # so divide with 2^4 = 16 to get the celsius fractions
         value /= 16.0
@@ -413,7 +415,7 @@ def evaluate_temperature(
     return factor(value + sensor_offset)
 
 
-def evaluate_resolution(raw_temperature_line):
+def evaluate_resolution(raw_temperature_line: str) -> int:
     # Byte 5 is the config register
     config_str = raw_temperature_line.split()[4]
     # Bit 5-6 contains the resolution, cut off the rest
@@ -421,7 +423,7 @@ def evaluate_resolution(raw_temperature_line):
     return bit_base + 9  # min. is 9 bits
 
 
-def convert_raw_temperature_to_sensor_count(raw_temperature_line):
+def convert_raw_temperature_to_sensor_count(raw_temperature_line: str) -> int:
     """Convert the raw temperature from the kernel module to the raw integer ADC count
 
     Note: Must be divided depending on the max. sensor resolution
@@ -446,7 +448,7 @@ def convert_raw_temperature_to_sensor_count(raw_temperature_line):
         return int16 - (1 << 16)  # substract 2^16 to get correct negative value
 
 
-def get_raw_temperature(raw_temperature_line):
+def get_raw_temperature(raw_temperature_line: str) -> float:
     """Get the raw temperature from a temperature line
 
     :returns: the milicelsius value read from the sensor

@@ -22,20 +22,23 @@ jobs:
       - name: Setup build and test environment
         run: |
           python -m pip install --upgrade pip setuptools wheel
-      - name: Build Python Package
-        run: |
-          python -m pip install '.[tests]'
-      - name: Lint with flake8
-        run: |
-          python -m pip install flake8
-          python -m flake8 --show-source src/ tests/ examples/
       - name: Check Manifest
         run: |
           pip install check-manifest
           check-manifest
+      - name: Lint with flake8
+        run: |
+          python -m pip install flake8
+          python -m flake8 --show-source src/ tests/ examples/
+      - name: Static Code Analysis with mypy
+        run: |
+          python -m pip install mypy
+          python -m mypy src/ tests/ examples/
+      - name: Build Python Package
+        run: |
+          python -m pip install '.[tests]'
       - name: Unit Test with pytest
         run: |
-          python -m pip install .
           python -m coverage run -p -m pytest
         env:
           W1THERMSENSOR_NO_KERNEL_MODULE: 1

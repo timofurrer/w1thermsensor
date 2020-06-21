@@ -15,7 +15,7 @@ from w1thermsensor.core import W1ThermSensor
 from w1thermsensor.errors import KernelModuleLoadError
 
 
-def load_kernel_modules():
+def load_kernel_modules() -> None:
     """
     Load kernel modules needed by the temperature sensor
     if they are not already loaded.
