@@ -10,6 +10,7 @@ A Python package and CLI tool to work with w1 temperature sensors.
 
 import subprocess
 import time
+from functools import lru_cache
 from pathlib import Path
 from typing import Iterable, List, Optional, Union
 
@@ -388,6 +389,7 @@ class W1ThermSensor:
         return factor(self.offset) - factor(0)
 
 
+@lru_cache()
 def evaluate_temperature(
     raw_temperature_line: str,
     raw_temperature_to_degree_celsius_factor: float,
@@ -415,6 +417,7 @@ def evaluate_temperature(
     return factor(value + sensor_offset)
 
 
+@lru_cache()
 def evaluate_resolution(raw_temperature_line: str) -> int:
     # Byte 5 is the config register
     config_str = raw_temperature_line.split()[4]
@@ -423,6 +426,7 @@ def evaluate_resolution(raw_temperature_line: str) -> int:
     return bit_base + 9  # min. is 9 bits
 
 
+@lru_cache()
 def convert_raw_temperature_to_sensor_count(raw_temperature_line: str) -> int:
     """Convert the raw temperature from the kernel module to the raw integer ADC count
 
@@ -448,6 +452,7 @@ def convert_raw_temperature_to_sensor_count(raw_temperature_line: str) -> int:
         return int16 - (1 << 16)  # substract 2^16 to get correct negative value
 
 
+@lru_cache()
 def get_raw_temperature(raw_temperature_line: str) -> float:
     """Get the raw temperature from a temperature line
 
@@ -457,5 +462,4 @@ def get_raw_temperature(raw_temperature_line: str) -> float:
     :raises NoSensorFoundError: if the sensor could not be found
     :raises SensorNotReadyError: if the sensor is not ready yet
     """
-    # return the value in millicelsius
     return float(raw_temperature_line.split("=")[1])
