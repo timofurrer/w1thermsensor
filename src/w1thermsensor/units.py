@@ -9,6 +9,7 @@ A Python package and CLI tool to work with w1 temperature sensors.
 """
 
 from enum import Enum
+from typing import Callable
 
 from w1thermsensor.errors import UnsupportedUnitError
 
@@ -19,7 +20,9 @@ class Unit(Enum):
     KELVIN = "kelvin"
 
     @classmethod
-    def get_conversion_function(cls, unit_from, unit_to):
+    def get_conversion_function(
+        cls, unit_from: "Unit", unit_to: "Unit"
+    ) -> Callable[[float], float]:
         """Returns the unit factor depending on the 'from' and 'to' unit constants
 
         :param int unit_from: the unit to convert from
