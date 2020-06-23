@@ -11,11 +11,7 @@ A Python package and CLI tool to work with w1 temperature sensors.
 from typing import Iterable, List
 
 from w1thermsensor.core import W1ThermSensor, evaluate_resolution, evaluate_temperature
-from w1thermsensor.errors import (
-    NoSensorFoundError,
-    SensorNotReadyError,
-    W1ThermSensorError,
-)
+from w1thermsensor.errors import NoSensorFoundError, SensorNotReadyError, W1ThermSensorError
 from w1thermsensor.units import Unit
 
 
