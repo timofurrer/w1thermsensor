@@ -73,11 +73,18 @@ def ls(types, as_json, resolution):  # pylint: disable=invalid-name
     if as_json:
         if resolution:
             data = [
-                {"id": i, "hwid": s.id, "type": s.name, "resolution":s.get_resolution()} for i, s in enumerate(sensors, 1)
+                {
+                    "id": i,
+                    "hwid": s.id,
+                    "type": s.name,
+                    "resolution": s.get_resolution(),
+                }
+                for i, s in enumerate(sensors, 1)
             ]
         else:
             data = [
-                {"id": i, "hwid": s.id, "type": s.name} for i, s in enumerate(sensors, 1)
+                {"id": i, "hwid": s.id, "type": s.name}
+                for i, s in enumerate(sensors, 1)
             ]
         click.echo(json.dumps(data, indent=4, sort_keys=True))
     else:
