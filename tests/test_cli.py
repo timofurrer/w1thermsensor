@@ -86,7 +86,7 @@ def test_list_available_sensors_with_resolution(sensors):
     # given
     runner = CliRunner()
     # when
-    result = runner.invoke(cli, ["ls", '--resolution'])
+    result = runner.invoke(cli, ["ls", "--resolution"])
     # then
     assert result.exit_code == 0
     # expect the correct amount of sensors being detected

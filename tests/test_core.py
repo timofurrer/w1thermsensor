@@ -19,7 +19,7 @@ from w1thermsensor.errors import (
     ResetValueError,
     SensorNotReadyError,
     UnsupportedUnitError,
-    W1ThermSensorError
+    W1ThermSensorError,
 )
 from w1thermsensor.sensors import Sensor
 from w1thermsensor.units import Unit
