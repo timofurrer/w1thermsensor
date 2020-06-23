@@ -71,6 +71,34 @@ def test_list_available_sensors_json(sensors):
         assert '"hwid": "{0}"'.format(sensor["id"]) in result.output
         assert '"type": "{0}"'.format(sensor["type"].name) in result.output
 
+@pytest.mark.parametrize(
+    "sensors",
+    [
+        tuple(),
+        ({"type": Sensor.DS18B20},),
+        ({"type": Sensor.DS18B20}, {"type": Sensor.DS1822}, {"type": Sensor.DS18S20},),
+    ],
+    indirect=["sensors"],
+)
+def test_list_available_sensors_with_resolution_json(sensors):
+    """Test listing available sensors in json"""
+    # given
+    runner = CliRunner()
+    # when
+    result = runner.invoke(cli, ["ls", "--json", "--resolution"])
+    # then
+    assert result.exit_code == 0
+    # is valid JSON document
+    json_output = json.loads(result.output)
+    print(json_output)
+    # expect the correct amount of sensors
+    assert len(json_output) == len(sensors)
+    # expect every sensor is detected
+    for sensor in sensors:
+        assert '"hwid": "{0}"'.format(sensor["id"]) in result.output
+        assert '"type": "{0}"'.format(sensor["type"].name) in result.output
+        assert '"resolution": 12' in result.output
+
 
 @pytest.mark.parametrize(
     "sensors, sensor_types",
