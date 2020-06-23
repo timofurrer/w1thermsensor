@@ -71,6 +71,7 @@ def test_list_available_sensors_json(sensors):
         assert '"hwid": "{0}"'.format(sensor["id"]) in result.output
         assert '"type": "{0}"'.format(sensor["type"].name) in result.output
 
+
 @pytest.mark.parametrize(
     "sensors",
     [
