@@ -81,8 +81,35 @@ def test_list_available_sensors_json(sensors):
     ],
     indirect=["sensors"],
 )
+def test_list_available_sensors_with_resolution(sensors):
+    """Test listing available sensors with resolution"""
+    # given
+    runner = CliRunner()
+    # when
+    result = runner.invoke(cli, ["ls", '--resolution'])
+    # then
+    assert result.exit_code == 0
+    # expect the correct amount of sensors being detected
+    assert "Found {0} sensors:".format(len(sensors)) in result.output
+    # expect every sensor is detected
+    for sensor in sensors:
+        expected_output = "HWID: {0} Type: {1} Resolution: 12".format(
+            sensor["id"], sensor["type"].name
+        )
+        assert expected_output in result.output
+
+
+@pytest.mark.parametrize(
+    "sensors",
+    [
+        tuple(),
+        ({"type": Sensor.DS18B20},),
+        ({"type": Sensor.DS18B20}, {"type": Sensor.DS1822}, {"type": Sensor.DS18S20},),
+    ],
+    indirect=["sensors"],
+)
 def test_list_available_sensors_with_resolution_json(sensors):
-    """Test listing available sensors in json"""
+    """Test listing available sensors with resolution in json"""
     # given
     runner = CliRunner()
     # when
