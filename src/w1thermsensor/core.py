@@ -18,7 +18,7 @@ from w1thermsensor.errors import (
     NoSensorFoundError,
     ResetValueError,
     SensorNotReadyError,
-    W1ThermSensorError
+    W1ThermSensorError,
 )
 from w1thermsensor.sensors import Sensor
 from w1thermsensor.units import Unit

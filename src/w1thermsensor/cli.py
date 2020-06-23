@@ -60,7 +60,7 @@ def cli():
     "-j", "--json", "as_json", flag_value=True, help="Output result in JSON format"
 )
 @click.option(
-    "-p",
+    "-r",
     "--resolution",
     "resolution",
     is_flag=True,
@@ -129,7 +129,7 @@ def ls(types, as_json, resolution):  # pylint: disable=invalid-name
     help="The unit of the temperature. Defaults to Celsius",
 )
 @click.option(
-    "-p",
+    "-r",
     "--resolution",
     type=click.IntRange(9, 12),
     help="use the given resolution for this read",
@@ -189,7 +189,7 @@ def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
     help="The unit of the temperature. Defaults to Celsius",
 )
 @click.option(
-    "-p",
+    "-r",
     "--resolution",
     type=click.IntRange(9, 12),
     help="use the given resolution for this read",
