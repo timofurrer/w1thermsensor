@@ -12,7 +12,7 @@ template = "changelog/template.rst"
 
 [tool.isort]
 known_first_party = "w1thermsensor"
-known_third_party = "click,pytest"
+known_third_party = "click,pytest,aiofiles"
 multi_line_output = 3
 line_length = 100
 
