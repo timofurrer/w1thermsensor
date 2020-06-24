@@ -18,7 +18,8 @@ from w1thermsensor.errors import (
     NoSensorFoundError,
     ResetValueError,
     SensorNotReadyError,
-    W1ThermSensorError
+    W1ThermSensorError,
+    UnsupportedSensorError,
 )
 from w1thermsensor.sensors import Sensor
 from w1thermsensor.units import Unit
@@ -97,8 +98,8 @@ class W1ThermSensor:
         else:
             try:
                 types = [s if isinstance(s, Sensor) else Sensor[s] for s in types]
-            except KeyError:  # sensor type does not exist
-                return []
+            except KeyError as exc:  # sensor type does not exist
+                raise UnsupportedSensorError(str(exc), (s.name for s in Sensor))
 
         def is_sensor(dir_name):
             return any(dir_name.startswith(hex(x.value)[2:]) for x in types)
