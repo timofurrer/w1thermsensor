@@ -700,7 +700,7 @@ def test_handling_reset_value(sensors):
     sensor = W1ThermSensor()
     expected_error_msg = (
         "Sensor {} yields the reset value of 85 degree millicelsius. "
-        "Please check the hardware.".format(sensor.id)
+        "Please check the power-supply for the sensor.".format(sensor.id)
     )
 
     # when & then

@@ -64,5 +64,5 @@ class ResetValueError(W1ThermSensorError):
     def __init__(self, sensor_id):
         super().__init__(
             "Sensor {} yields the reset value of 85 degree millicelsius. "
-            "Please check the hardware.".format(sensor_id)
+            "Please check the power-supply for the sensor.".format(sensor_id)
         )
