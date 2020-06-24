@@ -19,6 +19,7 @@ from w1thermsensor.errors import (
     ResetValueError,
     SensorNotReadyError,
     UnsupportedUnitError,
+    UnsupportedSensorError,
     W1ThermSensorError
 )
 from w1thermsensor.sensors import Sensor
@@ -104,6 +105,17 @@ def test_get_available_sensor_of_type_by_string_name(sensors):
     available_sensors = W1ThermSensor.get_available_sensors(["DS18B20"])
     # then
     assert len(available_sensors) == 1
+
+
+@pytest.mark.parametrize("sensors", [({"type": Sensor.DS18B20},)], indirect=["sensors"])
+def test_return_no_sensors_for_invalid_type(sensors):
+    # given
+    not_supported_sensor_name = "NOT-SUPPORTED"
+
+    # then
+    with pytest.raises(UnsupportedSensorError):
+        # when
+        W1ThermSensor.get_available_sensors([not_supported_sensor_name])
 
 
 @pytest.mark.parametrize("sensors", [({"type": Sensor.DS18B20},)], indirect=["sensors"])
