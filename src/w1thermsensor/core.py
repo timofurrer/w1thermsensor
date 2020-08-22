@@ -242,7 +242,7 @@ class W1ThermSensor:
                 "Could not find sensor of type {} with id {}".format(self.name, self.id)
             )
 
-        if data[0].strip()[-3:] != "YES" or "00 00 00 00 00 00 00 00 00" in data[0]:
+        if len(data) < 1 or data[0].strip()[-3:] != "YES" or "00 00 00 00 00 00 00 00 00" in data[0]:
             raise SensorNotReadyError(self)
 
         return data
