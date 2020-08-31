@@ -62,7 +62,9 @@ class AsyncW1ThermSensor(W1ThermSensor):
             )
 
         if (
-            data[0].strip()[-3:] != "YES" or "00 00 00 00 00 00 00 00 00" in data[0]
+            len(data) < 1
+            or data[0].strip()[-3:] != "YES"
+            or "00 00 00 00 00 00 00 00 00" in data[0]
         ):  # pragma: no cover
             raise SensorNotReadyError(self)
 
