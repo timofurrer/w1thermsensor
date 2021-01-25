@@ -33,7 +33,7 @@ jobs:
       - name: Static Code Analysis with mypy
         run: |
           python -m pip install mypy
-          python -m mypy src/ tests/
+          python -m mypy --ignore-missing-imports src/ tests/
       - name: Build Python Package
         run: |
           python -m pip install '.[tests]'
