@@ -65,9 +65,9 @@ body:
     label: Guidelines
     description: Please notice our contribution guidelines
     options:
-      - label: I have read the contributing guide lines at https://github.com/timofurrer/w1thermsensor/blob/master/.github/CONTRIBUTING.md
+      - label: I have read the contributing guide lines at [CONTRIBUTING](https://github.com/timofurrer/w1thermsensor/blob/master/.github/CONTRIBUTING.md)
         required: true
-      - label: I have read and respect the code of conduct at https://github.com/timofurrer/w1thermsensor/blob/master/.github/CODE_OF_CONDUCT.md
+      - label: I have read and respect the code of conduct at [Code of Conduct](https://github.com/timofurrer/w1thermsensor/blob/master/.github/CODE_OF_CONDUCT.md)
         required: true
       - label: "I have searched the existing issues and I'm convinced that mine is new"
         required: true
