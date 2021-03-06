@@ -1,0 +1,73 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: [bug, triage]
+assignees:
+- timofurrer
+issue_body: true
+body:
+
+- type: markdown
+  attributes:
+    value: |
+      Thanks for taking the time to fill out this bug report!
+        
+- type: textarea
+  attributes:
+    label: Erroneous Behavior
+    description: Please tell us the erroneous behavior you are experiencing
+    placeholder: Tell us what you see!
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Expected Behavior
+    description: Please tell us what you would expect
+    placeholder: Tell us what you expected to see!
+  validations:
+    required: true
+    
+- type: textarea
+  attributes:
+    label: Steps to reproduce
+    description: Please provide some additional information on how to reproduce your issue
+    placeholder: Tell us how we can see the error ourselves!
+  validations:
+    required: true
+    
+- type: input
+  attributes:
+    label: Version
+    description: What version of w1thermsensor are you using?
+    placeholder: 2.x.x
+  validations:
+    required: true
+
+- type: input
+  attributes:
+    label: Python Version
+    description: What Python version are you using?
+    placeholder: 3.x
+  validations:
+    required: true
+
+- type: input
+  attributes:
+    label: Operating System
+    description: What Operating System are you using?
+    placeholder: Raspberry Pi
+  validations:
+    required: true
+    
+- type: checkboxes
+  attributes:
+    label: Guidelines
+    description: Please notice our contribution guidelines
+    options:
+      - label: I have read the contributing guide lines at https://github.com/timofurrer/w1thermsensor/blob/master/.github/CONTRIBUTING.md
+        required: true
+      - label: I have read and respect the code of conduct at https://github.com/timofurrer/w1thermsensor/blob/master/.github/CODE_OF_CONDUCT.md
+        required: true
+      - label: "I have searched the existing issues and I'm convinced that mine is new"
+        required: true
