@@ -112,7 +112,7 @@ The DS18B20 sensor with the ID `00000588806a` will be taken.
 ```python
 from w1thermsensor import W1ThermSensor, Sensor
 
-sensor = W1ThermSensor(Sensor.DS18B20, "00000588806a")
+sensor = W1ThermSensor(sensor_type=Sensor.DS18B20, sensor_id="00000588806a")
 temperature_in_celsius = sensor.get_temperature()
 ```
 
@@ -142,7 +142,7 @@ Some w1 therm sensors support changing the resolution for the temperature reads.
 `w1thermsensor` enables to do so with the `W1ThermSensor.set_resolution()` method:
 
 ```python
-sensor = W1ThermSensor(Sensor.DS18B20, "00000588806a")
+sensor = W1ThermSensor(sensor_type=Sensor.DS18B20, sensor_id="00000588806a")
 sensor.set_resolution(9)
 ```
 
@@ -155,7 +155,7 @@ resolution is stored into the EEPROM. Since the EEPROM has a limited
 amount of writes (>50k), this command should be used wisely.
 
 ```python
-sensor = W1ThermSensor(Sensor.DS18B20, "00000588806a")
+sensor = W1ThermSensor(sensor_type=Sensor.DS18B20, sensor_id="00000588806a")
 sensor.set_resolution(9, persist=True)
 ```
 
