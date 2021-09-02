@@ -4,7 +4,6 @@ title: "[Feature]: "
 labels: [feature request, triage]
 assignees:
 - timofurrer
-issue_body: true
 body:
 
 - type: markdown
