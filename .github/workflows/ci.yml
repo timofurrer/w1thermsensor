@@ -53,35 +53,6 @@ jobs:
         with:
           fail_ci_if_error: true
 
-  debian-stretch-config:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        python-version: [3.5]
-        os: [ubuntu-16.04]
-
-    steps:
-      - uses: actions/checkout@v1
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Setup build and test environment
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-      - name: Build Python Package
-        run: |
-          python -m pip install '.[tests]'
-      - name: Manually install dependencies matching the distribution
-        run: |
-          python -m pip install -U click==6.6
-      - name: Unit Test with pytest
-        run: |
-          python -m pip install .
-          python -m coverage run -p -m pytest
-        env:
-          W1THERMSENSOR_NO_KERNEL_MODULE: 1
-
   debian-buster-config:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -133,7 +104,7 @@ jobs:
 
   publish:
     #needs: [build, docs]
-    needs: [ci, debian-stretch-config, debian-buster-config]
+    needs: [ci, debian-buster-config]
     runs-on: ubuntu-latest
 
     steps:
