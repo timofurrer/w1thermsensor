@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 jobs:
   ci:
-
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -32,7 +31,7 @@ jobs:
           python -m flake8 --show-source src/ tests/
       - name: Static Code Analysis with mypy
         run: |
-          python -m pip install mypy
+          python -m pip install mypy types-aiofiles
           python -m mypy --ignore-missing-imports src/ tests/
       - name: Build Python Package
         run: |
@@ -113,24 +112,24 @@ jobs:
           W1THERMSENSOR_NO_KERNEL_MODULE: 1
 
   #docs:
-    #runs-on: ubuntu-latest
+  #runs-on: ubuntu-latest
 
-    #steps:
-      #- uses: actions/checkout@v1
-      #- name: Set up Python 3.7
-        #uses: actions/setup-python@v1
-        #with:
-          #python-version: 3.7
-      #- name: Setup docs environment
-        #run: |
-          #python -m pip install ".[docs]"
-      #- name: Build documentation with sphinx
-        #run: |
-          #sphinx-build -W -b html -d doctrees docs/source docs/build/html
-          #sphinx-build -W -b doctest -d doctrees docs/source docs/build/html
-      #- name: Generate CHANGELOG
-        #run: |
-          #towncrier --draft
+  #steps:
+  #- uses: actions/checkout@v1
+  #- name: Set up Python 3.7
+  #uses: actions/setup-python@v1
+  #with:
+  #python-version: 3.7
+  #- name: Setup docs environment
+  #run: |
+  #python -m pip install ".[docs]"
+  #- name: Build documentation with sphinx
+  #run: |
+  #sphinx-build -W -b html -d doctrees docs/source docs/build/html
+  #sphinx-build -W -b doctest -d doctrees docs/source docs/build/html
+  #- name: Generate CHANGELOG
+  #run: |
+  #towncrier --draft
 
   publish:
     #needs: [build, docs]
