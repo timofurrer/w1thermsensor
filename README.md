@@ -47,10 +47,41 @@ After that, don't forget to reboot.
                                                    |
                                                    |
     Raspi GPIO 4    Pin 7 -----------------------------   Data   DS18B20
-
+           (BCM)    (BOARD)
 
     Raspi GND       Pin 6 -----------------------------   GND    DS18B20
 
+### Soft-pull-up
+
+Alternatively to the hardware pull-up made by a physical resistor, or to the above mentioned software configuration `dtoverlay=w1-gpio,pullup="y"` in /boot/config.txt, the following soft pull-up can be used:
+
+```python
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+```
+
+When using this software pull-up, 1-Wire devices will be visible to the kernel only while the program pulls the GPIO pin up.
+
+### Hw device connection verification
+
+Run the following command:
+
+```bash
+ls -l /sys/bus/w1/devices
+```
+
+You should check the availability of one or more filenames starting with "28-".
+
+Filenames starting with "00-" possibly mean that the pull-up resistor is missing.
+
+1-Wire devices can be plugged in dynamically and are visible to the kernel driver just after their hw connection.
+
+To test reading the temperature, issue the following command:
+
+```bash
+for i in /sys/bus/w1/devices/28-*; do cat $i/w1_slave; done
+```
 
 ## Installation
 
