@@ -97,9 +97,11 @@ class W1ThermSensor:
             types = list(Sensor)
         else:
             try:
-                types = [s if isinstance(s, Sensor) else Sensor[s] for s in types]
+                types = [s if isinstance(s, Sensor) else Sensor[s]
+                         for s in types]
             except KeyError as exc:  # sensor type does not exist
-                raise UnsupportedSensorError(str(exc), (s.name for s in Sensor))
+                raise UnsupportedSensorError(
+                    str(exc), (s.name for s in Sensor))
 
         def is_sensor(dir_name):
             return any(dir_name.startswith(hex(x.value)[2:]) for x in types)
@@ -147,12 +149,14 @@ class W1ThermSensor:
 
         # store path to sensor
         self.sensorpath = (
-            self.BASE_DIRECTORY / (self.slave_prefix + self.id) / self.SLAVE_FILE
+            self.BASE_DIRECTORY / (self.slave_prefix +
+                                   self.id) / self.SLAVE_FILE
         )
 
         if not self.exists():
             raise NoSensorFoundError(
-                "Could not find sensor of type {} with id {}".format(self.name, self.id)
+                "Could not find sensor of type {} with id {}".format(
+                    self.name, self.id)
             )
 
         self.set_offset(offset, offset_unit)
@@ -239,7 +243,8 @@ class W1ThermSensor:
                 data = f.readlines()
         except IOError:
             raise NoSensorFoundError(
-                "Could not find sensor of type {} with id {}".format(self.name, self.id)
+                "Could not find sensor of type {} with id {}".format(
+                    self.name, self.id)
             )
 
         if (
@@ -339,7 +344,8 @@ class W1ThermSensor:
         if exitcode != 0:
             raise W1ThermSensorError(
                 "Failed to change resolution to {0} bit. "
-                "You might have to be root to change the resolution".format(resolution)
+                "You might have to be root to change the resolution".format(
+                    resolution)
             )
 
         if persist:
@@ -404,9 +410,11 @@ def evaluate_temperature(
     sensor_offset: float,
     sensor_reset_value: float,
 ) -> float:
-    factor = Unit.get_conversion_function(Unit.DEGREES_C, target_temperature_unit)
+    factor = Unit.get_conversion_function(
+        Unit.DEGREES_C, target_temperature_unit)
     if sensor_type.comply_12bit_standard():
-        value = float(convert_raw_temperature_to_sensor_count(raw_temperature_line))
+        value = float(convert_raw_temperature_to_sensor_count(
+            raw_temperature_line))
         # the int part is 8 bit wide, 4 bit are left on 12 bit
         # so divide with 2^4 = 16 to get the celsius fractions
         value /= 16.0
@@ -454,7 +462,8 @@ def convert_raw_temperature_to_sensor_count(raw_temperature_line: str) -> int:
     if int16 >> 15 == 0:
         return int16  # positive values need no processing
     else:
-        return int16 - (1 << 16)  # substract 2^16 to get correct negative value
+        # substract 2^16 to get correct negative value
+        return int16 - (1 << 16)
 
 
 @lru_cache()

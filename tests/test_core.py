@@ -95,7 +95,8 @@ def test_get_available_sensors_of_type(sensors, sensor_types):
     # given & when
     available_sensors = W1ThermSensor.get_available_sensors(sensor_types)
     # then
-    expected_sensor_amount = len([s for s in sensors if s["type"] in sensor_types])
+    expected_sensor_amount = len(
+        [s for s in sensors if s["type"] in sensor_types])
     assert len(available_sensors) == expected_sensor_amount
 
 
@@ -175,7 +176,8 @@ def test_init_first_sensor_of_id_if_not_existent(sensors):
     [
         (({"id": "1", "type": Sensor.DS18B20},), "1"),
         (
-            ({"id": "2", "type": Sensor.DS18S20}, {"id": "1", "type": Sensor.DS18B20},),
+            ({"id": "2", "type": Sensor.DS18S20}, {
+             "id": "1", "type": Sensor.DS18B20},),
             "2",
         ),
     ],
@@ -204,7 +206,8 @@ def test_init_first_sensor_by_id(sensors, sensor_id):
             {"sensor_type": Sensor.DS18S20, "sensor_id": "2"},
         ),
         (
-            ({"type": Sensor.DS18B20, "id": "1"}, {"type": Sensor.DS18S20, "id": "2"},),
+            ({"type": Sensor.DS18B20, "id": "1"}, {
+             "type": Sensor.DS18S20, "id": "2"},),
             {"sensor_type": Sensor.DS18S20, "sensor_id": "2"},
         ),
     ],
@@ -359,7 +362,8 @@ def test_get_temperature_for_different_units_by_name_with_offsets(
 @pytest.mark.parametrize(
     "sensors, units, expected_temperatures",
     [
-        (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},), [Unit.DEGREES_C], [20.0],),
+        (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
+         [Unit.DEGREES_C], [20.0],),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
             [Unit.DEGREES_C, Unit.DEGREES_F],
@@ -600,7 +604,8 @@ def test_setting_and_persisting_sensor_resolution(sensors, resolution, mocker):
     # when
     sensor.set_resolution(resolution, persist=True)
     expected_calls = [
-        mocker.call("echo {0} > {1}".format(resolution, sensor.sensorpath), shell=True),
+        mocker.call("echo {0} > {1}".format(
+            resolution, sensor.sensorpath), shell=True),
         mocker.call("echo 0 > {0}".format(sensor.sensorpath), shell=True),
     ]
     # then

@@ -7,17 +7,19 @@ from setuptools import find_packages, setup
 #: Holds a list of packages to install with the binary distribution
 PACKAGES = find_packages(where="src")
 META_FILE = Path("src").absolute() / "w1thermsensor" / "__init__.py"
-KEYWORDS = ["w1", "w1-therm", "therm", "sensor", "raspberry", "raspberry pi", "gpio", "ds"]
+KEYWORDS = ["w1", "w1-therm", "therm", "sensor",
+            "raspberry", "raspberry pi", "gpio", "ds"]
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: Implementation",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -29,9 +31,11 @@ INSTALL_REQUIRES = ["click"]
 EXTRAS_REQUIRES = {}
 
 EXTRAS_REQUIRES["async"] = ["aiofiles"]
-EXTRAS_REQUIRES["tests"] = EXTRAS_REQUIRES["async"] + ["coverage[toml]>=5.0.2", "pytest>5", "pytest-mock", "pytest-asyncio"]
+EXTRAS_REQUIRES["tests"] = EXTRAS_REQUIRES["async"] + \
+    ["coverage[toml]>=5.0.2", "pytest>5", "pytest-mock", "pytest-asyncio"]
 EXTRAS_REQUIRES["dev"] = (
-    EXTRAS_REQUIRES["tests"] + ["flake8", "black", "check-manifest", "towncrier"]
+    EXTRAS_REQUIRES["tests"] + ["flake8",
+                                "black", "check-manifest", "towncrier"]
 )
 
 #: Holds the contents of the README file
@@ -78,7 +82,7 @@ setup(
     packages=PACKAGES,
     package_dir={"": "src"},
     include_package_data=True,
-    python_requires=">=3.5.*",
+    python_requires=">=3.7",
     install_requires=INSTALL_REQUIRES,
     extras_require=EXTRAS_REQUIRES,
     entry_points={
