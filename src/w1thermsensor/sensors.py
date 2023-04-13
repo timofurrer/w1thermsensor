@@ -8,10 +8,10 @@ A Python package and CLI tool to work with w1 temperature sensors.
 :license: MIT, see LICENSE for more details.
 """
 
-from enum import IntEnum
+from enum import Enum
 
 
-class Sensor(IntEnum):
+class Sensor(int, Enum):
     #: Holds information about supported w1therm sensors
     DS18S20 = 0x10
     DS1822 = 0x22
