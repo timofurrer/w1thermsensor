@@ -4,6 +4,9 @@
 # emacs backup files
 *~
 
+# pycharm files
+.idea/
+
 # python bytecode files
 *.pyc
 
@@ -17,6 +20,7 @@ w1thermsensor.egg-info
 
 # coverage data
 .coverage*
+coverage.xml
 
 # ignore temporary tox environments
 .tox

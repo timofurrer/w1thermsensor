@@ -213,6 +213,57 @@ Every other values assigned to `W1THERMSENSOR_NO_KERNEL_MODULE` will case `w1the
 
 *Note: the examples above also apply for the CLI tool usage. See below.*
 
+### Correcting Temperatures / Sensor Calibration
+Calibrating the temperature sensor relies on obtaining a measured high and measured low value that
+have known reference values that can be used for correcting the sensor's readings.  The simplest
+way to do this is to measure the melting point and boiling point of water since those values are
+known.  This method will only work with waterproof sensors - you will need a different mechanism
+for obtaining measured values if you are not using a waterproof sensor.
+
+In order to obtain the `measured_low_point`, fill a container to 80% with ice and add water to the
+ice until the ice is floating and water is at the surface.  Submerse your sensor in the ice water,
+ensuring it does not touch the container.  Wait 5 minutes for the temperature to stabilize in the
+container and then once the sensor readings have stabilized for approximately 30 seconds (readings
+remain consistent), record the value as the `measured_low_point`
+
+In order to obtain the `measured_high_point`, bring a pot of water to a rapid boil.  Place your
+sensor in the boiling water, ensuring that it does not touch the pot.  Allow the sensor to come up
+to temperature and once it has stabilized for approximately 30 seconds (readings remain
+consistent), record the value as the `measured_high_point`
+
+Generally speaking, the `reference_low_point` should be left at 0.0 unless you have some special
+situation that changes the melting point of water.  Because melting does not involve a gaseous
+phase change, the effects of air pressure and altitude on the melting point are minimal.
+
+The `reference_high_point` on the other hand is greatly impacted by air pressure (and thus
+altitude).  For example, the boiling point of water is 100.0C at sea level, and is approximately
+72C at the summit of Mount Everest (8848m above sea level).  While air pressure is what actually
+dictates boiling point, generally speaking altitude is a close enough approximation for most use
+cases.  [Engineering Toolbox](https://www.engineeringtoolbox.com/boiling-points-water-altitude-d_1344.html)
+has a page that gives you the boiling point of water at different altitudes.
+
+This method is derived from [this Instructable](https://www.instructables.com/Calibration-of-DS18B20-Sensor-With-Arduino-UNO/).
+
+```python
+from w1thermsensor.calibration_data import CalibrationData
+from w1thermsensor import W1ThermSensor, Unit
+
+calibration_data = CalibrationData(
+        measured_high_point=measured_high_point,
+        measured_low_point=measured_low_point,
+        reference_high_point=reference_high_point,
+        reference_low_point=reference_low_point, # optional, defaults to 0.0
+    )
+sensor = W1ThermSensor(calibration_data=calibration_data)
+
+corrected_temperature_in_celsius = sensor.get_corrected_temperature()
+corrected_temperature_in_fahrenheit = sensor.get_corrected_temperature(Unit.DEGREES_F)
+corrected_temperature_in_all_units = sensor.get_corrected_temperatures([
+    Unit.DEGREES_C,
+    Unit.DEGREES_F,
+    Unit.KELVIN])
+```
+
 ### Async Interface
 
 The `w1thermsensor` package implements an async interface `AsyncW1ThermSensor` for asyncio.

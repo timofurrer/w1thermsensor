@@ -11,7 +11,12 @@ A Python package and CLI tool to work with w1 temperature sensors.
 from typing import Iterable, List
 
 from w1thermsensor.core import W1ThermSensor, evaluate_resolution, evaluate_temperature
-from w1thermsensor.errors import NoSensorFoundError, SensorNotReadyError, W1ThermSensorError
+from w1thermsensor.errors import (
+    InvalidCalibrationDataError,
+    NoSensorFoundError,
+    SensorNotReadyError,
+    W1ThermSensorError
+)
 from w1thermsensor.units import Unit
 
 
@@ -81,7 +86,7 @@ class AsyncW1ThermSensor(W1ThermSensor):
         :raises UnsupportedUnitError: if the unit is not supported
         :raises NoSensorFoundError: if the sensor could not be found
         :raises SensorNotReadyError: if the sensor is not ready yet
-        :raises ResetValueError: if the sensor has still the initial value and no measurment
+        :raises ResetValueError: if the sensor has still the initial value and no measurement
         """
         raw_temperature_line = (await self.get_raw_sensor_strings())[1]
         return evaluate_temperature(
@@ -93,6 +98,33 @@ class AsyncW1ThermSensor(W1ThermSensor):
             self.offset,
             self.SENSOR_RESET_VALUE,
         )
+
+    async def get_corrected_temperature(self, unit: Unit = Unit.DEGREES_C) -> float:  # type: ignore
+        """Returns the temperature in the specified unit, corrected based on the calibration data
+
+        :param int unit: the unit of the temperature requested
+
+        :returns: the temperature in the given unit
+        :rtype: float
+
+        :raises UnsupportedUnitError: if the unit is not supported
+        :raises NoSensorFoundError: if the sensor could not be found
+        :raises SensorNotReadyError: if the sensor is not ready yet
+        :raises ResetValueError: if the sensor has still the initial value and no measurement
+        :raises InvalidCalibrationDataError: if the calibration data was not provided at creation
+        """
+
+        if not self.calibration_data:
+            raise InvalidCalibrationDataError(
+                "calibration_data must be provided to provide corrected temperature readings",
+                None,
+            )
+
+        raw_temperature = await self.get_temperature(Unit.DEGREES_C)
+        corrected_temperature = self.calibration_data.correct_temperature_for_calibration_data(
+            raw_temperature)
+
+        return Unit.get_conversion_function(Unit.DEGREES_C, unit)(corrected_temperature)
 
     async def get_temperatures(self, units: Iterable[Unit]) -> List[float]:  # type: ignore
         """Returns the temperatures in the specified units
@@ -110,6 +142,28 @@ class AsyncW1ThermSensor(W1ThermSensor):
         sensor_value = await self.get_temperature(Unit.DEGREES_C)
         return [
             Unit.get_conversion_function(Unit.DEGREES_C, unit)(sensor_value)
+            for unit in units
+        ]
+
+    async def get_corrected_temperatures(self,  # type: ignore
+                                         units: Iterable[Unit]) -> List[float]:
+        """Returns the temperatures in the specified units, corrected based on the calibration data
+
+        :param list units: the units for the sensor temperature
+
+        :returns: the sensor temperature in the given units. The order of
+        the temperatures matches the order of the given units.
+        :rtype: list
+
+        :raises UnsupportedUnitError: if the unit is not supported
+        :raises NoSensorFoundError: if the sensor could not be found
+        :raises SensorNotReadyError: if the sensor is not ready yet
+        :raises InvalidCalibrationDataError: if the calibration data was not provided at creation
+        """
+
+        corrected_temperature = await self.get_corrected_temperature(Unit.DEGREES_C)
+        return [
+            Unit.get_conversion_function(Unit.DEGREES_C, unit)(corrected_temperature)
             for unit in units
         ]
 
