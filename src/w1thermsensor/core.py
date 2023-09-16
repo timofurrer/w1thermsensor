@@ -14,12 +14,14 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Iterable, List, Optional, Union
 
+from w1thermsensor.calibration_data import CalibrationData
 from w1thermsensor.errors import (
+    InvalidCalibrationDataError,
     NoSensorFoundError,
     ResetValueError,
     SensorNotReadyError,
-    W1ThermSensorError,
     UnsupportedSensorError,
+    W1ThermSensorError
 )
 from w1thermsensor.sensors import Sensor
 from w1thermsensor.units import Unit
@@ -118,6 +120,7 @@ class W1ThermSensor:
         sensor_id: Optional[str] = None,
         offset: float = 0.0,
         offset_unit: Unit = Unit.DEGREES_C,
+        calibration_data: Optional[CalibrationData] = None,
     ) -> None:
         """Initializes a W1ThermSensor.
 
@@ -152,6 +155,8 @@ class W1ThermSensor:
             self.BASE_DIRECTORY / (self.slave_prefix +
                                    self.id) / self.SLAVE_FILE
         )
+
+        self.calibration_data = calibration_data
 
         if not self.exists():
             raise NoSensorFoundError(
@@ -267,7 +272,7 @@ class W1ThermSensor:
         :raises UnsupportedUnitError: if the unit is not supported
         :raises NoSensorFoundError: if the sensor could not be found
         :raises SensorNotReadyError: if the sensor is not ready yet
-        :raises ResetValueError: if the sensor has still the initial value and no measurment
+        :raises ResetValueError: if the sensor has still the initial value and no measurement
         """
         raw_temperature_line = self.get_raw_sensor_strings()[1]
         return evaluate_temperature(
@@ -279,6 +284,33 @@ class W1ThermSensor:
             self.offset,
             self.SENSOR_RESET_VALUE,
         )
+
+    def get_corrected_temperature(self, unit: Unit = Unit.DEGREES_C) -> float:
+        """Returns the temperature in the specified unit, corrected based on the calibration data
+
+        :param int unit: the unit of the temperature requested
+
+        :returns: the temperature in the given unit
+        :rtype: float
+
+        :raises UnsupportedUnitError: if the unit is not supported
+        :raises NoSensorFoundError: if the sensor could not be found
+        :raises SensorNotReadyError: if the sensor is not ready yet
+        :raises ResetValueError: if the sensor has still the initial value and no measurement
+        :raises InvalidCalibrationDataError: if the calibration data was not provided at creation
+        """
+
+        if not self.calibration_data:
+            raise InvalidCalibrationDataError(
+                "calibration_data must be provided to provide corrected temperature readings",
+                None,
+            )
+
+        raw_temperature = self.get_temperature(Unit.DEGREES_C)
+        corrected_temperature = self.calibration_data.correct_temperature_for_calibration_data(
+            raw_temperature)
+
+        return Unit.get_conversion_function(Unit.DEGREES_C, unit)(corrected_temperature)
 
     def get_temperatures(self, units: Iterable[Unit]) -> List[float]:
         """Returns the temperatures in the specified units
@@ -296,6 +328,27 @@ class W1ThermSensor:
         sensor_value = self.get_temperature(Unit.DEGREES_C)
         return [
             Unit.get_conversion_function(Unit.DEGREES_C, unit)(sensor_value)
+            for unit in units
+        ]
+
+    def get_corrected_temperatures(self, units: Iterable[Unit]) -> List[float]:
+        """Returns the temperatures in the specified units, corrected based on the calibration data
+
+        :param list units: the units for the sensor temperature
+
+        :returns: the sensor temperature in the given units. The order of
+        the temperatures matches the order of the given units.
+        :rtype: list
+
+        :raises UnsupportedUnitError: if the unit is not supported
+        :raises NoSensorFoundError: if the sensor could not be found
+        :raises SensorNotReadyError: if the sensor is not ready yet
+        :raises InvalidCalibrationDataError: if the calibration data was not provided at creation
+        """
+
+        corrected_temperature = self.get_corrected_temperature(Unit.DEGREES_C)
+        return [
+            Unit.get_conversion_function(Unit.DEGREES_C, unit)(corrected_temperature)
             for unit in units
         ]
 
@@ -462,7 +515,7 @@ def convert_raw_temperature_to_sensor_count(raw_temperature_line: str) -> int:
     if int16 >> 15 == 0:
         return int16  # positive values need no processing
     else:
-        # substract 2^16 to get correct negative value
+        # subtract 2^16 to get correct negative value
         return int16 - (1 << 16)
 
 

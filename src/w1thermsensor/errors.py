@@ -74,3 +74,12 @@ class ResetValueError(W1ThermSensorError):
             "Sensor {} yields the reset value of 85 degree millicelsius. "
             "Please check the power-supply for the sensor.".format(sensor_id)
         )
+
+
+class InvalidCalibrationDataError(W1ThermSensorError):
+    """Exception when the calibration data provided is invalid"""
+
+    def __init__(self, message, calibration_data):
+        super().__init__(
+            "Calibration data {} is invalid: {}.".format(message, calibration_data)
+        )
