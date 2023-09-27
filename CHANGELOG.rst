@@ -1,3 +1,12 @@
+w1thermsensor 2.3.0 (2023-09-27)
+================================
+
+Features
+--------
+
+- Add Calibration Data support
+
+
 w1thermsensor 2.2.0 (2023-04-13)
 ================================
 

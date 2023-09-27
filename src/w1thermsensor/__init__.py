@@ -10,7 +10,7 @@ A Python package and CLI tool to work with w1 temperature sensors.
 
 __description__ = "A Python package and CLI tool to work with w1 temperature sensors like DS1822, DS18S20 & DS18B20 on the Raspberry Pi, Beagle Bone and other devices."  # noqa
 __license__ = "MIT"
-__version__ = "2.2.0"
+__version__ = "2.3.0"
 __author__ = "Timo Furrer"
 __author_email__ = "tuxtimo@gmail.com"
 __url__ = "http://github.com/timofurrer/w1thermsensor"
