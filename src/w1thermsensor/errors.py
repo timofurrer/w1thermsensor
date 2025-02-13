@@ -83,3 +83,21 @@ class InvalidCalibrationDataError(W1ThermSensorError):
         super().__init__(
             "Calibration data {} is invalid: {}.".format(message, calibration_data)
         )
+
+
+class BulkConversionStatusError(W1ThermSensorError):
+    """Exception when the conversion status for a bulk action fails"""
+
+    def __init__(self, status, message):
+        super().__init__(
+            f"Bulk conversion status indicates failure. Status: {status}\nMessage: {message}"
+        )
+
+
+class BulkTemperatureDataError(W1ThermSensorError):
+    """Exception when the bulk conversion temperatures returns empty data"""
+
+    def __init__(self, sensor_id):
+        super().__init__(
+            f"Bulk conversion temperature did NOT return data. Sensor ID: {sensor_id}"
+        )

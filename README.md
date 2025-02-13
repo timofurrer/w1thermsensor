@@ -167,6 +167,33 @@ for sensor in W1ThermSensor.get_available_sensors([Sensor.DS18B20]):
     print("Sensor %s has temperature %.2f" % (sensor.id, sensor.get_temperature()))
 ```
 
+### Multiple sensors using bulk conversion
+
+Using bulk conversion method returns a list of available sensors in a bus, with property `temperature`. By default, uses temperature in Celsius, if `Unit` parameter is not specified. Otherwise, use `w1thermsensor.Unit` to convert to your desired unit.
+
+This method speeds up the process of reading all sensors in the bus to the single sensor conversion time.
+
+E.g. Having 3 sensors in the bus with a 12bit resolution will result in `~750ms * 3 sensors = ~2,3s` using traditional method above. With the bulk conversion it will last around `~750ms`  
+
+*Note: Bulk conversion requires root privileges or permissions change to `w1_master*` path*
+
+*Method do not support sensor calibration or offset configuration!*
+
+`*w1_master` path is: 
+- (symbolic link) - `/sys/bus/w1/devices/w1_bus_master1/therm_bulk_read`
+- (destination link) - `/sys/devices/w1_bus_master1/therm_bulk_read`
+
+If you don't want to run your script as a root - do `chmod +w` or `chown` to a user executing your python script to the one of the paths above.
+
+```python
+from w1thermsensor import W1ThermSensor, Unit
+
+for sensor in W1ThermSensor.get_bulk_temperature():
+            # W1ThermSensor.bulk_read(Unit.KELVIN)
+            # W1ThermSensor.bulk_read(Unit.DEGREES_F)
+    print(f"Sensor: {sensor.id}, temp: {sensor.temperature}")
+```
+
 ### Set sensor resolution
 
 Some w1 therm sensors support changing the resolution for the temperature reads.

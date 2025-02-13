@@ -16,6 +16,8 @@ from typing import Iterable, List, Optional, Union
 
 from w1thermsensor.calibration_data import CalibrationData
 from w1thermsensor.errors import (
+    BulkConversionStatusError,
+    BulkTemperatureDataError,
     InvalidCalibrationDataError,
     NoSensorFoundError,
     ResetValueError,
@@ -54,6 +56,10 @@ class W1ThermSensor:
 
         >>> sensor.get_temperature(Unit.DEGREES_F)
 
+        Get all sensors temperature
+
+        >>> sensor.get_bulk_temperature()
+
     Supported sensors are:
         * DS18S20
         * DS1822
@@ -71,6 +77,7 @@ class W1ThermSensor:
     #: Holds information about the location of the needed
     #  sensor devices on the system provided by the kernel modules
     BASE_DIRECTORY = Path("/sys/bus/w1/devices")
+    MASTER_DIRECTORY_BULK = Path(f"{BASE_DIRECTORY}/w1_bus_master1/therm_bulk_read")
     SLAVE_FILE = "w1_slave"
 
     #: Holds the sensor reset value in Degrees Celsius
@@ -113,6 +120,75 @@ class W1ThermSensor:
             for s in cls.BASE_DIRECTORY.iterdir()
             if is_sensor(s.name)
         ]
+
+    @classmethod
+    def get_bulk_temperature(cls, unit: Unit = Unit.DEGREES_C) -> List["W1ThermSensor"]:
+        """Returns a list of available sensors with property `'temperature'` to access its read value in requested unit.
+        If unit is not specified it will use Celsius by default.
+
+        Result temperature is then accessed by reading the temperature entry of each device, which may return empty if conversion is still in progress
+
+        :param unit: the unit of the temperature requested
+        :return: a list of sensor instances with its temperatures
+        :rtype: List["W1ThermSensor"]
+
+        :raises BulkConversionStatusError: if after the trigger do not indicate ready state or after reading do not indicate successful finish
+        :raises BulkTemperatureDataError: if the sensor return empty temperature data
+        :raises UnsupportedUnitError: if the unit is not supported
+        """
+
+        bulk_status = cls._bulk_trigger()
+        if bulk_status != 1:
+            raise BulkConversionStatusError(
+                bulk_status, "Sensors should be waiting for reading(1)!"
+            )
+
+        sensors = cls.get_available_sensors()
+        for s in sensors:
+            temp_path = s.BASE_DIRECTORY / (s.slave_prefix + s.id + "/temperature")
+            with open(temp_path, "r") as f:
+                temp = f.read().strip()
+                if not temp:
+                    raise BulkTemperatureDataError(s.id)
+                unit_conversion = Unit.get_conversion_function(Unit.DEGREES_C, unit)
+                s.temperature = unit_conversion(float(temp) / 1000)
+        else:
+            bulk_status = cls._get_bulk_trigger_status()
+            if bulk_status != 0:
+                raise BulkConversionStatusError(
+                    bulk_status, 'Sensors read finished. Status should be "0"!'
+                )
+        return sensors
+
+    @classmethod
+    def _bulk_trigger(cls) -> int:
+        """Initiates sensors' bulk conversion writing 'trigger' to a w1-master.
+
+        https://docs.kernel.org/w1/slaves/w1_therm.html
+
+        A bulk read of all devices on the bus could be done writing trigger to therm_bulk_read entry at w1_bus_master level
+
+        :returns: the status after triggering bulk conversion
+        :rtype: int
+        """
+        with cls.MASTER_DIRECTORY_BULK.open("w") as f:
+            f.write("trigger\n")
+        return cls._get_bulk_trigger_status()
+
+    @classmethod
+    def _get_bulk_trigger_status(cls) -> int:
+        """Check bulk trigger current status.
+
+        Reading therm_bulk_read will return
+        0 if no bulk conversion pending,
+        -1 if at least one sensor still in conversion,
+        1 if conversion is complete but at least one sensor value has not been read yet.
+
+        :returns: bulk conversion status
+        :rtype: int
+        """
+        with cls.MASTER_DIRECTORY_BULK.open("r") as f:
+            return int(f.read().strip())
 
     def __init__(
         self,
@@ -199,6 +275,7 @@ class W1ThermSensor:
     def _init_with_type_and_id(self, sensor_type: Sensor, sensor_id: str) -> None:
         self.type = sensor_type
         self.id = sensor_id
+        self.temperature = None
 
     def __repr__(self) -> str:  # pragma: no cover
         """Returns a string that eval can turn back into this object
@@ -275,7 +352,7 @@ class W1ThermSensor:
         :raises ResetValueError: if the sensor has still the initial value and no measurement
         """
         raw_temperature_line = self.get_raw_sensor_strings()[1]
-        return evaluate_temperature(
+        self.temperature = evaluate_temperature(
             raw_temperature_line,
             self.RAW_VALUE_TO_DEGREE_CELSIUS_FACTOR,
             unit,
@@ -284,6 +361,7 @@ class W1ThermSensor:
             self.offset,
             self.SENSOR_RESET_VALUE,
         )
+        return self.temperature
 
     def get_corrected_temperature(self, unit: Unit = Unit.DEGREES_C) -> float:
         """Returns the temperature in the specified unit, corrected based on the calibration data
