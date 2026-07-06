@@ -23,7 +23,11 @@ from w1thermsensor.sensors import Sensor
     [
         tuple(),
         ({"type": Sensor.DS18B20},),
-        ({"type": Sensor.DS18B20}, {"type": Sensor.DS1822}, {"type": Sensor.DS18S20},),
+        (
+            {"type": Sensor.DS18B20},
+            {"type": Sensor.DS1822},
+            {"type": Sensor.DS18S20},
+        ),
     ],
     indirect=["sensors"],
 )
@@ -39,9 +43,7 @@ def test_list_available_sensors(sensors):
     assert "Found {0} sensors:".format(len(sensors)) in result.output
     # expect every sensor is detected
     for sensor in sensors:
-        expected_output = "HWID: {0} Type: {1}".format(
-            sensor["id"], sensor["type"].name
-        )
+        expected_output = "HWID: {0} Type: {1}".format(sensor["id"], sensor["type"].name)
         assert expected_output in result.output
 
 
@@ -50,7 +52,11 @@ def test_list_available_sensors(sensors):
     [
         tuple(),
         ({"type": Sensor.DS18B20},),
-        ({"type": Sensor.DS18B20}, {"type": Sensor.DS1822}, {"type": Sensor.DS18S20},),
+        (
+            {"type": Sensor.DS18B20},
+            {"type": Sensor.DS1822},
+            {"type": Sensor.DS18S20},
+        ),
     ],
     indirect=["sensors"],
 )
@@ -77,7 +83,11 @@ def test_list_available_sensors_json(sensors):
     [
         tuple(),
         ({"type": Sensor.DS18B20},),
-        ({"type": Sensor.DS18B20}, {"type": Sensor.DS1822}, {"type": Sensor.DS18S20},),
+        (
+            {"type": Sensor.DS18B20},
+            {"type": Sensor.DS1822},
+            {"type": Sensor.DS18S20},
+        ),
     ],
     indirect=["sensors"],
 )
@@ -104,7 +114,11 @@ def test_list_available_sensors_with_resolution(sensors):
     [
         tuple(),
         ({"type": Sensor.DS18B20},),
-        ({"type": Sensor.DS18B20}, {"type": Sensor.DS1822}, {"type": Sensor.DS18S20},),
+        (
+            {"type": Sensor.DS18B20},
+            {"type": Sensor.DS1822},
+            {"type": Sensor.DS18S20},
+        ),
     ],
     indirect=["sensors"],
 )
@@ -132,7 +146,10 @@ def test_list_available_sensors_with_resolution_json(sensors):
     "sensors, sensor_types",
     [
         (tuple(), [Sensor.DS18B20]),
-        (({"type": Sensor.DS18B20},), [Sensor.DS18B20],),
+        (
+            ({"type": Sensor.DS18B20},),
+            [Sensor.DS18B20],
+        ),
         (
             (
                 {"type": Sensor.DS18B20},
@@ -151,8 +168,7 @@ def test_list_available_sensors_by_type(sensors, sensor_types):
     # when
     result = runner.invoke(
         cli,
-        ["ls"]
-        + list(itertools.chain.from_iterable(("-t", s.name) for s in sensor_types)),
+        ["ls"] + list(itertools.chain.from_iterable(("-t", s.name) for s in sensor_types)),
     )
     # then
     assert result.exit_code == 0
@@ -161,9 +177,7 @@ def test_list_available_sensors_by_type(sensors, sensor_types):
     assert "Found {0} sensors:".format(len(expected_sensors)) in result.output
     # expect every sensor is detected
     for sensor in expected_sensors:
-        expected_output = "HWID: {0} Type: {1}".format(
-            sensor["id"], sensor["type"].name
-        )
+        expected_output = "HWID: {0} Type: {1}".format(sensor["id"], sensor["type"].name)
         assert expected_output in result.output
 
 
@@ -269,7 +283,10 @@ def test_get_temperature_all_sensors_with_resolution(sensors, mocker):
     "sensors, sensor_types",
     [
         (tuple(), [Sensor.DS18B20]),
-        (({"type": Sensor.DS18B20, "temperature": 20.0},), [Sensor.DS18B20],),
+        (
+            ({"type": Sensor.DS18B20, "temperature": 20.0},),
+            [Sensor.DS18B20],
+        ),
         (
             (
                 {"type": Sensor.DS18B20, "temperature": 42.0},
@@ -288,17 +305,13 @@ def test_get_temperature_all_sensors_by_type(sensors, sensor_types):
     # when
     result = runner.invoke(
         cli,
-        ["all"]
-        + list(itertools.chain.from_iterable(("-t", x.name) for x in sensor_types)),
+        ["all"] + list(itertools.chain.from_iterable(("-t", x.name) for x in sensor_types)),
     )
     # then
     assert result.exit_code == 0
     # expect the correct amount of sensors being detected
     expected_sensors = [s for s in sensors if s["type"] in sensor_types]
-    assert (
-        "Got temperatures of {0} sensors:".format(len(expected_sensors))
-        in result.output
-    )
+    assert "Got temperatures of {0} sensors:".format(len(expected_sensors)) in result.output
     # expect every sensor is detected
     for sensor in expected_sensors:
         expected_output = "({0}) measured temperature: {1} celsius".format(
@@ -310,9 +323,21 @@ def test_get_temperature_all_sensors_by_type(sensors, sensor_types):
 @pytest.mark.parametrize(
     "sensors, temperature, unit",
     [
-        (({"type": Sensor.DS18B20, "temperature": 42.0},), 315.15, "kelvin",),
-        (({"type": Sensor.DS18B20, "temperature": 42.0},), 107.6, "fahrenheit",),
-        (({"type": Sensor.DS18B20, "temperature": 42.0},), 42.0, "celsius",),
+        (
+            ({"type": Sensor.DS18B20, "temperature": 42.0},),
+            315.15,
+            "kelvin",
+        ),
+        (
+            ({"type": Sensor.DS18B20, "temperature": 42.0},),
+            107.6,
+            "fahrenheit",
+        ),
+        (
+            ({"type": Sensor.DS18B20, "temperature": 42.0},),
+            42.0,
+            "celsius",
+        ),
     ],
     indirect=["sensors"],
 )
@@ -393,15 +418,31 @@ def test_get_temperature_of_sensor_json(sensors):
     [
         (
             (
-                {"id": "1", "type": Sensor.DS18B20, "temperature": 20.0,},
-                {"id": "2", "type": Sensor.DS18S20, "temperature": -8.0,},
+                {
+                    "id": "1",
+                    "type": Sensor.DS18B20,
+                    "temperature": 20.0,
+                },
+                {
+                    "id": "2",
+                    "type": Sensor.DS18S20,
+                    "temperature": -8.0,
+                },
             ),
             "1",
         ),
         (
             (
-                {"id": "1", "type": Sensor.DS18S20, "temperature": -8.0,},
-                {"id": "2", "type": Sensor.DS18S20, "temperature": -8.0,},
+                {
+                    "id": "1",
+                    "type": Sensor.DS18S20,
+                    "temperature": -8.0,
+                },
+                {
+                    "id": "2",
+                    "type": Sensor.DS18S20,
+                    "temperature": -8.0,
+                },
             ),
             "2",
         ),
@@ -461,14 +502,20 @@ def test_get_temperature_of_sensor_with_resolution(sensors, mocker):
 @pytest.mark.parametrize(
     "sensors, offset, expected_temperature",
     [
-        (({"type": Sensor.DS18B20, "temperature": 20.0},), 10, 30.0,),
-        (({"type": Sensor.DS18S20, "temperature": -8.0},), 10, 2.0,),
+        (
+            ({"type": Sensor.DS18B20, "temperature": 20.0},),
+            10,
+            30.0,
+        ),
+        (
+            ({"type": Sensor.DS18S20, "temperature": -8.0},),
+            10,
+            2.0,
+        ),
     ],
     indirect=["sensors"],
 )
-def test_get_temperature_of_sensor_with_offset(
-    sensors, offset, expected_temperature, mocker
-):
+def test_get_temperature_of_sensor_with_offset(sensors, offset, expected_temperature, mocker):
     """Test getting temperature of a single sensor with an offset"""
     # given
     runner = CliRunner()
@@ -489,9 +536,7 @@ def test_get_temperature_of_sensor_with_invalid_options():
     # given
     runner = CliRunner()
     # when
-    result = runner.invoke(
-        cli, ["get", "--json", "1", "--type", "DS18B20", "--hwid", "1"]
-    )
+    result = runner.invoke(cli, ["get", "--json", "1", "--type", "DS18B20", "--hwid", "1"])
     # then
     assert result.exit_code != 0
     assert result.exception
@@ -519,9 +564,7 @@ def test_set_resolution_of_sensor_with_invalid_options():
     # given
     runner = CliRunner()
     # when
-    result = runner.invoke(
-        cli, ["resolution", "10", "1", "--type", "DS18B20", "--hwid", "1"]
-    )
+    result = runner.invoke(cli, ["resolution", "10", "1", "--type", "DS18B20", "--hwid", "1"])
     # then
     assert result.exit_code != 0
     assert result.exception
@@ -533,15 +576,31 @@ def test_set_resolution_of_sensor_with_invalid_options():
     [
         (
             (
-                {"id": "1", "type": Sensor.DS18B20, "temperature": 20.0,},
-                {"id": "2", "type": Sensor.DS18S20, "temperature": -8.0,},
+                {
+                    "id": "1",
+                    "type": Sensor.DS18B20,
+                    "temperature": 20.0,
+                },
+                {
+                    "id": "2",
+                    "type": Sensor.DS18S20,
+                    "temperature": -8.0,
+                },
             ),
             "1",
         ),
         (
             (
-                {"id": "1", "type": Sensor.DS18S20, "temperature": -8.0,},
-                {"id": "2", "type": Sensor.DS18S20, "temperature": -8.0,},
+                {
+                    "id": "1",
+                    "type": Sensor.DS18S20,
+                    "temperature": -8.0,
+                },
+                {
+                    "id": "2",
+                    "type": Sensor.DS18S20,
+                    "temperature": -8.0,
+                },
             ),
             "2",
         ),

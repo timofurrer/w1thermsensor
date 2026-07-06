@@ -20,9 +20,21 @@ from w1thermsensor.units import Unit
 @pytest.mark.parametrize(
     "sensors, unit, expected_temperature",
     [
-        (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},), Unit.DEGREES_C, 20.0,),
-        (({"msb": 0xFF, "lsb": 0xF8, "temperature": -0.5},), Unit.DEGREES_C, -0.5,),
-        (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), Unit.DEGREES_C, -55,),
+        (
+            ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
+            Unit.DEGREES_C,
+            20.0,
+        ),
+        (
+            ({"msb": 0xFF, "lsb": 0xF8, "temperature": -0.5},),
+            Unit.DEGREES_C,
+            -0.5,
+        ),
+        (
+            ({"msb": 0xFC, "lsb": 0x90, "temperature": -55},),
+            Unit.DEGREES_C,
+            -55,
+        ),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "celsius", 25.0625),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "fahrenheit", 77.1125),
         (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), "fahrenheit", -67),
@@ -31,9 +43,7 @@ from w1thermsensor.units import Unit
     ],
     indirect=["sensors"],
 )
-async def test_async_get_temperature_for_different_units(
-    sensors, unit, expected_temperature
-):
+async def test_async_get_temperature_for_different_units(sensors, unit, expected_temperature):
     # given
     sensor = AsyncW1ThermSensor()
     # when
@@ -69,9 +79,7 @@ async def test_async_get_temperature_for_different_units(
     ],
     indirect=["sensors"],
 )
-async def test_get_corrected_temperature_for_different_units(
-    sensors, unit, expected_temperature
-):
+async def test_get_corrected_temperature_for_different_units(sensors, unit, expected_temperature):
     # the sensor is calibrated 1 degree low.
     calibration_data = CalibrationData(
         measured_high_point=99.0,
@@ -93,7 +101,11 @@ async def test_get_corrected_temperature_for_different_units(
 @pytest.mark.parametrize(
     "sensors, units, expected_temperatures",
     [
-        (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},), [Unit.DEGREES_C], [20.0],),
+        (
+            ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
+            [Unit.DEGREES_C],
+            [20.0],
+        ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
             [Unit.DEGREES_C, Unit.DEGREES_F],
@@ -148,9 +160,7 @@ async def test_get_temperature_in_multiple_units(sensors, units, expected_temper
     ],
     indirect=["sensors"],
 )
-async def test_get_corrected_temperature_in_multiple_units(
-    sensors, units, expected_temperatures
-):
+async def test_get_corrected_temperature_in_multiple_units(sensors, units, expected_temperatures):
     # the sensor is calibrated 1 degree low.
     calibration_data = CalibrationData(
         measured_high_point=99.0,

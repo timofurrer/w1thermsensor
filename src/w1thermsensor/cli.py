@@ -56,9 +56,7 @@ def cli():
     callback=resolve_type_name,
     help="Show only sensor of this type",
 )
-@click.option(
-    "-j", "--json", "as_json", flag_value=True, help="Output result in JSON format"
-)
+@click.option("-j", "--json", "as_json", flag_value=True, help="Output result in JSON format")
 @click.option(
     "-r",
     "--resolution",
@@ -82,15 +80,10 @@ def ls(types, as_json, resolution):  # pylint: disable=invalid-name
                 for i, s in enumerate(sensors, 1)
             ]
         else:
-            data = [
-                {"id": i, "hwid": s.id, "type": s.name}
-                for i, s in enumerate(sensors, 1)
-            ]
+            data = [{"id": i, "hwid": s.id, "type": s.name} for i, s in enumerate(sensors, 1)]
         click.echo(json.dumps(data, indent=4, sort_keys=True))
     else:
-        click.echo(
-            "Found {0} sensors:".format(click.style(str(len(sensors)), bold=True))
-        )
+        click.echo("Found {0} sensors:".format(click.style(str(len(sensors)), bold=True)))
         for i, sensor in enumerate(sensors, 1):
             if resolution:
                 click.echo(
@@ -134,9 +127,7 @@ def ls(types, as_json, resolution):  # pylint: disable=invalid-name
     type=click.IntRange(9, 12),
     help="use the given resolution for this read",
 )
-@click.option(
-    "-j", "--json", "as_json", flag_value=True, help="Output result in JSON format"
-)
+@click.option("-j", "--json", "as_json", flag_value=True, help="Output result in JSON format")
 def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
     """Get temperatures of all available sensors"""
     sensors = W1ThermSensor.get_available_sensors(types)
@@ -155,9 +146,7 @@ def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
         click.echo(json.dumps(data, indent=4, sort_keys=True))
     else:
         click.echo(
-            "Got temperatures of {0} sensors:".format(
-                click.style(str(len(sensors)), bold=True)
-            )
+            "Got temperatures of {0} sensors:".format(click.style(str(len(sensors)), bold=True))
         )
         for i, sensor, temperature in zip(count(start=1), sensors, temperatures):
             click.echo(
@@ -194,9 +183,7 @@ def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
     type=click.IntRange(9, 12),
     help="use the given resolution for this read",
 )
-@click.option(
-    "-j", "--json", "as_json", flag_value=True, help="Output result in JSON format"
-)
+@click.option("-j", "--json", "as_json", flag_value=True, help="Output result in JSON format")
 @click.option(
     "-o",
     "--offset",
@@ -207,9 +194,7 @@ def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
 def get(id_, hwid, type_, unit, resolution, as_json, offset):
     """Get temperature of a specific sensor"""
     if id_ and (hwid or type_):
-        raise click.BadArgumentUsage(
-            "If --id is given --hwid and --type are not allowed."
-        )
+        raise click.BadArgumentUsage("If --id is given --hwid and --type are not allowed.")
 
     if id_:
         try:
@@ -268,9 +253,7 @@ def get(id_, hwid, type_, unit, resolution, as_json, offset):
 def resolution(resolution, id_, hwid, type_):
     """Change the resolution for the sensor and persist it in the sensor's EEPROM"""
     if id_ and (hwid or type_):
-        raise click.BadArgumentUsage(
-            "If --id is given --hwid and --type are not allowed."
-        )
+        raise click.BadArgumentUsage("If --id is given --hwid and --type are not allowed.")
 
     if id_:
         try:

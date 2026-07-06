@@ -22,7 +22,7 @@ from w1thermsensor.errors import (
     SensorNotReadyError,
     UnsupportedSensorError,
     UnsupportedUnitError,
-    W1ThermSensorError
+    W1ThermSensorError,
 )
 from w1thermsensor.sensors import Sensor
 from w1thermsensor.units import Unit
@@ -33,7 +33,11 @@ from w1thermsensor.units import Unit
     [
         tuple(),
         ({"type": Sensor.DS18B20},),
-        ({"type": Sensor.DS18B20}, {"type": Sensor.DS1822}, {"type": Sensor.DS18S20},),
+        (
+            {"type": Sensor.DS18B20},
+            {"type": Sensor.DS1822},
+            {"type": Sensor.DS18S20},
+        ),
     ],
     indirect=["sensors"],
 )
@@ -87,7 +91,11 @@ def test_get_available_sensors(sensors):
                 {"type": Sensor.DS18S20},
                 {"type": Sensor.DS18B20},
             ),
-            [Sensor.MAX31850K, Sensor.DS18S20, Sensor.DS18B20,],
+            [
+                Sensor.MAX31850K,
+                Sensor.DS18S20,
+                Sensor.DS18B20,
+            ],
         ),
     ],
     indirect=["sensors"],
@@ -97,8 +105,7 @@ def test_get_available_sensors_of_type(sensors, sensor_types):
     # given & when
     available_sensors = W1ThermSensor.get_available_sensors(sensor_types)
     # then
-    expected_sensor_amount = len(
-        [s for s in sensors if s["type"] in sensor_types])
+    expected_sensor_amount = len([s for s in sensors if s["type"] in sensor_types])
     assert len(available_sensors) == expected_sensor_amount
 
 
@@ -137,8 +144,17 @@ def test_init_first_sensor(sensors):
 @pytest.mark.parametrize(
     "sensors, sensor_type",
     [
-        (({"type": Sensor.DS18B20},), Sensor.DS18B20,),
-        (({"type": Sensor.DS18B20}, {"type": Sensor.DS18S20},), Sensor.DS18B20,),
+        (
+            ({"type": Sensor.DS18B20},),
+            Sensor.DS18B20,
+        ),
+        (
+            (
+                {"type": Sensor.DS18B20},
+                {"type": Sensor.DS18S20},
+            ),
+            Sensor.DS18B20,
+        ),
     ],
     indirect=["sensors"],
 )
@@ -156,16 +172,12 @@ def test_init_first_sensor_of_type(sensors, sensor_type):
 @pytest.mark.parametrize("sensors", [({"type": Sensor.DS1822},)], indirect=["sensors"])
 def test_init_first_sensor_of_type_if_not_existent(sensors):
     # then
-    with pytest.raises(
-        NoSensorFoundError, match="Could not find any sensor of type DS18B20"
-    ):
+    with pytest.raises(NoSensorFoundError, match="Could not find any sensor of type DS18B20"):
         # when
         W1ThermSensor(Sensor.DS18B20)
 
 
-@pytest.mark.parametrize(
-    "sensors", [({"type": Sensor.DS1822, "id": "1"},)], indirect=["sensors"]
-)
+@pytest.mark.parametrize("sensors", [({"type": Sensor.DS1822, "id": "1"},)], indirect=["sensors"])
 def test_init_first_sensor_of_id_if_not_existent(sensors):
     # then
     with pytest.raises(NoSensorFoundError, match="Could not find sensor with id 2"):
@@ -178,8 +190,10 @@ def test_init_first_sensor_of_id_if_not_existent(sensors):
     [
         (({"id": "1", "type": Sensor.DS18B20},), "1"),
         (
-            ({"id": "2", "type": Sensor.DS18S20}, {
-             "id": "1", "type": Sensor.DS18B20},),
+            (
+                {"id": "2", "type": Sensor.DS18S20},
+                {"id": "1", "type": Sensor.DS18B20},
+            ),
             "2",
         ),
     ],
@@ -208,8 +222,10 @@ def test_init_first_sensor_by_id(sensors, sensor_id):
             {"sensor_type": Sensor.DS18S20, "sensor_id": "2"},
         ),
         (
-            ({"type": Sensor.DS18B20, "id": "1"}, {
-             "type": Sensor.DS18S20, "id": "2"},),
+            (
+                {"type": Sensor.DS18B20, "id": "1"},
+                {"type": Sensor.DS18S20, "id": "2"},
+            ),
             {"sensor_type": Sensor.DS18S20, "sensor_id": "2"},
         ),
     ],
@@ -227,9 +243,21 @@ def test_init_sensor_by_type_and_id(sensors, sensor_specs):
 @pytest.mark.parametrize(
     "sensors, unit, expected_temperature",
     [
-        (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},), Unit.DEGREES_C, 20.0,),
-        (({"msb": 0xFF, "lsb": 0xF8, "temperature": -0.5},), Unit.DEGREES_C, -0.5,),
-        (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), Unit.DEGREES_C, -55,),
+        (
+            ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
+            Unit.DEGREES_C,
+            20.0,
+        ),
+        (
+            ({"msb": 0xFF, "lsb": 0xF8, "temperature": -0.5},),
+            Unit.DEGREES_C,
+            -0.5,
+        ),
+        (
+            ({"msb": 0xFC, "lsb": 0x90, "temperature": -55},),
+            Unit.DEGREES_C,
+            -55,
+        ),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "celsius", 25.0625),
         (({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},), "fahrenheit", 77.1125),
         (({"msb": 0xFC, "lsb": 0x90, "temperature": -55},), "fahrenheit", -67),
@@ -274,9 +302,7 @@ def test_get_temperature_for_different_units(sensors, unit, expected_temperature
     ],
     indirect=["sensors"],
 )
-def test_get_corrected_temperature_for_different_units(
-    sensors, unit, expected_temperature
-):
+def test_get_corrected_temperature_for_different_units(sensors, unit, expected_temperature):
     # the sensor is calibrated 1 degree low.
     calibration_data = CalibrationData(
         measured_high_point=99.0,
@@ -303,9 +329,7 @@ def test_get_corrected_temperature_for_different_units(
     ],
     indirect=["sensors"],
 )
-def test_get_temperature_for_different_units_by_name(
-    sensors, unit, expected_temperature
-):
+def test_get_temperature_for_different_units_by_name(sensors, unit, expected_temperature):
     """Test getting a sensor temperature for different units by name"""
     # given
     sensor = W1ThermSensor()
@@ -410,8 +434,11 @@ def test_get_temperature_for_different_units_by_name_with_offsets(
 @pytest.mark.parametrize(
     "sensors, units, expected_temperatures",
     [
-        (({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
-         [Unit.DEGREES_C], [20.0],),
+        (
+            ({"msb": 0x01, "lsb": 0x40, "temperature": 20.0},),
+            [Unit.DEGREES_C],
+            [20.0],
+        ),
         (
             ({"msb": 0x01, "lsb": 0x91, "temperature": 25.0625},),
             [Unit.DEGREES_C, Unit.DEGREES_F],
@@ -466,9 +493,7 @@ def test_get_temperature_in_multiple_units(sensors, units, expected_temperatures
     ],
     indirect=["sensors"],
 )
-def test_get_corrected_temperature_in_multiple_units(
-    sensors, units, expected_temperatures
-):
+def test_get_corrected_temperature_in_multiple_units(sensors, units, expected_temperatures):
     # the sensor is calibrated 1 degree low.
     calibration_data = CalibrationData(
         measured_high_point=99.0,
@@ -487,9 +512,7 @@ def test_get_corrected_temperature_in_multiple_units(
 
 @pytest.mark.parametrize(
     "sensors",
-    [
-        ({"type": Sensor.DS18B20, "id": "1"},)
-    ],
+    [({"type": Sensor.DS18B20, "id": "1"},)],
     indirect=["sensors"],
 )
 def test_get_corrected_temperature_with_no_calibration_data_fails(sensors):
@@ -574,9 +597,7 @@ def test_no_sensor_found(sensors, monkeypatch):
     with pytest.raises(NoSensorFoundError, match="Could not find any sensor"):
         W1ThermSensor()
 
-    with pytest.raises(
-        NoSensorFoundError, match="Could not find sensor of type DS1822 with id 1"
-    ):
+    with pytest.raises(NoSensorFoundError, match="Could not find sensor of type DS1822 with id 1"):
         W1ThermSensor(Sensor.DS1822, "1")
 
 
@@ -585,9 +606,7 @@ def test_sensor_not_ready(sensors):
     """Test exception when sensor is not ready yet"""
     # given
     sensor = W1ThermSensor()
-    expected_error_msg = "Sensor {} is not yet ready to read temperature".format(
-        sensor.id
-    )
+    expected_error_msg = "Sensor {} is not yet ready to read temperature".format(sensor.id)
 
     # when & then
     with pytest.raises(SensorNotReadyError, match=expected_error_msg):
@@ -651,7 +670,9 @@ def test_str_protocol(sensors):
 
 
 @pytest.mark.parametrize(
-    "sensors", [({"type": Sensor.DS18B20, "id": "1"},)], indirect=["sensors"],
+    "sensors",
+    [({"type": Sensor.DS18B20, "id": "1"},)],
+    indirect=["sensors"],
 )
 def test_sensor_disconnect_after_init(sensors):
     """Test exception when sensor is disconnected after initialization"""
@@ -712,8 +733,7 @@ def test_setting_and_persisting_sensor_resolution(sensors, resolution, mocker):
     # when
     sensor.set_resolution(resolution, persist=True)
     expected_calls = [
-        mocker.call("echo {0} > {1}".format(
-            resolution, sensor.sensorpath), shell=True),
+        mocker.call("echo {0} > {1}".format(resolution, sensor.sensorpath), shell=True),
         mocker.call("echo 0 > {0}".format(sensor.sensorpath), shell=True),
     ]
     # then

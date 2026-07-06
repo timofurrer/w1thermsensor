@@ -34,9 +34,7 @@ class NoSensorFoundError(W1ThermSensorError):
             {}
             Please check cabling and check your /boot/config.txt for
             dtoverlay=w1-gpio
-            """.format(
-                    message
-                )
+            """.format(message)
             ).rstrip()
         )
 
@@ -45,9 +43,7 @@ class SensorNotReadyError(W1ThermSensorError):
     """Exception when the sensor is not ready yet"""
 
     def __init__(self, sensor):
-        super().__init__(
-            "Sensor {} is not yet ready to read temperature".format(sensor.id)
-        )
+        super().__init__("Sensor {} is not yet ready to read temperature".format(sensor.id))
         self.sensor = sensor
 
 
@@ -62,8 +58,11 @@ class UnsupportedSensorError(W1ThermSensorError):
     """Exception when unsupported sensor is given"""
 
     def __init__(self, sensor_name, supported_sensors):
-        super().__init__("The sensor {} is not supported. Use one of: {}".format(
-            sensor_name, ", ".join(supported_sensors)))
+        super().__init__(
+            "The sensor {} is not supported. Use one of: {}".format(
+                sensor_name, ", ".join(supported_sensors)
+            )
+        )
 
 
 class ResetValueError(W1ThermSensorError):
@@ -80,6 +79,4 @@ class InvalidCalibrationDataError(W1ThermSensorError):
     """Exception when the calibration data provided is invalid"""
 
     def __init__(self, message, calibration_data):
-        super().__init__(
-            "Calibration data {} is invalid: {}.".format(message, calibration_data)
-        )
+        super().__init__("Calibration data {} is invalid: {}.".format(message, calibration_data))

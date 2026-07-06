@@ -26,7 +26,7 @@ from w1thermsensor.errors import (  # noqa
     ResetValueError,
     SensorNotReadyError,
     UnsupportedUnitError,
-    W1ThermSensorError
+    W1ThermSensorError,
 )
 from w1thermsensor.kernel import load_kernel_modules
 from w1thermsensor.sensors import Sensor  # noqa
