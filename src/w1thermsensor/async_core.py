@@ -143,8 +143,8 @@ class AsyncW1ThermSensor(W1ThermSensor):
         sensor_value = await self.get_temperature(Unit.DEGREES_C)
         return [Unit.get_conversion_function(Unit.DEGREES_C, unit)(sensor_value) for unit in units]
 
-    async def get_corrected_temperatures(
-        self,  # type: ignore
+    async def get_corrected_temperatures(  # type: ignore
+        self,
         units: Iterable[Unit],
     ) -> List[float]:
         """Returns the temperatures in the specified units, corrected based on the calibration data
