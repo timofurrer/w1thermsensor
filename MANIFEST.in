@@ -3,8 +3,6 @@ include *.md
 include *.rst
 include *.txt
 recursive-include tests *.py
-include *.yml
-include pylintrc
 include tox.ini
 include *.toml
 recursive-include changelog *.rst

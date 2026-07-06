@@ -1,20 +1,96 @@
-[tool.black]
-target_version = ["py37"]
-include = "(setup.py|src|tests|examples)"
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "w1thermsensor"
+dynamic = ["version"]
+description = "A Python package and CLI tool to work with w1 temperature sensors like DS1822, DS18S20 & DS18B20 on the Raspberry Pi, Beagle Bone and other devices."
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "Timo Furrer", email = "tuxtimo@gmail.com"},
+]
+maintainers = [
+    {name = "Timo Furrer", email = "tuxtimo@gmail.com"},
+]
+keywords = ["w1", "w1-therm", "therm", "sensor", "raspberry", "raspberry pi", "gpio", "ds"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.10"
+dependencies = ["click>=8"]
+
+[project.optional-dependencies]
+async = ["aiofiles"]
+tests = [
+    "aiofiles",
+    "coverage[toml]>=7",
+    "pytest>=8",
+    "pytest-mock",
+    "pytest-asyncio>=0.21",
+]
+dev = [
+    "aiofiles",
+    "coverage[toml]>=7",
+    "pytest>=8",
+    "pytest-mock",
+    "pytest-asyncio>=0.21",
+    "ruff",
+    "mypy",
+    "types-aiofiles",
+    "towncrier",
+]
+
+[project.urls]
+Homepage = "https://github.com/timofurrer/w1thermsensor"
+Repository = "https://github.com/timofurrer/w1thermsensor"
+"Bug Tracker" = "https://github.com/timofurrer/w1thermsensor/issues"
+
+[project.scripts]
+w1thermsensor = "w1thermsensor.cli:cli"
+
+[tool.setuptools.dynamic]
+version = {attr = "w1thermsensor.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E203"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["w1thermsensor"]
 
 [tool.towncrier]
 package = "w1thermsensor"
-package_dir = "w1thermsensor"
+package_dir = "src/w1thermsensor"
 filename = "CHANGELOG.rst"
 directory = "changelog/"
 title_format = "w1thermsensor {version} ({project_date})"
 template = "changelog/template.rst"
 
-[tool.isort]
-known_first_party = "w1thermsensor"
-known_third_party = "click,pytest,aiofiles"
-multi_line_output = 3
-line_length = 100
+[tool.pytest.ini_options]
+testpaths = ["tests", "src"]
+asyncio_mode = "auto"
+
+[tool.mypy]
+ignore_missing_imports = true
 
 [tool.coverage.run]
 branch = true

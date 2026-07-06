@@ -87,15 +87,15 @@ class CalibrationData:
 
         if self.measured_low_point >= self.measured_high_point:
             raise InvalidCalibrationDataError(
-                "Measured low point must be less than measured high point. Did you reverse the " +
-                "values?",
+                "Measured low point must be less than measured high point. Did you reverse the "
+                + "values?",
                 self.__str__(),
             )
 
         if self.reference_low_point >= self.reference_high_point:
             raise InvalidCalibrationDataError(
-                "Reference low point must be less than reference high point.  Did you reverse " +
-                "the values?",
+                "Reference low point must be less than reference high point.  Did you reverse "
+                + "the values?",
                 self.__str__(),
             )
 
@@ -108,5 +108,6 @@ class CalibrationData:
         reference_range = self.reference_high_point - self.reference_low_point
         measured_range = self.measured_high_point - self.measured_low_point
         scaling_factor = reference_range / measured_range
-        return ((raw_temperature - self.measured_low_point) * scaling_factor
-                + self.reference_low_point)
+        return (
+            raw_temperature - self.measured_low_point
+        ) * scaling_factor + self.reference_low_point

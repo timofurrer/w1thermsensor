@@ -21,7 +21,7 @@ from w1thermsensor.errors import (
     ResetValueError,
     SensorNotReadyError,
     UnsupportedSensorError,
-    W1ThermSensorError
+    W1ThermSensorError,
 )
 from w1thermsensor.sensors import Sensor
 from w1thermsensor.units import Unit
@@ -99,11 +99,9 @@ class W1ThermSensor:
             types = list(Sensor)
         else:
             try:
-                types = [s if isinstance(s, Sensor) else Sensor[s]
-                         for s in types]
+                types = [s if isinstance(s, Sensor) else Sensor[s] for s in types]
             except KeyError as exc:  # sensor type does not exist
-                raise UnsupportedSensorError(
-                    str(exc), (s.name for s in Sensor))
+                raise UnsupportedSensorError(str(exc), (s.name for s in Sensor))
 
         def is_sensor(dir_name):
             return any(dir_name.startswith(hex(x.value)[2:]) for x in types)
@@ -151,17 +149,13 @@ class W1ThermSensor:
             self._init_with_type_and_id(sensor_type, sensor_id)  # type: ignore
 
         # store path to sensor
-        self.sensorpath = (
-            self.BASE_DIRECTORY / (self.slave_prefix +
-                                   self.id) / self.SLAVE_FILE
-        )
+        self.sensorpath = self.BASE_DIRECTORY / (self.slave_prefix + self.id) / self.SLAVE_FILE
 
         self.calibration_data = calibration_data
 
         if not self.exists():
             raise NoSensorFoundError(
-                "Could not find sensor of type {} with id {}".format(
-                    self.name, self.id)
+                "Could not find sensor of type {} with id {}".format(self.name, self.id)
             )
 
         self.set_offset(offset, offset_unit)
@@ -190,9 +184,7 @@ class W1ThermSensor:
             (s for s in self.get_available_sensors() if s.id == sensor_id), None
         )
         if not sensor:
-            raise NoSensorFoundError(
-                "Could not find sensor with id {}".format(sensor_id)
-            )
+            raise NoSensorFoundError("Could not find sensor with id {}".format(sensor_id))
 
         self._init_with_type_and_id(sensor.type, sensor.id)
 
@@ -248,8 +240,7 @@ class W1ThermSensor:
                 data = f.readlines()
         except IOError:
             raise NoSensorFoundError(
-                "Could not find sensor of type {} with id {}".format(
-                    self.name, self.id)
+                "Could not find sensor of type {} with id {}".format(self.name, self.id)
             )
 
         if (
@@ -308,7 +299,8 @@ class W1ThermSensor:
 
         raw_temperature = self.get_temperature(Unit.DEGREES_C)
         corrected_temperature = self.calibration_data.correct_temperature_for_calibration_data(
-            raw_temperature)
+            raw_temperature
+        )
 
         return Unit.get_conversion_function(Unit.DEGREES_C, unit)(corrected_temperature)
 
@@ -326,10 +318,7 @@ class W1ThermSensor:
         :raises SensorNotReadyError: if the sensor is not ready yet
         """
         sensor_value = self.get_temperature(Unit.DEGREES_C)
-        return [
-            Unit.get_conversion_function(Unit.DEGREES_C, unit)(sensor_value)
-            for unit in units
-        ]
+        return [Unit.get_conversion_function(Unit.DEGREES_C, unit)(sensor_value) for unit in units]
 
     def get_corrected_temperatures(self, units: Iterable[Unit]) -> List[float]:
         """Returns the temperatures in the specified units, corrected based on the calibration data
@@ -386,25 +375,18 @@ class W1ThermSensor:
         """
         if not 9 <= resolution <= 12:
             raise ValueError(
-                "The given sensor resolution '{0}' is out of range (9-12)".format(
-                    resolution
-                )
+                "The given sensor resolution '{0}' is out of range (9-12)".format(resolution)
             )
 
-        exitcode = subprocess.call(
-            "echo {0} > {1}".format(resolution, self.sensorpath), shell=True
-        )
+        exitcode = subprocess.call("echo {0} > {1}".format(resolution, self.sensorpath), shell=True)
         if exitcode != 0:
             raise W1ThermSensorError(
                 "Failed to change resolution to {0} bit. "
-                "You might have to be root to change the resolution".format(
-                    resolution)
+                "You might have to be root to change the resolution".format(resolution)
             )
 
         if persist:
-            exitcode = subprocess.call(
-                "echo 0 > {0}".format(self.sensorpath), shell=True
-            )
+            exitcode = subprocess.call("echo 0 > {0}".format(self.sensorpath), shell=True)
             if exitcode != 0:
                 raise W1ThermSensorError(
                     "Failed to write resolution configuration to sensor EEPROM"
@@ -463,11 +445,9 @@ def evaluate_temperature(
     sensor_offset: float,
     sensor_reset_value: float,
 ) -> float:
-    factor = Unit.get_conversion_function(
-        Unit.DEGREES_C, target_temperature_unit)
+    factor = Unit.get_conversion_function(Unit.DEGREES_C, target_temperature_unit)
     if sensor_type.comply_12bit_standard():
-        value = float(convert_raw_temperature_to_sensor_count(
-            raw_temperature_line))
+        value = float(convert_raw_temperature_to_sensor_count(raw_temperature_line))
         # the int part is 8 bit wide, 4 bit are left on 12 bit
         # so divide with 2^4 = 16 to get the celsius fractions
         value /= 16.0

@@ -67,9 +67,7 @@ def sensors(request, kernel_module_dir):  # pylint: disable=redefined-outer-name
             sensor_ready = sensor_conf.get("ready", True)
             sensor_zerovalues = sensor_conf.get("zero_values", False)
 
-            sensor_dir = kernel_module_dir.mkdir(
-                "{0}-{1}".format(hex(sensor_type)[2:], sensor_id)
-            )
+            sensor_dir = kernel_module_dir.mkdir("{0}-{1}".format(hex(sensor_type)[2:], sensor_id))
 
             sensor_file = sensor_dir.join(W1ThermSensor.SLAVE_FILE)
             sensor_file_content = (
