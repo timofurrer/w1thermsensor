@@ -8,6 +8,7 @@ dynamic = ["version"]
 description = "A Python package and CLI tool to work with w1 temperature sensors like DS1822, DS18S20 & DS18B20 on the Raspberry Pi, Beagle Bone and other devices."
 readme = "README.md"
 license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     {name = "Timo Furrer", email = "tuxtimo@gmail.com"},
 ]
