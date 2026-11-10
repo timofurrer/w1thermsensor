@@ -631,3 +631,35 @@ def test_set_resolution_of_sensor_with_invalid_id(sensors):
         "No sensor with id 1 available. Use the ls command to show all available sensors."
         in result.output
     )  # noqa
+
+
+@pytest.mark.parametrize("sensors", [({"type": Sensor.DS18B20},)], indirect=["sensors"])
+def test_get_temperature_of_sensor_with_zero_id(sensors):
+    """Test that sensor id 0 is rejected instead of silently reading the first sensor"""
+    # given
+    runner = CliRunner()
+    # when
+    result = runner.invoke(cli, ["get", "0"])
+    # then
+    assert result.exit_code != 0
+    assert result.exception
+    assert (
+        "No sensor with id 0 available. Use the ls command to show all available sensors."
+        in result.output
+    )
+
+
+@pytest.mark.parametrize("sensors", [({"type": Sensor.DS18B20},)], indirect=["sensors"])
+def test_set_resolution_of_sensor_with_zero_id(sensors):
+    """Test that sensor id 0 is rejected instead of silently changing the first sensor"""
+    # given
+    runner = CliRunner()
+    # when
+    result = runner.invoke(cli, ["resolution", "9", "0"])
+    # then
+    assert result.exit_code != 0
+    assert result.exception
+    assert (
+        "No sensor with id 0 available. Use the ls command to show all available sensors."
+        in result.output
+    )
