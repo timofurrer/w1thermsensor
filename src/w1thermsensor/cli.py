@@ -193,11 +193,13 @@ def all(types, unit, resolution, as_json):  # pylint: disable=redefined-builtin
 )
 def get(id_, hwid, type_, unit, resolution, as_json, offset):
     """Get temperature of a specific sensor"""
-    if id_ and (hwid or type_):
+    if id_ is not None and (hwid or type_):
         raise click.BadArgumentUsage("If --id is given --hwid and --type are not allowed.")
 
-    if id_:
+    if id_ is not None:
         try:
+            if id_ < 1:
+                raise IndexError(id_)
             sensor = W1ThermSensor.get_available_sensors()[id_ - 1]
         except IndexError:
             error_msg = (
@@ -252,11 +254,13 @@ def get(id_, hwid, type_, unit, resolution, as_json, offset):
 )
 def resolution(resolution, id_, hwid, type_):
     """Change the resolution for the sensor and persist it in the sensor's EEPROM"""
-    if id_ and (hwid or type_):
+    if id_ is not None and (hwid or type_):
         raise click.BadArgumentUsage("If --id is given --hwid and --type are not allowed.")
 
-    if id_:
+    if id_ is not None:
         try:
+            if id_ < 1:
+                raise IndexError(id_)
             sensor = W1ThermSensor.get_available_sensors()[id_ - 1]
         except IndexError:
             error_msg = (
